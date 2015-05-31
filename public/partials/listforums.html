@@ -1,0 +1,6 @@
+<div ng-controller="ForumsCtrl">
+	<div ng-repeat="category in categories">
+		<h2>{{category.title}}</h2>
+	</div>
+	<alert type="warning" ng-show="categories.length == 0">Es sind keine Foren enthalten</alert>
+</div>

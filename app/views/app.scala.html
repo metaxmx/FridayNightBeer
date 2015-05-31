@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html class="no-js classic-theme" lang="en" ng-app="fnbApp" ng-controller="AppCtrl">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="expires" content="Mon, 8 Aug 2006 00:00:00 GMT">
+
+	<title>Friday Night Beer</title>
+
+	<link type="text/css" rel="stylesheet" href="@routes.Assets.at("lib/bootstrap/css/bootstrap.css")" />
+
+	<link type="text/css" rel="stylesheet" href="@routes.Assets.at("stylesheets/fnb.css")" />
+
+	<script type="text/javascript" src="@routes.Assets.at("lib/jquery/jquery.min.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("lib/bootstrap/js/bootstrap.min.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("lib/angularjs/angular.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("lib/angularjs/angular-route.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("lib/angular-ui-bootstrap/ui-bootstrap-tpls.js")"></script>
+
+	<script type="text/javascript" src="@routes.Assets.at("javascripts/app.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("javascripts/common/config.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("javascripts/directives/appversion.js")"></script>
+
+	<script type="text/javascript" src="@routes.Assets.at("javascripts/service/auth-service.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("javascripts/service/forums-service.js")"></script>
+
+	<script type="text/javascript" src="@routes.Assets.at("javascripts/controllers/app-ctrl.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("javascripts/controllers/login-ctrl.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("javascripts/controllers/forums-ctrl.js")"></script>
+
+	<!--[if lt IE 9]> -->
+		<script type="text/javascript" src="@routes.Assets.at("lib/html5shiv/html5shiv.min.js")"></script>
+		<script type="text/javascript" src="@routes.Assets.at("lib/respond/dest/respond.min.js")"></script>
+	<![endif]-->
+
+	<link rel="shortcut icon" href="@routes.Assets.at("images/favicon.ico")" />
+
+</head>
+<body>
+	<div id="content-header-wrapper">
+		<header>
+			<h1>
+				<a href="/">Friday Night Beer</a>
+			</h1>
+		</header>
+		<div id="appmenu">
+			<div class="container">
+				<ul class="clearfix">
+					<li id="settingsmenu" ng-show="authenticated">
+						<a href="/settings.html" onclick="return false;">Settings</a>
+					</li>
+					<li id="forummenu" ng-show="authenticated">
+						<a ng-href="/#/">Forum</a>
+					</li>
+					<li id="eventsmenu" ng-show="authenticated">
+						<a ng-href="/#/events/">Events</a>
+					</li>
+					<li id="mediamenu" ng-show="authenticated">
+						<a ng-href="/#/media/">Media</a>
+					</li>
+					<li id="mediamenu" ng-show="authenticated">
+						<a ng-href="/#/login">Logout</a>
+					</li>
+					<li id="mediamenu" ng-hide="authenticated">
+						<a ng-href="/#/login">Login</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="container" ng-view>
+			<p>Please wait while the application is being loaded ...</p>
+		</div>
+	</div>
+	<footer>
+		<div class="footer-software">
+			Powered by <a href="http://fnb.illucit.com">Friday Night Beer 0.1</a>
+		</div>
+		<div class="footer-vendor">
+			&copy; 2015 by <a href="http://www.illucit.com">illucIT Software GmbH</a>
+		</div>
+	</footer>
+	<noscript>
+		<div id="jsnotice">
+			<p>This Site requires JavaScript to work properly.</p>
+		</div>
+	</noscript>
+</body>
+</html>
