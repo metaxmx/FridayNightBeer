@@ -1,9 +1,16 @@
 package controllers
 
-import javax.inject.{Singleton, Inject}
+import javax.inject.{ Singleton, Inject }
 import services.UUIDGenerator
-import org.slf4j.{LoggerFactory, Logger}
 import play.api.mvc._
+import play.api.Logger
+import play.modules.reactivemongo.MongoController
+import play.modules.reactivemongo.json.collection.JSONCollection
+import play.api.libs.json.Json
+import reactivemongo.bson.BSONObjectID
+import models.FnbSession
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import scala.concurrent.Await
 
 /**
  * Instead of declaring an object of Application as per the template project, we must declare a class given that
@@ -11,17 +18,45 @@ import play.api.mvc._
  * @param uuidGenerator the UUID generator service we wish to receive.
  */
 @Singleton
-class Application @Inject() (uuidGenerator: UUIDGenerator) extends Controller {
+class Application @Inject() (uuidGenerator: UUIDGenerator) extends Controller with MongoController {
 
-  private final val logger: Logger = LoggerFactory.getLogger(classOf[Application])
+  def sessionCollection: JSONCollection = db.collection[JSONCollection]("sessions")
 
   def appPage = Action {
-    logger.info("Serving application page...")
-    Ok(views.html.app())
+    implicit request =>
+      request.cookies.get("fnbsession").fold {
+        // No cookie with authkey found - generate one
+        val sessionKey = uuidGenerator.generate.toString
+        Logger.info(s"Creating new Session Key $sessionKey")
+        ensureSessionActive(sessionKey)
+        Ok(views.html.app(sessionKey)).withCookies(Cookie("fnbsession", sessionKey))
+      } {
+        cookie =>
+          // Read session key from cookie
+          val sessionKey = cookie.value.toString
+          Logger.info(s"Found Session Key $sessionKey")
+          ensureSessionActive(sessionKey)
+          Ok(views.html.app(sessionKey))
+      }
+  }
+
+  def ensureSessionActive(sessionKey: String) {
+    Logger.info(s"Ensuring Session Key $sessionKey is loaded")
+    val sessionFuture = sessionCollection.find(Json.obj("sessionkey" -> sessionKey)).one[FnbSession];
+    sessionFuture.onComplete {
+      result =>
+        val needInsert = result.isFailure || result.get.isEmpty
+        if (needInsert) {
+          Logger.info(s"Inserting session for ${sessionKey}")
+          sessionCollection.insert(FnbSession(BSONObjectID.generate, sessionKey, "")).onFailure {
+            case error =>
+              Logger.error("Error inserting session: " + error)
+          }
+        }
+    }
   }
 
   def randomUUID = Action {
-    logger.info("calling UUIDGenerator...")
     Ok(uuidGenerator.generate.toString)
   }
 

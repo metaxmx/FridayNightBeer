@@ -4,7 +4,7 @@ import play.api.libs.json.Json
 
 case class AuthInfoDTO(
   authenticated: Boolean,
-  userPk: Long,
+  userId: String,
   name: String,
   username: String)
 

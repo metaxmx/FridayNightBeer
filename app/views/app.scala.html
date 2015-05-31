@@ -1,3 +1,5 @@
+@* AngularJS Application Template *@
+@(session: String)
 <!DOCTYPE html>
 <html class="no-js classic-theme" lang="en" ng-app="fnbApp" ng-controller="AppCtrl">
 <head>
@@ -31,7 +33,11 @@
 	<script type="text/javascript" src="@routes.Assets.at("javascripts/controllers/login-ctrl.js")"></script>
 	<script type="text/javascript" src="@routes.Assets.at("javascripts/controllers/forums-ctrl.js")"></script>
 
-	<!--[if lt IE 9]> -->
+	<script type="text/javascript">
+		window.fnbsession = '@session';
+	</script>
+
+	<!--[if lt IE 9]>
 		<script type="text/javascript" src="@routes.Assets.at("lib/html5shiv/html5shiv.min.js")"></script>
 		<script type="text/javascript" src="@routes.Assets.at("lib/respond/dest/respond.min.js")"></script>
 	<![endif]-->

@@ -6,12 +6,22 @@ class AuthenticationService
 
     constructor: (@$log, @$http, @$q) ->
         @$log.info "constructing AuthenticationService"
+        @session = window.fnbsession;
+        @$log.info "Session is #{@session}"
         @storeAuthdata(null)
+
+    getApiConfig: () ->
+        resultConfig =
+            headers:
+                Accept: 'application/json'
+                'Content-Type': 'application/json'
+                'x-fnb-session': @session
+        resultConfig
 
     fetchAuthData: () ->
         @$log.info "Fetch auth information"
         deferred = @$q.defer()
-        @$http.get('/rest/authentication/info')
+        @$http.get('/authentication/info', @getApiConfig())
         .success((data, status, headers) =>
                 @$log.info("Successfully got AuthInfo - status #{status}")
                 deferred.resolve(data)
@@ -39,7 +49,7 @@ class AuthenticationService
     login: (form) ->
         @$log.debug "login #{angular.toJson(form, true)}"
         deferred = @$q.defer()
-        @$http.post('/rest/authentication/login', form)
+        @$http.post('/authentication/login', form, @getApiConfig())
         .success((data, status, headers) =>
                 @$log.info("Successfully got auth data after login attempt - status #{status}")
                 deferred.resolve(data)
@@ -53,7 +63,7 @@ class AuthenticationService
     logout: () ->
         @$log.debug "logout"
         deferred = @$q.defer()
-        @$http.post('/rest/authentication/logout')
+        @$http.post('/authentication/logout', @getApiConfig())
         .success((data, status, headers) =>
                 @$log.info("Successfully got auth data after logout attempt - status #{status}")
                 deferred.resolve(data)
