@@ -18,6 +18,8 @@ class UsersService {
   def usersCollection: JSONCollection = db.collection[JSONCollection]("users")
 
   def cachekeyUser(id: String) = s"db.user.$id"
+  
+  def cachekeyUsername(username: String) = s"db.username.$username"
 
   def selectUserById(id: String) = usersCollection.find(Json.obj("id_" -> id))
 
