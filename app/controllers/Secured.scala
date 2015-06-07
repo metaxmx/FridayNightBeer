@@ -14,10 +14,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import play.modules.reactivemongo.json.collection.JSONCollection
 import play.api.libs.json.Json
 import reactivemongo.bson.BSONObjectID
+import services.UsersService
 
 trait Secured {
-
-  def userCollection: JSONCollection = db.collection[JSONCollection]("users")
 
   def sessionCollection: JSONCollection = db.collection[JSONCollection]("sessions")
 
@@ -47,11 +46,11 @@ trait Secured {
 
   def hasUser(session: FnbSession) = session.user_id match {
     case null => None
-    case "" => None
-    case s => Some(s)
+    case ""   => None
+    case s    => Some(s)
   }
-    
-  def withSession[A](block: => Tuple2[FnbSession, Option[User]] => Request[A] => Future[Result]): Request[A] => Future[Result] =
+
+  def withSession[A](block: => Tuple2[FnbSession, Option[User]] => Request[A] => Future[Result])(implicit usersService: UsersService): Request[A] => Future[Result] =
     request =>
       parseSessionKey(request) match {
         case None => Future.successful(onMissingSession(request))
@@ -62,7 +61,7 @@ trait Secured {
                 case None => Future.successful(None)
                 case Some(session) => hasUser(session) match {
                   case None => Future.successful(Some(Tuple2(session, None)))
-                  case Some(userId) => userCollection.find(Json.obj("id_" -> session.user_id)).one[User].map {
+                  case Some(userId) => usersService.findUser(session.user_id) map {
                     userOpt =>
                       userOpt match {
                         case None       => None

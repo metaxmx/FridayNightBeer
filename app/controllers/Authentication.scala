@@ -11,9 +11,14 @@ import play.api.mvc._
 import play.api.libs.json._
 import play.api.libs.json.Json.toJson
 import dtos.AuthInfoDTO
+import javax.inject.Inject
+import services.UsersService
+import dto.LoginParams
+import services.SessionsService
+import services.SessionsService
 
 @Singleton
-class Authentication extends Controller with MongoController with Secured {
+class Authentication @Inject() (implicit usersService: UsersService, sessionsService: SessionsService) extends Controller with MongoController with Secured {
 
   def getAuthInfo = Action.async {
     withSession[AnyContent] {
@@ -26,5 +31,19 @@ class Authentication extends Controller with MongoController with Secured {
           Future.successful(Ok(toJson(result)).as("application/json"))
     }
   }
+
+  //  def login = Action.async(parse.json) {
+  //    request =>
+  //      request.body.validate[LoginParams].map {
+  //        loginParams =>
+  //          usersService.findUserByUsername(loginParams.username) flatMap { 
+  //            userOpt => match {
+  //              case None: Future.successful(Unau)
+  //            }
+  //          }
+  //
+  //          Created(s"User Created")
+  //      }.getOrElse(Future.successful(BadRequest("invalid json")))
+  //  }
 
 }
