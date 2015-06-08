@@ -14,11 +14,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import play.modules.reactivemongo.json.collection.JSONCollection
 import play.api.libs.json.Json
 import reactivemongo.bson.BSONObjectID
-import services.UsersService
+import services.{UsersService, SessionsService}
 
 trait Secured {
 
-  def sessionCollection: JSONCollection = db.collection[JSONCollection]("sessions")
+  def sessionCollectionx: JSONCollection = db.collection[JSONCollection]("sessions")
 
   def parseSessionKey(request: RequestHeader) = request.headers.get("x-fnb-session")
 
@@ -44,38 +44,23 @@ trait Secured {
       case Some(session) => block(session)(request)
     }
 
-  def hasUser(session: FnbSession) = session.user_id match {
-    case null => None
-    case ""   => None
-    case s    => Some(s)
-  }
-
-  def withSession[A](block: => Tuple2[FnbSession, Option[User]] => Request[A] => Future[Result])(implicit usersService: UsersService): Request[A] => Future[Result] =
+  def withSession[A](block: => Tuple2[FnbSession, Option[User]] => Request[A] => Future[Result])(implicit usersService: UsersService, sessionsService: SessionsService): Request[A] => Future[Result] =
     request =>
       parseSessionKey(request) match {
         case None => Future.successful(onMissingSession(request))
         case Some(sessionKey) =>
-          sessionCollection.find(Json.obj("sessionkey" -> sessionKey)).one[FnbSession].flatMap {
-            sessionOpt =>
-              sessionOpt match {
-                case None => Future.successful(None)
-                case Some(session) => hasUser(session) match {
-                  case None => Future.successful(Some(Tuple2(session, None)))
-                  case Some(userId) => usersService.findUser(session.user_id) map {
-                    userOpt =>
-                      userOpt match {
-                        case None       => None
-                        case Some(user) => Some(Tuple2(session, Some(user)))
-                      }
-                  }
-                }
+          sessionsService.findSession(sessionKey)
+          sessionCollection.find(Json.obj("sessionkey" -> sessionKey)).one[FnbSession] flatMap {
+            case None => Future.successful(None)
+            case Some(session) => session.user_id match {
+              case None => Future.successful(Some(Tuple2(session, None)))
+              case Some(userId) => usersService.findUser(userId) map {
+                _ map { user => Tuple2(session, Some(user)) }
               }
-          }.flatMap {
-            opt =>
-              opt match {
-                case None        => Future.successful(onSessionLoadingError(request))
-                case Some(tuple) => block(tuple)(request)
-              }
+            }
+          } flatMap {
+            case None        => Future.successful(onSessionLoadingError(request))
+            case Some(tuple) => block(tuple)(request)
           }
       }
 

@@ -5,6 +5,7 @@ import scala.concurrent.Future
 import java.util.concurrent.Callable
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.Logger
+import scala.util.Success
 
 object CacheUtil {
 
@@ -16,10 +17,8 @@ object CacheUtil {
       }
       case None => {
         Logger.info(s"Missing key $key in cache")
-        block flatMap {
-          result =>
-            Cache.set(key, result, expiration)
-            Future.successful(result)
+        block andThen {
+          case Success(result) => Cache.set(key, result, expiration)
         }
       }
     }

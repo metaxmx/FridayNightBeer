@@ -16,6 +16,7 @@ import services.UsersService
 import dto.LoginParams
 import services.SessionsService
 import services.SessionsService
+import services.PasswordEncoder
 
 @Singleton
 class Authentication @Inject() (implicit usersService: UsersService, sessionsService: SessionsService) extends Controller with MongoController with Secured {
@@ -25,25 +26,31 @@ class Authentication @Inject() (implicit usersService: UsersService, sessionsSer
       authInfo =>
         request =>
           val result = authInfo match {
-            case Tuple2(session, None)       => AuthInfoDTO(false, null, null, null)
-            case Tuple2(session, Some(user)) => AuthInfoDTO(true, user._id.toString(), user.displayName, user.username)
+            case Tuple2(session, userOpt) => AuthInfoDTO.of(userOpt)
           }
           Future.successful(Ok(toJson(result)).as("application/json"))
     }
   }
 
-  //  def login = Action.async(parse.json) {
-  //    request =>
-  //      request.body.validate[LoginParams].map {
-  //        loginParams =>
-  //          usersService.findUserByUsername(loginParams.username) flatMap { 
-  //            userOpt => match {
-  //              case None: Future.successful(Unau)
-  //            }
-  //          }
-  //
-  //          Created(s"User Created")
-  //      }.getOrElse(Future.successful(BadRequest("invalid json")))
-  //  }
+    def login = Action.async(parse.json) {
+      request =>
+        request.body.validate[LoginParams].map {
+          loginParams =>
+            val passwordEncoded = PasswordEncoder.encodePassword(loginParams.password)
+            usersService.findUserByUsername(loginParams.username) map {
+              userOpt => userOpt filter(_.password == passwordEncoded)
+            } map {
+              case None => AuthInfoDTO(false, null, null, null)
+              case Some(user) => {
+                // Store User in Session
+                
+                
+                AuthInfoDTO(true, user._id.toString(), user.displayName, user.username)
+              }
+            } map {
+              authInfoDto => Ok(toJson(authInfoDto))
+            }
+        }.getOrElse(Future.successful(BadRequest("invalid json")))
+    }
 
 }

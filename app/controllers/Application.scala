@@ -11,6 +11,7 @@ import reactivemongo.bson.BSONObjectID
 import models.FnbSession
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Await
+import services.SessionsService
 
 /**
  * Instead of declaring an object of Application as per the template project, we must declare a class given that
@@ -18,9 +19,7 @@ import scala.concurrent.Await
  * @param uuidGenerator the UUID generator service we wish to receive.
  */
 @Singleton
-class Application @Inject() (uuidGenerator: UUIDGenerator) extends Controller with MongoController {
-
-  def sessionCollection: JSONCollection = db.collection[JSONCollection]("sessions")
+class Application @Inject() (uuidGenerator: UUIDGenerator, sessionsService: SessionsService) extends Controller with MongoController {
 
   def appPage = Action {
     implicit request =>
@@ -42,13 +41,14 @@ class Application @Inject() (uuidGenerator: UUIDGenerator) extends Controller wi
 
   def ensureSessionActive(sessionKey: String) {
     Logger.info(s"Ensuring Session Key $sessionKey is loaded")
-    val sessionFuture = sessionCollection.find(Json.obj("sessionkey" -> sessionKey)).one[FnbSession];
+    val sessionFuture = sessionsService.findSession(sessionKey);
     sessionFuture.onComplete {
       result =>
         val needInsert = result.isFailure || result.get.isEmpty
         if (needInsert) {
           Logger.info(s"Inserting session for ${sessionKey}")
-          sessionCollection.insert(FnbSession(BSONObjectID.generate, sessionKey, "")).onFailure {
+          sessionsService.insertSession(session)
+          sessionCollection.insert(FnbSession(BSONObjectID(sessionKey), None)).onFailure {
             case error =>
               Logger.error("Error inserting session: " + error)
           }
