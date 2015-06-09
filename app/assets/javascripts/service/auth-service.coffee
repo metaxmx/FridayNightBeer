@@ -63,7 +63,7 @@ class AuthenticationService
     logout: () ->
         @$log.debug "logout"
         deferred = @$q.defer()
-        @$http.post('/authentication/logout', @getApiConfig())
+        @$http.post('/authentication/logout', {}, @getApiConfig())
         .success((data, status, headers) =>
                 @$log.info("Successfully got auth data after logout attempt - status #{status}")
                 deferred.resolve(data)

@@ -14,11 +14,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import play.modules.reactivemongo.json.collection.JSONCollection
 import play.api.libs.json.Json
 import reactivemongo.bson.BSONObjectID
-import services.{UsersService, SessionsService}
+import services.{ UsersService, SessionsService }
 
 trait Secured {
-
-  def sessionCollectionx: JSONCollection = db.collection[JSONCollection]("sessions")
 
   def parseSessionKey(request: RequestHeader) = request.headers.get("x-fnb-session")
 
@@ -49,8 +47,7 @@ trait Secured {
       parseSessionKey(request) match {
         case None => Future.successful(onMissingSession(request))
         case Some(sessionKey) =>
-          sessionsService.findSession(sessionKey)
-          sessionCollection.find(Json.obj("sessionkey" -> sessionKey)).one[FnbSession] flatMap {
+          sessionsService.findSession(sessionKey) flatMap {
             case None => Future.successful(None)
             case Some(session) => session.user_id match {
               case None => Future.successful(Some(Tuple2(session, None)))

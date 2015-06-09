@@ -13,6 +13,8 @@ GET     /login                      @controllers.Application.appPage
 
 # Authentication
 GET      /authentication/info       @controllers.Authentication.getAuthInfo
+POST     /authentication/login      @controllers.Authentication.login
+POST     /authentication/logout     @controllers.Authentication.logout
 
 # User management API
 #GET     /users                      @controllers.Users.findUsers

@@ -27,7 +27,7 @@ class UsersService {
 
   def cachekeyUsername(username: String) = s"db.username.$username"
 
-  def selectUserById(id: String) = usersCollection.find(Json.obj("id_" -> id))
+  def selectUserById(id: String) = usersCollection.find(Json.obj("_id" -> id))
 
   def selectUserByUsername(username: String) = usersCollection.find(Json.obj("username" -> username))
 
@@ -41,8 +41,9 @@ class UsersService {
       case None => {
         findUserByUsernameFromDb(username) andThen {
           case Success(Some(user)) => {
-            Cache.set(cachekeyUsername(username), user.username, CACHE_INTERVAL_USERNAME)
-            Cache.set(cachekeyUser(user._id.stringify), user, CACHE_INTERVAL_USER)
+            Logger.info(s"username: $username, cache key: ${cachekeyUsername(username)}, value: ${user._id.stringify}")
+            Cache.set(cachekeyUsername(username), user._id.stringify, CACHE_INTERVAL_USERNAME)
+            Cache.set(cachekeyUser(user._id.stringify), Some(user), CACHE_INTERVAL_USER)
           }
         }
       }

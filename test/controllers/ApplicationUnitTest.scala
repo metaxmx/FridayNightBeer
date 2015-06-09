@@ -16,12 +16,12 @@ import java.util.UUID
  * route is configured properly.
  */
 class ApplicationUnitTest extends Specification with Mockito {
-  
+
   "Application" should {
-    
+
     "invoke the UUID generator" in {
       val uuidGenerator = mock[UUIDGenerator]
-      val application = new controllers.Application(uuidGenerator)
+      val application = new controllers.Application(uuidGenerator, null)
 
       uuidGenerator.generate returns UUID.randomUUID()
 
