@@ -11,7 +11,6 @@ import models.{ FnbSession, User }
 import play.api.Logger
 import exceptions.QueryException
 import reactivemongo.bson.BSONObjectID
-import play.cache.Cache
 import scala.util.Success
 import scala.util.Failure
 
@@ -20,6 +19,8 @@ class SessionsService {
 
   val CACHE_INTERVAL_SESSION = 10 * 60
 
+  val cacheSession = new TypedCache[FnbSession](_._id, cachekeySession, CACHE_INTERVAL_SESSION)
+
   def sessionsCollection: JSONCollection = db.collection[JSONCollection]("sessions")
 
   def cachekeySession(id: String) = s"db.session.$id"
@@ -27,7 +28,7 @@ class SessionsService {
   def selectSessionById(id: String) = sessionsCollection.find(Json.obj("_id" -> id))
 
   def findSession(id: String): Future[Option[FnbSession]] =
-    CacheUtil.getOrElseAsync(cachekeySession(id), findSessionFromDb(id), CACHE_INTERVAL_SESSION)
+    cacheSession.getOrElseAsync(id, findSessionFromDb(id))
 
   def findSessionFromDb(id: String): Future[Option[FnbSession]] = {
     Logger.info(s"Fetching Session $id from database")
@@ -41,7 +42,7 @@ class SessionsService {
 
   def insertSession(session: FnbSession): Future[FnbSession] = {
     sessionsCollection.insert(session) map (_ => session) andThen {
-      case Success(_) => Cache.set(cachekeySession(session._id), Some(session), CACHE_INTERVAL_SESSION)
+      case Success(_) => cacheSession.set(session)
     } recover {
       case exc => {
         Logger.error("Error inserting session", exc)
@@ -64,12 +65,12 @@ class SessionsService {
           user => Logger.info(s"Logging in session as user ${user.username}")
         }
 
-        val sessionUpdated = session.withUser(userOpt map {_._id stringify})
+        val sessionUpdated = session.withUser(userOpt map { _._id stringify })
         sessionsCollection.save(sessionUpdated) map {
           lastError =>
             {
               Logger.info(s"Result of Update: ${lastError.updated} for object $sessionUpdated")
-              Cache.set(cachekeySession(id), Some(sessionUpdated), CACHE_INTERVAL_SESSION)
+              cacheSession.set(sessionUpdated)
               sessionUpdated
             }
         } recover {

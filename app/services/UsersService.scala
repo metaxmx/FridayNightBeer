@@ -11,57 +11,63 @@ import javax.inject.Singleton
 import reactivemongo.api.ReadPreference
 import exceptions.QueryException
 import play.api.Logger
-import play.cache.Cache
 import scala.util.Success
 
 @Singleton
 class UsersService {
 
+  case class UsernameData(username: String, userId: String)
+
   val CACHE_INTERVAL_USER = 10 * 60
 
   val CACHE_INTERVAL_USERNAME = 24 * 60 * 60
-
-  def usersCollection: JSONCollection = db.collection[JSONCollection]("users")
 
   def cachekeyUser(id: String) = s"db.user.$id"
 
   def cachekeyUsername(username: String) = s"db.username.$username"
 
+  val cacheUser = new TypedCache[User](_._id.stringify, cachekeyUser, CACHE_INTERVAL_USER)
+
+  val cacheUsername = new TypedCache[UsernameData](_.username, cachekeyUsername, CACHE_INTERVAL_USERNAME)
+
+  def usersCollection: JSONCollection = db.collection[JSONCollection]("users")
+
   def selectUserById(id: String) = usersCollection.find(Json.obj("_id" -> id))
 
   def selectUserByUsername(username: String) = usersCollection.find(Json.obj("username" -> username))
 
-  def findUser(id: String): Future[Option[User]] =
-    CacheUtil.getOrElseAsync(cachekeyUser(id), findUserFromDb(id), CACHE_INTERVAL_USER)
+  def findUser(id: String): Future[Option[User]] = cacheUser.getOrElseAsync(id, findUserFromDb(id))
 
-  def findUserByUsername(username: String): Future[Option[User]] = {
-    val cachedUserId = Option(Cache.get(cachekeyUsername(username)).asInstanceOf[String])
-    cachedUserId match {
-      case Some(userId) => findUser(userId)
-      case None => {
-        findUserByUsernameFromDb(username) andThen {
-          case Success(Some(user)) => {
-            Logger.info(s"username: $username, cache key: ${cachekeyUsername(username)}, value: ${user._id.stringify}")
-            Cache.set(cachekeyUsername(username), user._id.stringify, CACHE_INTERVAL_USERNAME)
-            Cache.set(cachekeyUser(user._id.stringify), Some(user), CACHE_INTERVAL_USER)
-          }
+  def findUserByUsername(username: String): Future[Option[User]] =
+    cacheUsername.get(username) match {
+      case Some(usernameData) => findUser(usernameData.userId)
+      case None => findUserByUsernameFromDb(username) andThen {
+        case Success(Some(user)) => {
+          Logger.info(s"username: $username, cache key: ${cachekeyUsername(username)}, value: ${user._id.stringify}")
+          cacheUsername.set(UsernameData(username, user._id.stringify))
+          cacheUser.set(user)
         }
+      }
+    }
+
+  def findUserFromDb(id: String): Future[Option[User]] = {
+    Logger.info(s"Fetching User $id from database")
+    selectUserById(id).one[User] recover {
+      case exc => {
+        Logger.error("Error finding user", exc)
+        throw new QueryException("Error finding user", exc)
       }
     }
   }
 
-  def findUserFromDb(id: String): Future[Option[User]] = try {
-    Logger.info(s"Fetching User $id from database")
-    selectUserById(id).one[User]
-  } catch {
-    case thr: Exception => throw new QueryException("Error finding user", thr)
-  }
-
-  def findUserByUsernameFromDb(username: String): Future[Option[User]] = try {
+  def findUserByUsernameFromDb(username: String): Future[Option[User]] = {
     Logger.info(s"Fetching User with username $username from database")
-    selectUserByUsername(username).one[User]
-  } catch {
-    case thr: Exception => throw new QueryException("Error finding user by username", thr)
+    selectUserByUsername(username).one[User] recover {
+      case exc => {
+        Logger.error("Error finding user by username", exc)
+        throw new QueryException("Error finding user by username", exc)
+      }
+    }
   }
 
 }
