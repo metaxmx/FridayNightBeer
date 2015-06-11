@@ -58,14 +58,14 @@ class SessionsService {
         Future.failed(QueryException("Session not found"))
       }
       case Some(session) => {
-        val userId = userOpt map { _._id stringify }
+        val userId = userOpt map { _._id.toString }
         userOpt.fold {
           Logger.info(s"Logging out session")
         } {
           user => Logger.info(s"Logging in session as user ${user.username}")
         }
 
-        val sessionUpdated = session.withUser(userOpt map { _._id stringify })
+        val sessionUpdated = session.withUser(userOpt map { _._id })
         sessionsCollection.save(sessionUpdated) map {
           lastError =>
             {

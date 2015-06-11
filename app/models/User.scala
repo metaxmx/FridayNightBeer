@@ -5,7 +5,7 @@ import reactivemongo.bson.BSONObjectID
 import play.modules.reactivemongo.json.BSONFormats.BSONObjectIDFormat
 
 case class User(
-  _id: BSONObjectID,
+  _id: Int,
   username: String,
   password: String,
   displayName: String,

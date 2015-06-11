@@ -45,7 +45,9 @@ class Application @Inject() (uuidGenerator: UUIDGenerator, sessionsService: Sess
   def ensureSessionActive(sessionKey: String): Future[FnbSession] = {
     Logger.info(s"Ensuring Session Key $sessionKey is loaded")
     sessionsService.findSession(sessionKey) flatMap {
-      case Some(session) => Future.successful(session)
+      case Some(session) => {
+        Future.successful(session)
+      }
       case None => {
         val newSession = FnbSession(sessionKey, None)
         Logger.info(s"Inserting session for ${sessionKey}")
