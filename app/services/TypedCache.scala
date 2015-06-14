@@ -50,4 +50,6 @@ class TypedCache[T](entityQuery: T => String, queryKey: String => String, expira
     }
   }
 
+  def getOrElseAsyncDef(query: String, block: => Future[T]): Future[T] =
+    getOrElseAsync(query, block map { v => Some(v) }) map { opt => opt.get }
 }

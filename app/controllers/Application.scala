@@ -7,12 +7,14 @@ import play.api.Logger
 import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json.collection.JSONCollection
 import play.api.libs.json.Json
+import play.api.libs.json.Json.toJson
 import reactivemongo.bson.BSONObjectID
 import models.FnbSession
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Await
 import services.SessionsService
 import scala.concurrent.Future
+import services.SettingsService
 
 /**
  * Instead of declaring an object of Application as per the template project, we must declare a class given that
@@ -20,7 +22,7 @@ import scala.concurrent.Future
  * @param uuidGenerator the UUID generator service we wish to receive.
  */
 @Singleton
-class Application @Inject() (uuidGenerator: UUIDGenerator, sessionsService: SessionsService) extends Controller with MongoController {
+class Application @Inject() (uuidGenerator: UUIDGenerator, sessionsService: SessionsService, settingsService: SettingsService) extends Controller with MongoController {
 
   def appPage = Action.async {
     implicit request =>
@@ -58,6 +60,10 @@ class Application @Inject() (uuidGenerator: UUIDGenerator, sessionsService: Sess
 
   def randomUUID = Action {
     Ok(uuidGenerator.generate.toString)
+  }
+
+  def getSettings = Action.async {
+    settingsService.findSettingsDto map { dto => Ok(toJson(dto)) }
   }
 
 }

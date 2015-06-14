@@ -7,6 +7,7 @@
 # Single endpoint for serving AngularJS
 GET     /                           @controllers.Application.appPage
 GET     /randomUUID                 @controllers.Application.randomUUID
+GET     /getsettings                @controllers.Application.getSettings
 
 # Virtual Pages
 GET     /login                      @controllers.Application.appPage
