@@ -21,7 +21,7 @@ class AuthenticationService
     fetchAuthData: () ->
         @$log.info "Fetch auth information"
         deferred = @$q.defer()
-        @$http.get('/authentication/info', @getApiConfig())
+        @$http.get('/api/authentication/info', @getApiConfig())
         .success((data, status, headers) =>
                 @$log.info("Successfully got AuthInfo - status #{status}")
                 deferred.resolve(data)
@@ -49,7 +49,7 @@ class AuthenticationService
     login: (form) ->
         @$log.debug "login #{angular.toJson(form, true)}"
         deferred = @$q.defer()
-        @$http.post('/authentication/login', form, @getApiConfig())
+        @$http.post('/api/authentication/login', form, @getApiConfig())
         .success((data, status, headers) =>
                 @$log.info("Successfully got auth data after login attempt - status #{status}")
                 deferred.resolve(data)
@@ -63,7 +63,7 @@ class AuthenticationService
     logout: () ->
         @$log.debug "logout"
         deferred = @$q.defer()
-        @$http.post('/authentication/logout', {}, @getApiConfig())
+        @$http.post('/api/authentication/logout', {}, @getApiConfig())
         .success((data, status, headers) =>
                 @$log.info("Successfully got auth data after logout attempt - status #{status}")
                 deferred.resolve(data)
