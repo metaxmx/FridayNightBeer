@@ -45,7 +45,7 @@ class ForumsService {
 
   def findCategoriesFromDb: Future[Seq[ForumCategory]] = {
     Logger.info(s"Fetching Forum Categories from database")
-    forumsCollection.find(Json.obj()).cursor[ForumCategory].collect[Seq]() recover {
+    categoriesCollection.find(Json.obj()).cursor[ForumCategory].collect[Seq]() recover {
       case exc => {
         Logger.error("Error loading forum categories", exc)
         throw new QueryException("Error loading forum categories", exc)

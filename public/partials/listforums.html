@@ -1,9 +1,27 @@
 <div ng-controller="ForumsCtrl">
 
-	
-
 	<div ng-repeat="category in categories">
-		<h2>{{category.title}}</h2>
+		<h2>{{category.name}}</h2>
+		
+
+		<table st-table="category.forums" class="table">
+			<thead>
+			<tr>
+				<th>ID</th>
+				<th>name</th>
+				<th>description</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr ng-repeat="forum in category.forums">
+				<td>{{forum.id}}</td>
+				<td>{{forum.name}}</td>
+				<td>{{forum.description}}</td>
+			</tr>
+			</tbody>
+		</table>
+
+		
 	</div>
 	<alert type="warning" ng-show="categories.length == 0">Es sind keine Foren enthalten</alert>
 	

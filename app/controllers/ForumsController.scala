@@ -18,7 +18,7 @@ class ForumsController @Inject() (implicit usersService: UsersService, sessionsS
     withSession[AnyContent] {
       authInfo =>
         request =>
-          forumsService.getForumsDTO.map { result => Ok(toJson(result)).as("application/json") }
+          forumsService.getForumsDTO.map { result => Ok(toJson(result.categories)).as("application/json") }
     }
   }
 
