@@ -7,7 +7,5 @@ case class LoginParams(
   password: String)
 
 object LoginParams {
-
   implicit def format = Json.format[LoginParams]
-
 }

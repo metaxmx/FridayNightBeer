@@ -7,10 +7,9 @@ case class User(
   username: String,
   password: String,
   displayName: String,
-  fullName: String)
+  fullName: String,
+  groups: Option[Seq[Int]])
 
 object User {
-
   implicit val format = Json.format[User]
-
 }

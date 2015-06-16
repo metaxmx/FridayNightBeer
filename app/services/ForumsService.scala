@@ -7,7 +7,7 @@ import play.api.libs.json.Json
 import scala.concurrent.ExecutionContext.Implicits.global
 import javax.inject.Singleton
 import scala.concurrent.Future
-import dtos.ListForumsDTO
+import dto.ListForumsDTO
 import play.api.Logger
 import exceptions.QueryException
 import models.Forum
@@ -18,7 +18,7 @@ class ForumsService {
 
   val CACHE_INTERVAL_FORUMS = 10 * 60
 
-  val cacheListForums = new TypedSingletonCache[ListForumsDTO]("db.listforums", CACHE_INTERVAL_FORUMS)
+  val cacheListForums = new TypedSingletonCache[ListForumsDTO]("dto.listforums", CACHE_INTERVAL_FORUMS)
 
   def forumsCollection: JSONCollection = db.collection[JSONCollection]("forums")
 
