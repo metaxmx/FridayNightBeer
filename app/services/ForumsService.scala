@@ -7,7 +7,6 @@ import play.api.libs.json.Json
 import scala.concurrent.ExecutionContext.Implicits.global
 import javax.inject.Singleton
 import scala.concurrent.Future
-import dto.ListForumsDTO
 import play.api.Logger
 import exceptions.QueryException
 import models.Forum
@@ -18,20 +17,17 @@ class ForumsService {
 
   val CACHE_INTERVAL_FORUMS = 10 * 60
 
-  val cacheListForums = new TypedSingletonCache[ListForumsDTO]("dto.listforums", CACHE_INTERVAL_FORUMS)
+  val cacheListForums = new TypedSingletonCache[ForumsAndCategories]("dto.listforums", CACHE_INTERVAL_FORUMS)
 
   def forumsCollection: JSONCollection = db.collection[JSONCollection]("forums")
 
   def categoriesCollection: JSONCollection = db.collection[JSONCollection]("categories")
 
-  def getForumsDTO: Future[ListForumsDTO] = cacheListForums.getOrElseAsyncDef(fetchForumsDTO)
+  def getForumsAndCategories: Future[ForumsAndCategories] = cacheListForums.getOrElseAsyncDef(fetchForumsAndCategories)
 
-  def fetchForumsDTO: Future[ListForumsDTO] =
-    findForumsFromDb flatMap {
-      forums => findCategoriesFromDb map { (forums, _) }
-    } map {
-      case (forums, categories) => ListForumsDTO.createFromModels(categories, forums)
-    }
+  def fetchForumsAndCategories: Future[ForumsAndCategories] = findForumsFromDb flatMap {
+    forums => findCategoriesFromDb map { ForumsAndCategories(_, forums) }
+  }
 
   def findForumsFromDb: Future[Seq[Forum]] = {
     Logger.info(s"Fetching Forums from database")
@@ -54,3 +50,5 @@ class ForumsService {
   }
 
 }
+
+case class ForumsAndCategories(categories: Seq[ForumCategory], forums: Seq[Forum])

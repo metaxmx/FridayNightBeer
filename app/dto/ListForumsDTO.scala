@@ -31,15 +31,11 @@ object ListForumsCategory {
 
 }
 
-case class ListForumsDTO(categories: Seq[ListForumsCategory])
+object ListForumsAggregation {
 
-object ListForumsDTO {
-
-  implicit val jsonFormat = Json.format[ListForumsDTO]
-
-  def createFromModels(categories: Seq[ForumCategory], forums: Seq[Forum]): ListForumsDTO = {
+  def createListLorums(categories: Seq[ForumCategory], forums: Seq[Forum]): Seq[ListForumsCategory] = {
     val forumsByCategory = forums groupBy { _.category } mapValues { _ sortBy { _.position } }
-    ListForumsDTO(categories map { c => ListForumsCategory(c.name, forumsByCategory.getOrElse(c._id, Seq()) map { ListForumsForum.fromForum(_) }) })
+    categories sortBy { _.position } map { c => ListForumsCategory(c.name, forumsByCategory.getOrElse(c._id, Seq()) map { ListForumsForum.fromForum(_) }) }
   }
 
 }
