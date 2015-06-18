@@ -3,34 +3,33 @@ package models
 import play.api.libs.json.Json
 
 case class AccessRestriction(
-  users: Option[Seq[Int]],
-  groups: Option[Seq[Int]],
-  anonymous: Option[Boolean],
-  allow: Boolean) {
+  forbiddenUsers: Option[Seq[Int]],
+  forbiddenGroups: Option[Seq[Int]],
+  allowedUsers: Option[Seq[Int]],
+  allowedGroups: Option[Seq[Int]],
+  allowAnonymous: Boolean) {
 
-  def allowed(userOpt: Option[User]): Boolean = if (allow) {
-    // Only allow access if in explicit "allowed" list:
-    // Anonymous access or
-    // User contained in user list or
-    // User has a group which is in group list
-    anonymous.exists { _ == true } || userOpt.exists {
-      user =>
-        users.exists { _ contains user._id } ||
-          (user.groups.isDefined && groups.exists { !_.intersect(user.groups.get).isEmpty })
-    }
-  } else {
-    // Allow access if not in explicit "denied" list
-    // Anonymous access (denied if no user logged in) and
-    // User not contained in user list and
-    // User has no group which is in group list
-    userOpt.fold {
-      !anonymous.exists { _ == true }
-    } {
-      user =>
-        (!users.exists { _ contains user._id }) &&
-          (!(user.groups.isDefined && groups.exists { !_.intersect(user.groups.get).isEmpty }))
-    }
+  def allowed(userOpt: Option[User]): Boolean = userOpt.fold {
+    // If no user logged in, check anonymous access
+    allowAnonymous
+  } {
+    // If user is logged in:
+    // 1) Deny access if user matched by forbiddenUsers or in forbiddenGroups
+    // 2) if allowedUsers and/or allowedGroups is defined: Allow only if user matches the users or groups 
+    implicit user => !userExcluded && userIncluded
   }
+
+  private def userExcluded(implicit user: User) =
+    (forbiddenUsers exists { _ contains user._id }) ||
+      (containsCommonElement(forbiddenGroups, user.groups))
+
+  private def userIncluded(implicit user: User) =
+    (!allowedUsers.isDefined && !allowedGroups.isDefined) ||
+      (allowedUsers exists { _ contains user._id }) ||
+      (containsCommonElement(allowedGroups, user.groups))
+
+  private def containsCommonElement(seq1: Option[Seq[Int]], seq2: Option[Seq[Int]]): Boolean =
+    seq1.isDefined && seq2.isDefined && !(seq1.get.intersect(seq2.get).isEmpty)
 
 }
 
