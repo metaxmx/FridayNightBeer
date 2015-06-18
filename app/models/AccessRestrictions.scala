@@ -7,11 +7,11 @@ case class AccessRestriction(
   forbiddenGroups: Option[Seq[Int]],
   allowedUsers: Option[Seq[Int]],
   allowedGroups: Option[Seq[Int]],
-  allowAnonymous: Boolean) {
+  allowAnonymous: Option[Boolean]) {
 
   def allowed(userOpt: Option[User]): Boolean = userOpt.fold {
     // If no user logged in, check anonymous access
-    allowAnonymous
+    allowAnonymous getOrElse true
   } {
     // If user is logged in:
     // 1) Deny access if user matched by forbiddenUsers or in forbiddenGroups
