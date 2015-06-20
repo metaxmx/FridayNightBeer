@@ -4,19 +4,24 @@
 		<h2>{{category.name}}</h2>
 		
 
-		<table st-table="category.forums" class="table">
+		<table st-table="category.forums" class="forums">
 			<thead>
 			<tr>
-				<th>ID</th>
-				<th>name</th>
-				<th>description</th>
+				<th class="forum-icon-col"></th>
+				<th class="forum-title-col">Forum</th>
+				<th class="forum-content-col">Inhalt</th>
+				<th class="forum-latestpost-col">Letzter Beitrag</th>
 			</tr>
 			</thead>
 			<tbody>
 			<tr ng-repeat="forum in category.forums">
-				<td>{{forum.id}}</td>
-				<td>{{forum.name}}</td>
-				<td>{{forum.description}}</td>
+				<td class="forum-icon-col"><img src="/assets/images/classic/forum_default.png"></td>
+				<td class="forum-title-col">
+					<a href="/forums/{{forum.id}}">{{forum.name}}</a>
+					<div>{{forum.description}}</div>
+				</td>
+				<td class="forum-content-col"></td>
+				<td class="forum-latestpost-col"></td>
 			</tr>
 			</tbody>
 		</table>
