@@ -15,6 +15,9 @@ import scala.concurrent.Await
 import services.SessionsService
 import scala.concurrent.Future
 import services.SettingsService
+import services.Themes
+import com.typesafe.config.{ ConfigFactory, Config }
+import theme.Theme
 
 /**
  * Instead of declaring an object of Application as per the template project, we must declare a class given that
@@ -24,6 +27,8 @@ import services.SettingsService
 @Singleton
 class Application @Inject() (uuidGenerator: UUIDGenerator, sessionsService: SessionsService, settingsService: SettingsService) extends Controller with MongoController {
 
+  
+
   def appPage = Action.async {
     implicit request =>
       request.cookies.get("fnbsession").fold {
@@ -31,7 +36,7 @@ class Application @Inject() (uuidGenerator: UUIDGenerator, sessionsService: Sess
         val sessionKey = uuidGenerator.generate.toString
         Logger.info(s"Creating new Session Key $sessionKey")
         ensureSessionActive(sessionKey) map { _ =>
-          Ok(views.html.app(sessionKey)).withCookies(Cookie("fnbsession", sessionKey))
+          Ok(views.html.app(sessionKey, Themes.defaultTheme)).withCookies(Cookie("fnbsession", sessionKey))
         }
       } {
         cookie =>
@@ -39,7 +44,7 @@ class Application @Inject() (uuidGenerator: UUIDGenerator, sessionsService: Sess
           val sessionKey = cookie.value.toString
           Logger.info(s"Found Session Key $sessionKey")
           ensureSessionActive(sessionKey) map { _ =>
-            Ok(views.html.app(sessionKey))
+            Ok(views.html.app(sessionKey, Themes.defaultTheme))
           }
       }
   }

@@ -4,7 +4,15 @@ version := "0.1-SNAPSHOT"
 
 scalaVersion := "2.11.6"
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala).enablePlugins(SbtWeb)
+lazy val fnbDatamodel = (project in file("modules/datamodel"))
+
+lazy val fnbDefaultTheme = (project in file("modules/default-theme")).dependsOn(fnbDatamodel)
+
+lazy val fnbPlay = (project in file("."))
+	.aggregate(fnbDatamodel, fnbDefaultTheme)
+	.dependsOn(fnbDatamodel, fnbDefaultTheme)
+	.enablePlugins(PlayScala)
+	.enablePlugins(SbtWeb)
 
 resolvers += "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
 
@@ -29,3 +37,6 @@ includeFilter in (Assets, LessKeys.less) := "*.less"
 excludeFilter in (Assets, LessKeys.less) := "_*.less"
 
 EclipseKeys.withSource := true
+
+scalacOptions += "-feature"
+
