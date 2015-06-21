@@ -11,7 +11,7 @@ case class ListForumsLastPost(
 case class ListForumsForum(
   id: Int,
   name: String,
-  description: String)
+  description: Option[String])
 
 object ListForumsForum {
 

@@ -6,6 +6,10 @@ case class Group(
   _id: Int,
   name: String)
 
-object Group {
+object Group extends BaseModel {
+
   implicit val format = Json.format[Group]
+
+  def collectionName = "groups"
+
 }

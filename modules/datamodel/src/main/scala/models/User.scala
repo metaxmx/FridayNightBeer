@@ -7,9 +7,13 @@ case class User(
   username: String,
   password: String,
   displayName: String,
-  fullName: String,
+  fullName: Option[String],
   groups: Option[Seq[Int]])
 
-object User {
+object User extends BaseModel {
+  
   implicit val format = Json.format[User]
+  
+  def collectionName = "users"
+  
 }
