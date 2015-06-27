@@ -1,11 +1,8 @@
 /*
- * Page: Index / Show Forums
+ * Page: Index / Show Forums in Modern Theme
  */
 
-@import "variables-classic.less";
-@import "variables-modern.less";
-@import "resources.less";
-@import "mixins.less";
+@import "variables.less";
 
 table.forums {
 	width: 100%;
@@ -59,17 +56,17 @@ table.forums {
 			width: 32px;
 			height: 32px;
 			cursor: default;
-			background-image: url(@res-img-forum-icon-default);
+			//background-image: url(@res-img-forum-icon-default);
 			
 			&.forum-icon-hot {
-				background-image: url(@res-img-forum-icon-hot);
+				//background-image: url(@res-img-forum-icon-hot);
 				
 				&.forum-icon-locked {
-					background-image: url(@res-img-forum-icon-locked);
+					//background-image: url(@res-img-forum-icon-locked);
 				}
 			}
 			&.forum-icon-locked {
-				background-image: url(@res-img-forum-icon-locked);
+				//background-image: url(@res-img-forum-icon-locked);
 			}
 		}
 		

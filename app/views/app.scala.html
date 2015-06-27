@@ -2,7 +2,7 @@
 @import theme.Theme
 @(session: String, theme: Theme)
 <!DOCTYPE html>
-<html class="no-js classic-theme" lang="en" ng-app="fnbApp" ng-controller="AppCtrl">
+<html class="no-js modern-theme" lang="en" ng-app="fnbApp" ng-controller="AppCtrl">
 <head>
 	<meta charset="UTF-8">
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -43,17 +43,33 @@
 		<script type="text/javascript" src="@routes.Assets.at("lib/respond/dest/respond.min.js")"></script>
 	<![endif]-->
 
-	<link rel="shortcut icon" href="@routes.Assets.at("images/favicon.ico")" />
+	<link rel="shortcut icon" href="@routes.Assets.at("appdata/favicon.ico")" />
 
 </head>
 <body>
 	<div id="content-header-wrapper">
 		<header>
-			<h1>
-				<a href="/">Friday Night Beer</a>
-			</h1>
+			<h1><a href="/">Friday Night Beer</a></h1>
+			<a id="logo" href="/">
+				<img src="@routes.Assets.at("appdata/logo.png")" alt="" width="64" height="64">
+			</a>
+			<nav>
+				<ul id="pagemenu" ng-show="authenticated">
+					<li class="selected"><a href="/">Forum</a></li>
+					<li><a href="/">Media</a></li>
+					<li><a href="/">Events</a></li>
+					<li><a href="/">Users</a></li>
+					<li><a href="/">Administration</a></li>
+				</ul>
+				<ul id="usermenu">
+					<li ng-hide="authenticated"><a ng-href="/#/login">Login</a></li>
+					<li ng-show="authenticated"><a href="/">Settings</a></li>
+					<li ng-show="authenticated"><a ng-href="/#/login">Logout</a></li>
+				</ul>
+			</nav>
+			
 		</header>
-		<div id="appmenu">
+		<!-- <div id="appmenu">
 			<div class="container">
 				<ul class="clearfix">
 					<li id="settingsmenu" ng-show="authenticated">
@@ -76,7 +92,7 @@
 					</li>
 				</ul>
 			</div>
-		</div>
+		</div> -->
 		<div class="container" ng-view>
 			<p>Please wait while the application is being loaded ...</p>
 		</div>
