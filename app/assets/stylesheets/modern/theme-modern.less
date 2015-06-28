@@ -10,10 +10,12 @@
 html.modern-theme {
 	margin: 0;
 	padding: 0;
+	height: 100%;
 	
 	body {
 		background-color: @modern-color-background;
 		color: @modern-color-default;
+		height: 100%;
 	}
 
 	header {
@@ -135,12 +137,39 @@ html.modern-theme {
 			content: "";
 			height: 3px;
 			background-color: @modern-color-header-border-inner;
-			border: 1px solid @modern-color-header-border;
+			border-top: 1px solid @modern-color-header-border;
+			border-bottom: 1px solid @modern-color-header-border;
 			display: block;
 			position: absolute;
 			top: @modern-height-header;
-			left: -1px;
-			right:-1px;
+			left: 0;
+			right: 0;
+		}
+	}
+	
+	#content-header-wrapper {
+		height: auto;
+		margin: 0 0 -@modern-height-footer;
+		min-height: 100%;
+		padding: 0 0 (@modern-height-footer + 32px);
+	}
+	
+	footer {
+		display: block;
+		height: @modern-height-footer;
+		.vertical-gradient(@modern-color-menu-light, @modern-color-menu-dark);
+		.box-shadow(inset 0px 2px 2px 0px, @modern-color-shadow);
+		
+		.footer-software {
+			display: block;
+			padding-top: 12px;
+			margin-left: 24px;
+		}
+		
+		.footer-vendor {
+			display: block;
+			padding-top: 4px;
+			margin-left: 24px;
 		}
 	}
 	
