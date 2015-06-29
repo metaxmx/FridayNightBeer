@@ -152,6 +152,10 @@ html.modern-theme {
 		margin: 0 0 -@modern-height-footer;
 		min-height: 100%;
 		padding: 0 0 (@modern-height-footer + 32px);
+		
+		#main-content {
+			padding: 20px 0 8px;
+		}
 	}
 	
 	footer {
@@ -170,6 +174,58 @@ html.modern-theme {
 			display: block;
 			padding-top: 4px;
 			margin-left: 24px;
+		}
+	}
+	
+	form.form-dialog {
+		border: 1px solid #a0a0a0;
+		padding: 0;
+		margin: 0;
+		background-color: @modern-color-section;
+		.border-radius(8px);
+		
+		h1, h2, h3 {
+			&.form-header {
+				.vertical-gradient(@modern-color-section-heading-light, @modern-color-section-heading-dark);
+				.border-top-radius(8px);
+				margin: 0;
+				padding: 8px 8px 12px;
+				
+				&:after {
+					content: "";
+					height: 2px;
+					border-top: 1px solid @modern-color-split-dark;
+					border-bottom: 1px solid @modern-color-split-light;
+					display: block;
+					position: relative;
+					top: 8px;
+				}
+			}
+		}
+		
+		.form-body {
+			padding: 12px;
+		}
+		
+		.form-footer {
+			border-top: 1px solid #a0a0a0;
+			.border-bottom-radius(8px);
+			.vertical-gradient(@modern-color-section-heading-light, @modern-color-section-heading-dark);
+			padding: 8px;
+			
+			.btn, button {
+				margin-left: 8px;
+				float: right;
+			}
+		}
+	}
+	
+	.alert {
+		padding: 8px;
+		margin-bottom: 16px;
+		
+		&.alert-dismissable .close {
+			position: static;
 		}
 	}
 	
