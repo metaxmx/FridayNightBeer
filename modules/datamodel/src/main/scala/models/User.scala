@@ -1,6 +1,7 @@
 package models
 
 import play.api.libs.json.Json
+import reactivemongo.bson.Macros
 
 case class User(
   _id: Int,
@@ -11,9 +12,11 @@ case class User(
   groups: Option[Seq[Int]])
 
 object User extends BaseModel {
-  
-  implicit val format = Json.format[User]
-  
+
+  implicit val bsonFormat = Macros.handler[User]
+
+  implicit val jsonFormat = Json.format[User]
+
   def collectionName = "users"
-  
+
 }

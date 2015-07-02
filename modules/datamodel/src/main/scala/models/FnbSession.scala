@@ -1,6 +1,7 @@
 package models
 
 import play.api.libs.json.Json
+import reactivemongo.bson.Macros
 
 case class FnbSession(
   _id: String,
@@ -12,6 +13,8 @@ case class FnbSession(
 
 object FnbSession {
 
-  implicit val format = Json.format[FnbSession]
+  implicit val bsonFormat= Macros.handler[FnbSession]
+  
+  implicit val jsonFormat = Json.format[FnbSession]
 
 }

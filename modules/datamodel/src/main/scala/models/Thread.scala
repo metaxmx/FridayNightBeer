@@ -1,14 +1,20 @@
 package models
 
 import play.api.libs.json.Json
+import util.Joda.bsonHandler
 import org.joda.time.DateTime
+import reactivemongo.bson.Macros
 
 case class ThreadPostData(
   user: Int,
   date: DateTime)
 
 object ThreadPostData {
-  implicit val format = Json.format[ThreadPostData]
+
+  implicit val bsonFormat = Macros.handler[ThreadPostData]
+
+  implicit val jsonFormat = Json.format[ThreadPostData]
+
 }
 
 case class Thread(
@@ -27,7 +33,9 @@ case class Thread(
 
 object Thread extends BaseModel {
 
-  implicit val format = Json.format[Thread]
+  implicit val bsonFormat = Macros.handler[Thread]
+
+  implicit val jsonFormat = Json.format[Thread]
 
   def collectionName = "threads"
 

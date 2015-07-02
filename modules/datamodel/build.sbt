@@ -12,7 +12,7 @@ libraryDependencies ++= Seq(
   "javax.inject" % "javax.inject" % "1",
   "joda-time" % "joda-time" % "2.3",
   "com.typesafe.play" %% "play-json" % "2.3.7",
-  "org.reactivemongo" %% "play2-reactivemongo" % "0.10.5.0.akka23")
+  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.0.play23")
 
 EclipseKeys.createSrc := EclipseCreateSrc.Default
 

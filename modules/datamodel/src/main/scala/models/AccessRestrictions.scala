@@ -1,6 +1,7 @@
 package models
 
 import play.api.libs.json.Json
+import reactivemongo.bson.Macros
 
 case class AccessRestriction(
   forbiddenUsers: Option[Seq[Int]],
@@ -34,5 +35,9 @@ case class AccessRestriction(
 }
 
 object AccessRestriction {
-  implicit def format = Json.format[AccessRestriction]
+
+  implicit val bsonFormat= Macros.handler[AccessRestriction]
+  
+  implicit val jsonFormat = Json.format[AccessRestriction]
+  
 }

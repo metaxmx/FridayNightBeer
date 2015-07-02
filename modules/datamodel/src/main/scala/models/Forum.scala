@@ -1,6 +1,7 @@
 package models
 
 import play.api.libs.json.Json
+import reactivemongo.bson.Macros
 
 case class Forum(
   _id: Int,
@@ -17,7 +18,9 @@ case class Forum(
 
 object Forum extends BaseModel {
 
-  implicit val format = Json.format[Forum]
+  implicit val bsonFormat= Macros.handler[Forum]
+  
+  implicit val jsonFormat = Json.format[Forum]
 
   def collectionName = "forums"
 
