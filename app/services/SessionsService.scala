@@ -1,9 +1,9 @@
 package services
 
-import play.modules.reactivemongo.json.collection.JSONCollection
+import reactivemongo.api.collections.bson.BSONCollection
+import reactivemongo.bson.BSONDocument
 import play.modules.reactivemongo.ReactiveMongoPlugin.db
 import play.api.Play.current
-import play.api.libs.json.Json
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import javax.inject.Singleton
@@ -21,18 +21,18 @@ class SessionsService {
 
   val cacheSession = new TypedCache[FnbSession](_._id, cachekeySession, CACHE_INTERVAL_SESSION)
 
-  def sessionsCollection: JSONCollection = db.collection[JSONCollection]("sessions")
+  def sessionsCollection = db.collection[BSONCollection]("sessions")
 
   def cachekeySession(id: String) = s"db.session.$id"
 
-  def selectSessionById(id: String) = sessionsCollection.find(Json.obj("_id" -> id))
+  def selectSessionById(id: String) = sessionsCollection.find(BSONDocument("_id" -> id)).one[FnbSession]
 
   def findSession(id: String): Future[Option[FnbSession]] =
     cacheSession.getOrElseAsync(id, findSessionFromDb(id))
 
   def findSessionFromDb(id: String): Future[Option[FnbSession]] = {
     Logger.info(s"Fetching Session $id from database")
-    selectSessionById(id).one[FnbSession] recover {
+    selectSessionById(id) recover {
       case exc => {
         Logger.error("Error finding session", exc)
         throw new QueryException("Error finding session", exc)
@@ -66,10 +66,11 @@ class SessionsService {
         }
 
         val sessionUpdated = session.withUser(userOpt map { _._id })
-        sessionsCollection.save(sessionUpdated) map {
-          lastError =>
+        // TODO: Does insert work here???
+        sessionsCollection.insert(sessionUpdated) map {
+          writeResult =>
             {
-              Logger.info(s"Result of Update: ${lastError.updated} for object $sessionUpdated")
+              Logger.info(s"Result of Update: ${writeResult.n} for object $sessionUpdated")
               cacheSession.set(sessionUpdated)
               sessionUpdated
             }

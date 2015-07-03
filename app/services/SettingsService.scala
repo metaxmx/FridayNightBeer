@@ -1,9 +1,9 @@
 package services
 
-import play.modules.reactivemongo.json.collection.JSONCollection
+import reactivemongo.api.collections.bson.BSONCollection
+import reactivemongo.bson.BSONDocument
 import play.modules.reactivemongo.ReactiveMongoPlugin.db
 import play.api.Play.current
-import play.api.libs.json.Json
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import javax.inject.Singleton
@@ -11,6 +11,7 @@ import models.FnbSetting
 import dtos.SettingsDTO
 import play.api.Logger
 import exceptions.QueryException
+import reactivemongo.api.ReadPreference
 
 @Singleton
 class SettingsService {
@@ -21,11 +22,11 @@ class SettingsService {
 
   val cacheSettingsDTO = new TypedSingletonCache[SettingsDTO]("dto.settings", CACHE_INTERVAL_SETTINGS)
 
-  def settingsCollection: JSONCollection = db.collection[JSONCollection]("settings")
+  def settingsCollection = db.collection[BSONCollection]("settings")
 
   def findSettingsFromDb: Future[Seq[FnbSetting]] = {
     Logger.info(s"Fetching Settings from database")
-    settingsCollection.find(Json.obj()).cursor[FnbSetting].collect[Seq]() recover {
+    settingsCollection.find(BSONDocument()).cursor[FnbSetting](ReadPreference.Primary).collect[Seq]() recover {
       case exc => {
         Logger.error("Error loading settings", exc)
         throw new QueryException("Error loading settings", exc)

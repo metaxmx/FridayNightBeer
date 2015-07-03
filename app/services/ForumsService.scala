@@ -1,9 +1,9 @@
 package services
 
-import play.modules.reactivemongo.json.collection.JSONCollection
+import reactivemongo.api.collections.bson.BSONCollection
+import reactivemongo.bson.BSONDocument
 import play.modules.reactivemongo.ReactiveMongoPlugin.db
 import play.api.Play.current
-import play.api.libs.json.Json
 import scala.concurrent.ExecutionContext.Implicits.global
 import javax.inject.Singleton
 import scala.concurrent.Future
@@ -11,6 +11,7 @@ import play.api.Logger
 import exceptions.QueryException
 import models.Forum
 import models.ForumCategory
+import reactivemongo.api.ReadPreference
 
 @Singleton
 class ForumsService {
@@ -19,9 +20,9 @@ class ForumsService {
 
   val cacheListForums = new TypedSingletonCache[ForumsAndCategories]("dto.listforums", CACHE_INTERVAL_FORUMS)
 
-  def forumsCollection: JSONCollection = db.collection[JSONCollection]("forums")
+  def forumsCollection = db.collection[BSONCollection]("forums")
 
-  def categoriesCollection: JSONCollection = db.collection[JSONCollection]("categories")
+  def categoriesCollection = db.collection[BSONCollection]("categories")
 
   def getForumsAndCategories: Future[ForumsAndCategories] = cacheListForums.getOrElseAsyncDef(fetchForumsAndCategories)
 
@@ -31,7 +32,7 @@ class ForumsService {
 
   def findForumsFromDb: Future[Seq[Forum]] = {
     Logger.info(s"Fetching Forums from database")
-    forumsCollection.find(Json.obj()).cursor[Forum].collect[Seq]() recover {
+    forumsCollection.find(BSONDocument()).cursor[Forum](ReadPreference.Primary).collect[Seq]() recover {
       case exc => {
         Logger.error("Error loading forums", exc)
         throw new QueryException("Error loading forums", exc)
@@ -41,7 +42,7 @@ class ForumsService {
 
   def findCategoriesFromDb: Future[Seq[ForumCategory]] = {
     Logger.info(s"Fetching Forum Categories from database")
-    categoriesCollection.find(Json.obj()).cursor[ForumCategory].collect[Seq]() recover {
+    categoriesCollection.find(BSONDocument()).cursor[ForumCategory](ReadPreference.Primary).collect[Seq]() recover {
       case exc => {
         Logger.error("Error loading forum categories", exc)
         throw new QueryException("Error loading forum categories", exc)

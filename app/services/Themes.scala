@@ -16,7 +16,9 @@ object Themes {
     for (theme <- loadedThemes) {
       Logger.info(s"Found Theme '${theme.id}' (${theme.label}) defined in ${theme.getClass}")
     }
-    loadedThemes
+    // loadedThemes
+    // TODO: FIx Theme Loading
+    Seq(new DefaultTheme)
   }
 
   lazy val themes = loadThemes

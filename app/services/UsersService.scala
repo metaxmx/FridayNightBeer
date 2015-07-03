@@ -1,10 +1,10 @@
 package services
 
 import models.User
-import play.modules.reactivemongo.json.collection.JSONCollection
+import reactivemongo.api.collections.bson.BSONCollection
 import play.modules.reactivemongo.ReactiveMongoPlugin.db
 import play.api.Play.current
-import play.api.libs.json.Json
+import reactivemongo.bson.BSONDocument
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import javax.inject.Singleton
@@ -30,11 +30,11 @@ class UsersService {
 
   val cacheUsername = new TypedCache[UsernameData](_.username, cachekeyUsername, CACHE_INTERVAL_USERNAME)
 
-  def usersCollection: JSONCollection = db.collection[JSONCollection]("users")
+  def usersCollection = db.collection[BSONCollection]("users")
 
-  def selectUserById(id: Int) = usersCollection.find(Json.obj("_id" -> id))
+  def selectUserById(id: Int) = usersCollection.find(BSONDocument("_id" -> id)).one[User]
 
-  def selectUserByUsername(username: String) = usersCollection.find(Json.obj("username" -> username.toLowerCase))
+  def selectUserByUsername(username: String) = usersCollection.find(BSONDocument("username" -> username.toLowerCase)).one[User]
 
   def findUser(id: Int): Future[Option[User]] = cacheUser.getOrElseAsync(id.toString, findUserFromDb(id))
 
@@ -52,7 +52,7 @@ class UsersService {
 
   def findUserFromDb(id: Int): Future[Option[User]] = {
     Logger.info(s"Fetching User $id from database")
-    selectUserById(id).one[User] recover {
+    selectUserById(id) recover {
       case exc => {
         Logger.error("Error finding user", exc)
         throw new QueryException("Error finding user", exc)
@@ -62,7 +62,7 @@ class UsersService {
 
   def findUserByUsernameFromDb(username: String): Future[Option[User]] = {
     Logger.info(s"Fetching User with username $username from database")
-    selectUserByUsername(username).one[User] recover {
+    selectUserByUsername(username) recover {
       case exc => {
         Logger.error("Error finding user by username", exc)
         throw new QueryException("Error finding user by username", exc)

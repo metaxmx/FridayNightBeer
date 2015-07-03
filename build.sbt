@@ -38,5 +38,7 @@ excludeFilter in (Assets, LessKeys.less) := "_*.less"
 
 EclipseKeys.withSource := true
 
+EclipseKeys.skipParents in ThisBuild := false
+
 scalacOptions += "-feature"
 
