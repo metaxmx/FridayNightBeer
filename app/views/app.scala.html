@@ -1,6 +1,6 @@
 @* AngularJS Application Template *@
 @import theme.Theme
-@(session: String, theme: Theme)
+@(theme: Theme)
 <!DOCTYPE html>
 <html class="no-js modern-theme" lang="en" ng-app="fnbApp" ng-controller="AppCtrl">
 <head>
@@ -33,10 +33,6 @@
 	<script type="text/javascript" src="@routes.Assets.at("javascripts/controllers/app-ctrl.js")"></script>
 	<script type="text/javascript" src="@routes.Assets.at("javascripts/controllers/login-ctrl.js")"></script>
 	<script type="text/javascript" src="@routes.Assets.at("javascripts/controllers/forums-ctrl.js")"></script>
-
-	<script type="text/javascript">
-		window.fnbsession = '@session';
-	</script>
 
 	<!--[if lt IE 9]>
 		<script type="text/javascript" src="@routes.Assets.at("lib/html5shiv/html5shiv.min.js")"></script>

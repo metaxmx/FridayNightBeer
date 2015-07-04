@@ -27,24 +27,22 @@ import theme.Theme
 @Singleton
 class Application @Inject() (uuidGenerator: UUIDGenerator, sessionsService: SessionsService, settingsService: SettingsService) extends Controller with MongoController {
 
-  
+  def parseSession(implicit req: RequestHeader) = req.session.get(Secured.fnbSessionHeaderName)
 
   def appPage = Action.async {
     implicit request =>
-      request.cookies.get("fnbsession").fold {
+      parseSession.fold {
         // No cookie with authkey found - generate one
         val sessionKey = uuidGenerator.generate.toString
         Logger.info(s"Creating new Session Key $sessionKey")
         ensureSessionActive(sessionKey) map { _ =>
-          Ok(views.html.app(sessionKey, Themes.defaultTheme)).withCookies(Cookie("fnbsession", sessionKey))
+          Ok(views.html.app(Themes.defaultTheme)).withSession(Secured.fnbSessionHeaderName -> sessionKey)
         }
       } {
-        cookie =>
-          // Read session key from cookie
-          val sessionKey = cookie.value.toString
+        sessionKey =>
           Logger.info(s"Found Session Key $sessionKey")
           ensureSessionActive(sessionKey) map { _ =>
-            Ok(views.html.app(sessionKey, Themes.defaultTheme))
+            Ok(views.html.app(Themes.defaultTheme))
           }
       }
   }

@@ -35,7 +35,10 @@ object ListForumsAggregation {
 
   def createListLorums(categories: Seq[ForumCategory], forums: Seq[Forum]): Seq[ListForumsCategory] = {
     val forumsByCategory = forums groupBy { _.category } mapValues { _ sortBy { _.position } }
-    categories sortBy { _.position } map { c => ListForumsCategory(c.name, forumsByCategory.getOrElse(c._id, Seq()) map { ListForumsForum.fromForum(_) }) }
+    val listForumsByCategory = forumsByCategory mapValues { _ map { ListForumsForum.fromForum(_) } }
+    categories sortBy { _.position } map {
+      c => ListForumsCategory(c.name, listForumsByCategory.getOrElse(c._id, Seq()))
+    } filter { !_.forums.isEmpty }
   }
 
 }

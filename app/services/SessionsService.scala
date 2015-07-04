@@ -66,8 +66,7 @@ class SessionsService {
         }
 
         val sessionUpdated = session.withUser(userOpt map { _._id })
-        // TODO: Does insert work here???
-        sessionsCollection.insert(sessionUpdated) map {
+        sessionsCollection.update(BSONDocument("_id" -> session._id), sessionUpdated) map {
           writeResult =>
             {
               Logger.info(s"Result of Update: ${writeResult.n} for object $sessionUpdated")

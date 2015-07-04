@@ -18,7 +18,7 @@ import services.{ UsersService, SessionsService }
 
 trait Secured {
 
-  def parseSessionKey(request: RequestHeader) = request.headers.get("x-fnb-session")
+  def parseSessionKey(request: RequestHeader) = request.session.get(Secured.fnbSessionHeaderName)
 
   def onMissingSession(request: RequestHeader) = {
     Logger.warn("Returning API request without session header")
@@ -61,4 +61,10 @@ trait Secured {
           }
       }
 
+}
+
+object Secured {
+  
+  val fnbSessionHeaderName = "fnbsessionid"
+  
 }
