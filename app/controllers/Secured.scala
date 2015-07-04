@@ -42,7 +42,7 @@ trait Secured {
       case Some(session) => block(session)(request)
     }
 
-  def withSession[A](block: => Tuple2[FnbSession, Option[User]] => Request[A] => Future[Result])(implicit usersService: UsersService, sessionsService: SessionsService): Request[A] => Future[Result] =
+  def withSession[A](block: => SessionInfo => Request[A] => Future[Result])(implicit usersService: UsersService, sessionsService: SessionsService): Request[A] => Future[Result] =
     request =>
       parseSessionKey(request) match {
         case None => Future.successful(onMissingSession(request))
@@ -50,21 +50,23 @@ trait Secured {
           sessionsService.findSession(sessionKey) flatMap {
             case None => Future.successful(None)
             case Some(session) => session.user_id match {
-              case None => Future.successful(Some(Tuple2(session, None)))
+              case None => Future.successful(Some(SessionInfo(session, None)))
               case Some(userId) => usersService.findUser(userId) map {
-                _ map { user => Tuple2(session, Some(user)) }
+                _ map { user => SessionInfo(session, Some(user)) }
               }
             }
           } flatMap {
-            case None        => Future.successful(onSessionLoadingError(request))
-            case Some(tuple) => block(tuple)(request)
+            case None              => Future.successful(onSessionLoadingError(request))
+            case Some(sessionInfo) => block(sessionInfo)(request)
           }
       }
 
 }
 
+case class SessionInfo(session: FnbSession, userOpt: Option[User])
+
 object Secured {
-  
+
   val fnbSessionHeaderName = "fnbsessionid"
-  
+
 }

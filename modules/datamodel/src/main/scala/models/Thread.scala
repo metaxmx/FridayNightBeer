@@ -27,7 +27,7 @@ case class Thread(
   sticky: Boolean,
   restriction: Option[AccessRestriction]) {
 
-  def accessGranted(userOpt: Option[User]) = restriction.isEmpty || restriction.get.allowed(userOpt)
+  def accessGranted(implicit userOpt: Option[User]) = restriction map { _.allowed } getOrElse true
 
 }
 

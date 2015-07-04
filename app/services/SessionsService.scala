@@ -21,7 +21,7 @@ class SessionsService {
 
   val cacheSession = new TypedCache[FnbSession](_._id, cachekeySession, CACHE_INTERVAL_SESSION)
 
-  def sessionsCollection = db.collection[BSONCollection]("sessions")
+  def sessionsCollection = db.collection[BSONCollection](FnbSession.collectionName)
 
   def cachekeySession(id: String) = s"db.session.$id"
 

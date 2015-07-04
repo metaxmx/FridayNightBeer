@@ -30,7 +30,9 @@ class UsersService {
 
   val cacheUsername = new TypedCache[UsernameData](_.username, cachekeyUsername, CACHE_INTERVAL_USERNAME)
 
-  def usersCollection = db.collection[BSONCollection]("users")
+  val cacheUsers = new TypedSingletonCache[Seq[User]]("db.users", CACHE_INTERVAL_USER)
+
+  def usersCollection = db.collection[BSONCollection](User.collectionName)
 
   def selectUserById(id: Int) = usersCollection.find(BSONDocument("_id" -> id)).one[User]
 
@@ -69,5 +71,17 @@ class UsersService {
       }
     }
   }
+
+  def findUsersFromDb: Future[Seq[User]] = {
+    Logger.info(s"Fetching Users from database")
+    usersCollection.find(BSONDocument()).cursor[User](ReadPreference.Primary).collect[Seq]() recover {
+      case exc => {
+        Logger.error("Error loading users", exc)
+        throw new QueryException("Error loading users", exc)
+      }
+    }
+  }
+
+  def getUsers: Future[Seq[User]] = cacheUsers.getOrElseAsyncDef(findUsersFromDb)
 
 }

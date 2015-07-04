@@ -12,26 +12,29 @@ import services.UsersService
 import services.SessionsService
 import dto.ListForumsCategory
 import models.User
+import models.Thread
 import services.ForumsAndCategories
-import dto.ListForumsAggregation.createListLorums
+import dto.ListForumsAggregation.createListForums
+import services.ThreadsService
 
 @Singleton
-class ForumsController @Inject() (implicit usersService: UsersService, sessionsService: SessionsService, forumsService: ForumsService) extends Controller with MongoController with Secured {
+class ForumsController @Inject() (implicit usersService: UsersService,
+                                  sessionsService: SessionsService,
+                                  forumsService: ForumsService,
+                                  threadsService: ThreadsService) extends Controller with MongoController with Secured {
 
   def getForums = Action.async {
     withSession[AnyContent] {
-      authInfo =>
+      sessionInfo =>
         request =>
-          forumsService.getForumsAndCategories map {
-            forumsAndCats => Ok(toJson(filterForumsByPermissions(forumsAndCats, authInfo._2))).as("application/json")
+          forumsService.getForumsAndCategories flatMap {
+            forumsAndCats => threadsService.getThreadsByForum map { (forumsAndCats, _) }
+          } flatMap {
+            case (forumsAndCats, threads) => usersService.getUsers map { (forumsAndCats, threads, _) }
+          } map {
+            case (forumsAndCats, threads, users) => Ok(toJson(createListForums(forumsAndCats, threads, users)(sessionInfo.userOpt))).as("application/json")
           }
     }
-  }
-
-  def filterForumsByPermissions(forumsAndCats: ForumsAndCategories, userOpt: Option[User]): Seq[ListForumsCategory] = {
-    val forums = forumsAndCats.forums filter { _.accessGranted(userOpt) }
-    val categories = forumsAndCats.categories filter { _.accessGranted(userOpt) }
-    createListLorums(categories, forums)
   }
 
 }

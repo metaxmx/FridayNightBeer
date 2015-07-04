@@ -10,7 +10,7 @@ case class AccessRestriction(
   allowedGroups: Option[Seq[Int]],
   allowAnonymous: Option[Boolean]) {
 
-  def allowed(userOpt: Option[User]): Boolean = userOpt.fold {
+  def allowed(implicit userOpt: Option[User]): Boolean = userOpt.fold {
     // If no user logged in, check anonymous access
     allowAnonymous getOrElse true
   } {

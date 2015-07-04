@@ -22,7 +22,7 @@ class SettingsService {
 
   val cacheSettingsDTO = new TypedSingletonCache[SettingsDTO]("dto.settings", CACHE_INTERVAL_SETTINGS)
 
-  def settingsCollection = db.collection[BSONCollection]("settings")
+  def settingsCollection = db.collection[BSONCollection](FnbSetting.collectionName)
 
   def findSettingsFromDb: Future[Seq[FnbSetting]] = {
     Logger.info(s"Fetching Settings from database")

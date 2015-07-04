@@ -20,8 +20,19 @@
 					<a href="/forums/{{forum.id}}">{{forum.name}}</a>
 					<div>{{forum.description}}</div>
 				</td>
-				<td class="forum-content-col"></td>
-				<td class="forum-latestpost-col"></td>
+				<td class="forum-content-col">
+					<div>{{forum.numThreads}} Threads</div>
+					<div>{{forum.numPosts}} Posts</div>
+				</td>
+				<td class="forum-latestpost-col">
+					<div ng-show="forum.lastPost">
+						<div><a href="{{forum.lastPost.id}}">{{forum.lastPost.title}}</a></div>
+						<div>
+							von <a href="{{forum.lastPost.user}}">{{forum.lastPost.userName}}</a>
+							am {{forum.lastPost.date}}
+						</div>
+					</div>
+				</td>
 			</tr>
 			</tbody>
 		</table>

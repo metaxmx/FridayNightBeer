@@ -9,7 +9,7 @@ case class ForumCategory(
   position: Int,
   restriction: Option[AccessRestriction]) {
 
-  def accessGranted(userOpt: Option[User]) = restriction.map { _.allowed(userOpt) }.getOrElse(true)
+  def accessGranted(implicit userOpt: Option[User]) = restriction map { _.allowed } getOrElse true
 
 }
 

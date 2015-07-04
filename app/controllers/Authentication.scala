@@ -23,18 +23,15 @@ class Authentication @Inject() (implicit usersService: UsersService, sessionsSer
 
   def getAuthInfo = Action.async {
     withSession[AnyContent] {
-      authInfo =>
+      sessionInfo =>
         request =>
-          val result = authInfo match {
-            case Tuple2(session, userOpt) => AuthInfoDTO.of(userOpt)
-          }
-          Future.successful(Ok(toJson(result)).as("application/json"))
+          Future.successful(Ok(toJson(AuthInfoDTO.of(sessionInfo.userOpt))).as("application/json"))
     }
   }
 
   def login = Action.async(parse.json) {
     withSession {
-      case (session, _) =>
+      sessionInfo =>
         request =>
           request.body.validate[LoginParams].map {
             loginParams =>
@@ -50,7 +47,7 @@ class Authentication @Inject() (implicit usersService: UsersService, sessionsSer
                 case None => Future.successful(AuthInfoDTO.unauthenticated)
                 case Some(user) => {
                   // Store User in Session
-                  sessionsService.updateSessionUser(session._id, Some(user)) map {
+                  sessionsService.updateSessionUser(sessionInfo.session._id, Some(user)) map {
                     _ => AuthInfoDTO.authenticated(user)
                   }
                 }
@@ -63,9 +60,9 @@ class Authentication @Inject() (implicit usersService: UsersService, sessionsSer
 
   def logout = Action.async {
     withSession[AnyContent] {
-      case (session, _) =>
+      sessionInfo =>
         request =>
-          sessionsService.updateSessionUser(session._id, None) map {
+          sessionsService.updateSessionUser(sessionInfo.session._id, None) map {
             // TODO: Create new session ID
             _ => Ok(toJson(AuthInfoDTO.unauthenticated))
           }
