@@ -1,43 +1,53 @@
-<div ng-controller="ForumsCtrl">
+<div ng-controller="ForumsCtrl" class="view-listforums">
 
-	<div ng-repeat="category in categories">
-		<h2>{{category.name}}</h2>
-		
-
-		<table st-table="category.forums" class="forums">
-			<thead>
-			<tr>
-				<th class="forum-icon-col"></th>
-				<th class="forum-title-col">Forum</th>
-				<th class="forum-content-col">Inhalt</th>
-				<th class="forum-latestpost-col">Letzter Beitrag</th>
-			</tr>
-			</thead>
-			<tbody>
-			<tr ng-repeat="forum in category.forums">
-				<td class="forum-icon-col"><img src="/assets/images/classic/forum_default.png"></td>
-				<td class="forum-title-col">
-					<a href="/forums/{{forum.id}}">{{forum.name}}</a>
-					<div>{{forum.description}}</div>
-				</td>
-				<td class="forum-content-col">
-					<div>{{forum.numThreads}} Threads</div>
-					<div>{{forum.numPosts}} Posts</div>
-				</td>
-				<td class="forum-latestpost-col">
-					<div ng-show="forum.lastPost">
-						<div><a href="{{forum.lastPost.id}}">{{forum.lastPost.title}}</a></div>
-						<div>
-							von <a href="{{forum.lastPost.user}}">{{forum.lastPost.userName}}</a>
-							am {{forum.lastPost.date}}
+	<div class="view-header">
+		<div class="breadcrumb-combined">
+			<ol class="breadcrumb">
+				<li><a ng-href="/#/">Friday Night Beer</a></li>
+				<li class="active">Forum</li>
+			</ol>
+			<div class="headeroptions">
+				<a href="/">Suche</a> |
+				<a href="/">Foren verwalten</a>
+			</div>
+		</div>
+	</div>
+	<div class="main-content">
+		<div ng-repeat="category in categories" class="listforums-category">
+			<h2>{{category.name}}</h2>
+			<table st-table="category.forums" class="forums">
+				<thead>
+				<tr>
+					<th class="forum-icon-col"></th>
+					<th class="forum-title-col">Forum</th>
+					<th class="forum-content-col">Inhalt</th>
+					<th class="forum-latestpost-col">Letzter Beitrag</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr ng-repeat="forum in category.forums">
+					<td class="forum-icon-col"><img src="/assets/images/classic/forum_default.png"></td>
+					<td class="forum-title-col">
+						<a href="/forums/{{forum.id}}">{{forum.name}}</a>
+						<div>{{forum.description}}</div>
+					</td>
+					<td class="forum-content-col">
+						<div>{{forum.numThreads}} Threads</div>
+						<div>{{forum.numPosts}} Posts</div>
+					</td>
+					<td class="forum-latestpost-col">
+						<div ng-show="forum.lastPost">
+							<div><a href="{{forum.lastPost.id}}">{{forum.lastPost.title}}</a></div>
+							<div>
+								von <a href="{{forum.lastPost.user}}">{{forum.lastPost.userName}}</a>
+								am {{forum.lastPost.date}}
+							</div>
 						</div>
-					</div>
-				</td>
-			</tr>
-			</tbody>
-		</table>
-
-		
+					</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
 	</div>
 	<alert type="warning" ng-show="categories.length == 0">Es sind keine Foren enthalten</alert>
 	
