@@ -1,22 +1,21 @@
 
 class ShowForumCtrl
 
-    constructor: (@$log, @$scope, @ForumsService) ->
+    constructor: (@$log, @$scope, @$routeParams, @ForumsService) ->
         @$log.debug "constructing ShowForumCtrl"
-        @$scope.categories = []
-        @getAllForums()
+        @getForum()
 
-    getAllForums: () ->
-        @$log.debug "getAllForums()"
-        @ForumsService.loadForums()
+    getForum: () ->
+        @$log.debug "getForum()"
+        @ForumsService.loadForum(@$routeParams.id)
         .then(
             (data) =>
-                @$log.debug "Promise returned #{data.length} Forums/Categories"
-                @$scope.categories = data
+                @$log.debug "Promise returned Forum"
+                @$scope.forum = data
             ,
             (error) =>
                 @$log.error "Unable to get Forums: #{error}"
-                @$scope.categories = []
+                @$scope.forum = {}
             )
 
 controllersModule.controller('ShowForumCtrl', ShowForumCtrl)
