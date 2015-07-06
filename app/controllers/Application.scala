@@ -46,6 +46,8 @@ class Application @Inject() (uuidGenerator: UUIDGenerator, sessionsService: Sess
           }
       }
   }
+  
+  def showForumPage(id: Int) = appPage
 
   def ensureSessionActive(sessionKey: String): Future[FnbSession] = {
     Logger.info(s"Ensuring Session Key $sessionKey is loaded")

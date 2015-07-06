@@ -1,21 +1,21 @@
-<div ng-controller="ForumsCtrl" class="view-listforums">
+<div ng-controller="ShowForumCtrl" class="view-showforum">
 
 	<div class="view-header">
 		<div class="breadcrumb-combined">
 			<ol class="breadcrumb">
-				<li><a ng-href="/#/forum">Friday Night Beer</a></li>
-				<li class="active">Forum</li>
+				<li><a ng-href="/#/">Friday Night Beer</a></li>
+				<li><a ng-href="/#/">Forum</a></li>
+				<li class="active">{{title}}</li>
 			</ol>
 			<div class="headeroptions">
 				<a href="/">Suche</a> |
-				<a href="/">Foren verwalten</a>
+				<a href="/">Neuer Thread</a> |
+				<a href="/">Threads verwalten</a>
 			</div>
 		</div>
 	</div>
 	<div class="main-content">
-		<div ng-repeat="category in categories" class="listforums-category">
-			<h2>{{category.name}}</h2>
-			<table st-table="category.forums" class="forums">
+			<table st-table="threads" class="threads">
 				<thead>
 				<tr>
 					<th class="forum-icon-col"></th>
@@ -25,10 +25,10 @@
 				</tr>
 				</thead>
 				<tbody>
-				<tr ng-repeat="forum in category.forums">
+				<tr ng-repeat="thread in threads">
 					<td class="forum-icon-col"><img src="/assets/images/classic/forum_default.png"></td>
 					<td class="forum-title-col">
-						<a ng-href="/#/forum/{{forum.id}}">{{forum.name}}</a>
+						<a href="/forums/{{forum.id}}">{{forum.name}}</a>
 						<div>{{forum.description}}</div>
 					</td>
 					<td class="forum-content-col">

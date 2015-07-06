@@ -36,5 +36,19 @@ class ForumsController @Inject() (implicit usersService: UsersService,
           }
     }
   }
+  
+  def showForum(id: Int) = Action.async {
+    withSession[AnyContent] {
+      sessionInfo =>
+        request =>
+          forumsService.getForumsAndCategories flatMap {
+            forumsAndCats => threadsService.getThreadsByForum map { (forumsAndCats, _) }
+          } flatMap {
+            case (forumsAndCats, threads) => usersService.getUsers map { (forumsAndCats, threads, _) }
+          } map {
+            case (forumsAndCats, threads, users) => Ok(toJson(createListForums(forumsAndCats, threads, users)(sessionInfo.userOpt))).as("application/json")
+          }
+    }
+  }
 
 }

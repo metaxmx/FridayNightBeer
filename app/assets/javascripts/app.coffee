@@ -18,6 +18,9 @@ angular.module('fnbApp.routeConfig', ['ngRoute'])
             .when('/', {
                 templateUrl: '/assets/partials/listforums.html'
             })
+            .when('/forum/:id', {
+                templateUrl: '/assets/partials/showforum.html'
+            })
             .when('/login', {
                 templateUrl: '/assets/partials/login.html'
             })

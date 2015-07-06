@@ -33,6 +33,7 @@
 	<script type="text/javascript" src="@routes.Assets.at("javascripts/controllers/app-ctrl.js")"></script>
 	<script type="text/javascript" src="@routes.Assets.at("javascripts/controllers/login-ctrl.js")"></script>
 	<script type="text/javascript" src="@routes.Assets.at("javascripts/controllers/forums-ctrl.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("javascripts/controllers/showforum-ctrl.js")"></script>
 
 	<!--[if lt IE 9]>
 		<script type="text/javascript" src="@routes.Assets.at("lib/html5shiv/html5shiv.min.js")"></script>
@@ -45,13 +46,13 @@
 <body>
 	<div id="content-header-wrapper">
 		<header>
-			<h1><a href="/">Friday Night Beer</a></h1>
-			<a id="logo" href="/">
+			<h1><a ng-href="/#/">Friday Night Beer</a></h1>
+			<a id="logo" ng-href="/#/">
 				<img src="@routes.Assets.at("appdata/logo.png")" alt="" width="64" height="64">
 			</a>
 			<nav>
 				<ul id="pagemenu" ng-show="authenticated">
-					<li class="selected"><a href="/">Forum</a></li>
+					<li class="selected"><a ng-href="/#/">Forum</a></li>
 					<li><a href="/">Media</a></li>
 					<li><a href="/">Events</a></li>
 					<li><a href="/">Users</a></li>
