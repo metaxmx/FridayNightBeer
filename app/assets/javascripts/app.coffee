@@ -2,6 +2,7 @@
 dependencies = [
     'ngRoute',
     'ui.bootstrap',
+    'textAngular',
     'fnbApp.filters',
     'fnbApp.services',
     'fnbApp.controllers',
@@ -20,6 +21,9 @@ angular.module('fnbApp.routeConfig', ['ngRoute'])
             })
             .when('/forum/:id', {
                 templateUrl: '/assets/partials/showforum.html'
+            })
+            .when('/forum/:id/newtopic', {
+                templateUrl: '/assets/partials/newtopic.html'
             })
             .when('/login', {
                 templateUrl: '/assets/partials/login.html'

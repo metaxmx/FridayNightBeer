@@ -30,6 +30,8 @@ libraryDependencies ++= Seq(
   "org.webjars" % "respond" % "1.4.2",
   "org.webjars" % "famfamfam-silk" % "1.3-1",
   "org.webjars" % "smart-table" % "2.0.3",
+  "org.webjars" % "textAngular" % "1.4.1",
+  "org.webjars" % "font-awesome" % "4.3.0-3",
   "org.mockito" % "mockito-core" % "1.10.17" % "test")
 
 includeFilter in (Assets, LessKeys.less) := "*.less"

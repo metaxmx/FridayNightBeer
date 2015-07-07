@@ -11,6 +11,7 @@ GET     /randomUUID                 @controllers.Application.randomUUID
 # Virtual Pages
 GET     /login                      @controllers.Application.appPage
 GET     /forum/:id                  @controllers.Application.showForumPage(id: Int)
+GET     /forum/:id/newtopic         @controllers.Application.showNewTopicPage(id: Int)
 
 # Authentication
 GET     /api/authentication/info    @controllers.Authentication.getAuthInfo
@@ -25,6 +26,10 @@ GET     /api/forums/list            @controllers.ForumsController.getForums
 
 # Show Forum
 GET     /api/forum/:id              @controllers.ForumsController.showForum(id: Int)
+
+# New Topic
+GET     /api/newtopic/:id           @controllers.ForumsController.showNewTopic(id: Int)
+POST    /api/newtopic/:id           @controllers.ForumsController.newTopic(id: Int)
 
 # User management API
 #GET     /users                      @controllers.Users.findUsers

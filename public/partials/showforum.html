@@ -8,8 +8,8 @@
 				<li class="active">{{forum.title}}</li>
 			</ol>
 			<div class="headeroptions">
+				<a href="/#/forum/{{forum.id}}/newtopic">Neuer Thread</a> |
 				<a href="/">Suche</a> |
-				<a href="/">Neuer Thread</a> |
 				<a href="/">Threads verwalten</a>
 			</div>
 		</div>
@@ -33,7 +33,7 @@
 						<a ng-href="/#/topic/{{thread.id}}">{{thread.title}}</a>
 					</td>
 					<td class="showforum-firstpost-col">
-						<div>{{thread.firstPost.date}}</div>
+						<div>{{thread.firstPost.date | date:'dd.MM.yyyy HH:mm'}}</div>
 						<div>von <a ng-href="/#/user/{{thread.firstPost.user}}"> {{thread.firstPost.userName}}</a></div>
 					</td>
 					<td class="showforum-posts-col">
@@ -41,7 +41,7 @@
 					</td>
 					<td class="forum-latestpost-col">
 						<div ng-show="thread.latestPost">
-							<div><a ng-href="/#/topic/{{thread.id}}">{{thread.latestPost.date}}</a></div>
+							<div><a ng-href="/#/topic/{{thread.id}}">{{thread.latestPost.date | date:'dd.MM.yyyy HH:mm'}}</a></div>
 							<div>von {{thread.latestPost.userName}}</div>
 						</div>
 					</td>
