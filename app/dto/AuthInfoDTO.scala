@@ -1,4 +1,4 @@
-package dtos
+package dto
 
 import play.api.libs.json.Json
 import models.User

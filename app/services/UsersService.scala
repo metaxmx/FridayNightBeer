@@ -12,6 +12,8 @@ import reactivemongo.api.ReadPreference
 import exceptions.QueryException
 import play.api.Logger
 import scala.util.Success
+import util.TypedCache
+import util.TypedSingletonCache
 
 @Singleton
 class UsersService {

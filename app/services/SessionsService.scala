@@ -13,6 +13,7 @@ import exceptions.QueryException
 import reactivemongo.bson.BSONObjectID
 import scala.util.Success
 import scala.util.Failure
+import util.TypedCache
 
 @Singleton
 class SessionsService {

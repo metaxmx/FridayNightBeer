@@ -8,10 +8,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import javax.inject.Singleton
 import models.FnbSetting
-import dtos.SettingsDTO
+import dto.SettingsDTO
 import play.api.Logger
 import exceptions.QueryException
 import reactivemongo.api.ReadPreference
+import util.TypedSingletonCache
 
 @Singleton
 class SettingsService {

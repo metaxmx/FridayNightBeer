@@ -9,7 +9,7 @@ import javax.inject.Singleton
 import play.api.mvc._
 import play.api.libs.json._
 import play.api.libs.json.Json.toJson
-import dtos.AuthInfoDTO
+import dto.AuthInfoDTO
 import javax.inject.Inject
 import services.UsersService
 import dto.LoginParams

@@ -1,4 +1,4 @@
-package services
+package util
 
 import play.api.Logger
 import play.cache.Cache

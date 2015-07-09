@@ -16,6 +16,8 @@ import reactivemongo.core.errors.DatabaseException
 import reactivemongo.api.commands.DefaultWriteResult
 import util.GenericDAO
 import util.EntityName
+import util.TypedCache
+import util.TypedSingletonCache
 
 @Singleton
 class ThreadsService extends GenericDAO[Thread] {

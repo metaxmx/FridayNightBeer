@@ -12,6 +12,8 @@ import exceptions.QueryException
 import models.Forum
 import models.ForumCategory
 import reactivemongo.api.ReadPreference
+import util.TypedSingletonCache
+import util.TypedCache
 
 @Singleton
 class ForumsService {
