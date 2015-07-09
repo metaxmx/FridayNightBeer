@@ -13,10 +13,10 @@ case class FnbSession(
 
 object FnbSession extends BaseModel {
 
-  implicit val bsonFormat= Macros.handler[FnbSession]
-  
+  implicit val bsonFormat = Macros.handler[FnbSession]
+
   implicit val jsonFormat = Json.format[FnbSession]
-  
+
   def collectionName = "sessions"
 
 }

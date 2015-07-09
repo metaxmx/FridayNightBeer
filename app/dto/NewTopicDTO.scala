@@ -28,3 +28,12 @@ object NewTopicDTO {
   implicit val jsonFormat = Json.format[NewTopicDTO]
 
 }
+
+case class InsertedTopicDTO(
+  id: Int)
+
+object InsertedTopicDTO {
+
+  implicit val jsonFormat = Json.format[InsertedTopicDTO]
+
+}

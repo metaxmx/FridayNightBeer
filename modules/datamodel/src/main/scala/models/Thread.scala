@@ -28,6 +28,8 @@ case class Thread(
   restriction: Option[AccessRestriction]) {
 
   def accessGranted(implicit userOpt: Option[User]) = restriction map { _.allowed } getOrElse true
+  
+  def withId(_id: Int) = Thread(_id, title, forum, threadStart, lastPost, posts, sticky, restriction)
 
 }
 
@@ -38,6 +40,14 @@ object Thread extends BaseModel {
   implicit val jsonFormat = Json.format[Thread]
 
   def collectionName = "threads"
+  
+  implicit val threadIdReader = new BaseModelIdReader[Thread] {
+    def getId = _._id
+  }
+  
+  implicit val threadIdWriter = new BaseModelIdWriter[Thread] {
+    def withId = _ withId _
+  }
 
 }
 

@@ -25,7 +25,11 @@ case class Post(
   text: String,
   userCreated: Int,
   dateCreated: DateTime,
-  edits: Option[Seq[PostEdit]])
+  edits: Option[Seq[PostEdit]]) {
+
+  def withId(_id: Int) = Post(_id, thread, text, userCreated, dateCreated, edits)
+
+}
 
 object Post extends BaseModel {
 
@@ -34,6 +38,14 @@ object Post extends BaseModel {
   implicit val jsonFormat = Json.format[Post]
 
   def collectionName = "posts"
+
+  implicit val postIdReader = new BaseModelIdReader[Post] {
+    def getId = _._id
+  }
+
+  implicit val postIdWriter = new BaseModelIdWriter[Post] {
+    def withId = _ withId _
+  }
 
 }
 

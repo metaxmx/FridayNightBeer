@@ -22,6 +22,9 @@ import dto.NewTopicDTO
 import dto.ShowNewTopicDTO
 import play.api.libs.json.JsValue
 import play.Logger
+import org.joda.time.DateTime
+import models.ThreadPostData
+import dto.InsertedTopicDTO
 
 @Singleton
 class ForumsController @Inject() (implicit usersService: UsersService,
@@ -84,9 +87,22 @@ class ForumsController @Inject() (implicit usersService: UsersService,
           request.body.validate[NewTopicDTO].fold(
             error => Future.successful(BadRequest("Bad JSON format")),
             newTopicDTO => {
-              Logger info s"Create Thread with title ${newTopicDTO.title}"
-              Logger info s"HTML is: ${newTopicDTO.htmlContent}"
-              Future.successful(Ok("TODO"))
+              forumsService.findForum(id) flatMap {
+                case None => Future.successful(NotFound("Forum not Found"))
+                case Some(forum) =>
+                  if (!forum.accessGranted(sessionInfo.userOpt))
+                    Future.successful(Forbidden("Access to forum denied"))
+                  else {
+                    Logger info s"Create Thread with title ${newTopicDTO.title}"
+                    Logger info s"HTML is: ${newTopicDTO.htmlContent}"
+                    val threadToInsert = Thread(0, newTopicDTO.title, forum._id,
+                      ThreadPostData(sessionInfo.userOpt.get._id, DateTime.now),
+                      ThreadPostData(sessionInfo.userOpt.get._id, DateTime.now), 1, false, None)
+                    threadsService.insertThread(threadToInsert) map {
+                      insertedThread => Ok(toJson(InsertedTopicDTO(insertedThread._id))).as("application/json")
+                    }
+                  }
+              }
             })
     }
   }

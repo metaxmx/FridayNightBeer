@@ -9,12 +9,19 @@ import play.api.Play.current
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import play.api.Logger
-import reactivemongo.api.ReadPreference
+import reactivemongo.api.ReadPreference.Primary
 import exceptions.QueryException
+import reactivemongo.api.commands.GetLastError
+import reactivemongo.core.errors.DatabaseException
+import reactivemongo.api.commands.DefaultWriteResult
+import util.GenericDAO
+import util.EntityName
 
 @Singleton
-class ThreadsService {
+class ThreadsService extends GenericDAO[Thread] {
 
+  implicit val entityNames = EntityName("thread")
+  
   val CACHE_INTERVAL_THREAD = 10 * 60
 
   def cachekeyThread(id: String) = s"db.thread.$id"
@@ -23,20 +30,15 @@ class ThreadsService {
 
   val cacheAllThreadsByForum = new TypedSingletonCache[Map[Int, Seq[Thread]]]("db.threads", CACHE_INTERVAL_THREAD)
 
-  def threadsCollection = db.collection[BSONCollection](Thread.collectionName)
+  implicit def threadsCollection = db.collection[BSONCollection](Thread.collectionName)
 
-  def findThreadsFromDb: Future[Seq[Thread]] = {
-    Logger.info(s"Fetching Threads from database")
-    threadsCollection.find(BSONDocument()).cursor[Thread](ReadPreference.Primary).collect[Seq]() recover {
-      case exc => {
-        Logger.error("Error loading threads", exc)
-        throw new QueryException("Error loading threads", exc)
-      }
-    }
-  }
-
-  def findThreadsByForumFromDb: Future[Map[Int, Seq[Thread]]] = findThreadsFromDb map { _.groupBy { _.forum } }
+  def findThreadsByForumFromDb: Future[Map[Int, Seq[Thread]]] = findAll map { _.groupBy { _.forum } }
 
   def getThreadsByForum: Future[Map[Int, Seq[Thread]]] = cacheAllThreadsByForum.getOrElseAsyncDef(findThreadsByForumFromDb)
+
+  def insertThread(thread: Thread): Future[Thread] =
+    insertOptimistic(thread) andThen {
+      case _ => cacheAllThreadsByForum.remove
+    }
 
 }
