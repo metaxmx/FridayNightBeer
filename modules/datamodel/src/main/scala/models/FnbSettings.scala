@@ -1,6 +1,7 @@
 package models
 
 import play.api.libs.json.Json
+
 import reactivemongo.bson.Macros
 
 case class FnbSetting(

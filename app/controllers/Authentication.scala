@@ -1,25 +1,23 @@
 package controllers
 
-import play.modules.reactivemongo.MongoController
-import play.modules.reactivemongo.json.collection.JSONCollection
+import javax.inject.{ Inject, Singleton }
+
+import scala.annotation.implicitNotFound
 import scala.concurrent.Future
-import reactivemongo.api.Cursor
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import javax.inject.Singleton
-import play.api.mvc._
-import play.api.libs.json._
-import play.api.libs.json.Json.toJson
-import dto.AuthInfoDTO
-import javax.inject.Inject
-import services.UsersService
-import dto.LoginParams
-import services.SessionsService
-import services.SessionsService
-import services.PasswordEncoder
+
 import play.api.Logger
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.Json.toJson
+import play.api.mvc.{ Action, AnyContent, Controller }
+import play.modules.reactivemongo.MongoController
+
+import dto.{ AuthInfoDTO, LoginParams }
+import services.{ SessionService, UserService }
+import util.PasswordEncoder
 
 @Singleton
-class Authentication @Inject() (implicit usersService: UsersService, sessionsService: SessionsService) extends Controller with MongoController with Secured {
+class Authentication @Inject() (implicit userService: UserService,
+                                sessionsService: SessionService) extends Controller with MongoController with Secured {
 
   def getAuthInfo = Action.async {
     withSession[AnyContent] {
@@ -37,7 +35,7 @@ class Authentication @Inject() (implicit usersService: UsersService, sessionsSer
             loginParams =>
               val passwordEncoded = PasswordEncoder.encodePassword(loginParams.password)
               Logger.info(s"Trying login with user ${loginParams.username} and password hash ${passwordEncoded}")
-              usersService.findUserByUsername(loginParams.username) map {
+              userService.getUserByUsername(loginParams.username) map {
                 userOpt =>
                   {
                     Logger.info(s"Found user ${userOpt}")

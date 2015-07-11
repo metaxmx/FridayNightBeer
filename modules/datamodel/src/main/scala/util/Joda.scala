@@ -1,8 +1,8 @@
 package util
 
-import org.joda.time.DateTime
-import org.joda.time.DateTimeZone
-import reactivemongo.bson._
+import org.joda.time.{DateTime, DateTimeZone}
+
+import reactivemongo.bson.{BSONDateTime, BSONHandler}
 
 object Joda {
 

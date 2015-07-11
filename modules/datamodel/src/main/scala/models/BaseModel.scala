@@ -6,14 +6,14 @@ trait BaseModel {
 
 }
 
-trait BaseModelIdReader[T] {
+trait BaseModelIdReader[T, K] {
 
-  def getId: T => Int
+  def getId: T => K
 
 }
 
-trait BaseModelIdWriter[T] {
+trait BaseModelIdWriter[T, K] {
 
-  def withId: (T, Int) => T
+  def withId: (T, K) => T
 
 }

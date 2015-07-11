@@ -1,9 +1,11 @@
 package models
 
 import org.joda.time.DateTime
-import util.Joda.bsonHandler
+
 import play.api.libs.json.Json
+
 import reactivemongo.bson.Macros
+import util.Joda.bsonHandler
 
 case class PostEdit(
   user: Int,
@@ -39,11 +41,11 @@ object Post extends BaseModel {
 
   def collectionName = "posts"
 
-  implicit val postIdReader = new BaseModelIdReader[Post] {
+  implicit val postIdReader = new BaseModelIdReader[Post, Int] {
     def getId = _._id
   }
 
-  implicit val postIdWriter = new BaseModelIdWriter[Post] {
+  implicit val postIdWriter = new BaseModelIdWriter[Post, Int] {
     def withId = _ withId _
   }
 

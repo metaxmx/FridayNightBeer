@@ -1,20 +1,16 @@
 package controllers
 
-import play.api.mvc._
-import play.api.mvc.Results._
-import models.User
-import javax.inject.Inject
-import scala.concurrent.Future
-import play.Logger
-import scala.concurrent.ExecutionContext
-import models.FnbSession
-import play.modules.reactivemongo.ReactiveMongoPlugin.db
-import play.api.Play.current
+import javax.inject.Singleton
+
 import scala.concurrent.ExecutionContext.Implicits.global
-import play.modules.reactivemongo.json.collection.JSONCollection
-import play.api.libs.json.Json
-import reactivemongo.bson.BSONObjectID
-import services.{ UsersService, SessionsService }
+import scala.concurrent.Future
+
+import play.Logger
+import play.api.mvc.{Request, RequestHeader, Result}
+import play.api.mvc.Results.{BadRequest, InternalServerError}
+
+import models.{User, UserSession}
+import services.{SessionService, UserService}
 
 trait Secured {
 
@@ -42,16 +38,16 @@ trait Secured {
       case Some(session) => block(session)(request)
     }
 
-  def withSession[A](block: => SessionInfo => Request[A] => Future[Result])(implicit usersService: UsersService, sessionsService: SessionsService): Request[A] => Future[Result] =
+  def withSession[A](block: => SessionInfo => Request[A] => Future[Result])(implicit userService: UserService, sessionService: SessionService): Request[A] => Future[Result] =
     request =>
       parseSessionKey(request) match {
         case None => Future.successful(onMissingSession(request))
         case Some(sessionKey) =>
-          sessionsService.findSession(sessionKey) flatMap {
+          sessionService.getSession(sessionKey) flatMap {
             case None => Future.successful(None)
             case Some(session) => session.user_id match {
               case None => Future.successful(Some(SessionInfo(session, None)))
-              case Some(userId) => usersService.findUser(userId) map {
+              case Some(userId) => userService.getUser(userId) map {
                 _ map { user => SessionInfo(session, Some(user)) }
               }
             }
@@ -63,7 +59,7 @@ trait Secured {
 
 }
 
-case class SessionInfo(session: FnbSession, userOpt: Option[User])
+case class SessionInfo(session: UserSession, userOpt: Option[User])
 
 object Secured {
 

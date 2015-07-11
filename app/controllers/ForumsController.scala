@@ -1,47 +1,48 @@
 package controllers
 
-import javax.inject.Singleton
-import javax.inject.Inject
-import services.ForumsService
-import play.modules.reactivemongo.MongoController
-import play.api.mvc._
-import play.api.libs.json.Json.toJson
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import javax.inject.{Inject, Singleton}
+
+import scala.annotation.implicitNotFound
 import scala.concurrent.Future
-import services.UsersService
-import services.SessionsService
-import dto.ListForumsCategory
-import models.User
-import models.Thread
-import services.ForumsAndCategories
-import dto.ListForumsAggregation.createListForums
-import services.ThreadsService
-import dto.ShowForumDTO
-import dto.ShowForumAggregation.createShowForum
-import dto.NewTopicDTO
-import dto.ShowNewTopicDTO
-import play.api.libs.json.JsValue
-import play.Logger
+
 import org.joda.time.DateTime
-import models.ThreadPostData
+
+import play.Logger
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json.toJson
+import play.api.mvc.{Action, AnyContent, Controller}
+import play.modules.reactivemongo.MongoController
+
 import dto.InsertedTopicDTO
+import dto.ListForumsAggregation.createListForums
+import dto.NewTopicDTO
+import dto.ShowForumAggregation.createShowForum
+import dto.ShowNewTopicDTO
+import models.{Thread, ThreadPostData}
+import services.{ForumCategoryService, ForumService, SessionService, ThreadService, UserService}
 
 @Singleton
-class ForumsController @Inject() (implicit usersService: UsersService,
-                                  sessionsService: SessionsService,
-                                  forumsService: ForumsService,
-                                  threadsService: ThreadsService) extends Controller with MongoController with Secured {
+class ForumsController @Inject() (implicit userService: UserService,
+                                  sessionsService: SessionService,
+                                  forumService: ForumService,
+                                  forumCategoryService: ForumCategoryService,
+                                  threadService: ThreadService) extends Controller with MongoController with Secured {
 
   def getForums = Action.async {
     withSession[AnyContent] {
       sessionInfo =>
         request =>
-          forumsService.getForumsAndCategories flatMap {
-            forumsAndCats => threadsService.getThreadsByForum map { (forumsAndCats, _) }
-          } flatMap {
-            case (forumsAndCats, threads) => usersService.getUsers map { (forumsAndCats, threads, _) }
-          } map {
-            case (forumsAndCats, threads, users) => Ok(toJson(createListForums(forumsAndCats, threads, users)(sessionInfo.userOpt))).as("application/json")
+          implicit val userOpt = sessionInfo.userOpt
+          val dataFuture = for {
+            categories <- forumCategoryService.getCategories
+            forums <- forumService.getForumsByCategory
+            threads <- threadService.getThreadsByForum
+            userIndex <- userService.getUserIndex
+          } yield (categories, forums, threads, userIndex)
+          dataFuture map {
+            case (categories, forums, threads, userIndex) =>
+              Ok(toJson(createListForums(categories, forums, threads, userIndex))).as("application/json")
           }
     }
   }
@@ -50,17 +51,21 @@ class ForumsController @Inject() (implicit usersService: UsersService,
     withSession[AnyContent] {
       sessionInfo =>
         request =>
-          forumsService.findForum(id) flatMap {
+          implicit val userOpt = sessionInfo.userOpt
+          forumService.getForum(id) flatMap {
             case None => Future.successful(NotFound("Forum not Found"))
             case Some(forum) =>
-              if (!forum.accessGranted(sessionInfo.userOpt))
+              if (!forum.accessGranted)
                 Future.successful(Forbidden("Access to forum denied"))
-              else
-                threadsService.getThreadsByForum map { (forum, _) } flatMap {
-                  case (forum, threads) => usersService.getUsers map { (forum, threads, _) }
-                } map {
-                  case (forum, threads, users) => Ok(toJson(createShowForum(forum, threads, users)(sessionInfo.userOpt))).as("application/json")
+              else {
+                val dataFuture = for {
+                  threads <- threadService.getThreadsByForum
+                  userIndex <- userService.getUserIndex
+                } yield (threads, userIndex)
+                dataFuture map {
+                  case (threads, userIndex) => Ok(toJson(createShowForum(forum, threads, userIndex))).as("application/json")
                 }
+              }
           }
     }
   }
@@ -69,10 +74,11 @@ class ForumsController @Inject() (implicit usersService: UsersService,
     withSession[AnyContent] {
       sessionInfo =>
         request =>
-          forumsService.findForum(id) map {
+          implicit val userOpt = sessionInfo.userOpt
+          forumService.getForum(id) map {
             case None => NotFound("Forum not Found")
             case Some(forum) =>
-              if (!forum.accessGranted(sessionInfo.userOpt))
+              if (!forum.accessGranted)
                 Forbidden("Access to forum denied")
               else
                 Ok(toJson(ShowNewTopicDTO.fromForum(forum))).as("application/json")
@@ -84,13 +90,14 @@ class ForumsController @Inject() (implicit usersService: UsersService,
     withSession[JsValue] {
       sessionInfo =>
         request =>
+          implicit val userOpt = sessionInfo.userOpt
           request.body.validate[NewTopicDTO].fold(
             error => Future.successful(BadRequest("Bad JSON format")),
             newTopicDTO => {
-              forumsService.findForum(id) flatMap {
+              forumService.getForum(id) flatMap {
                 case None => Future.successful(NotFound("Forum not Found"))
                 case Some(forum) =>
-                  if (!forum.accessGranted(sessionInfo.userOpt))
+                  if (!forum.accessGranted)
                     Future.successful(Forbidden("Access to forum denied"))
                   else {
                     Logger info s"Create Thread with title ${newTopicDTO.title}"
@@ -98,7 +105,7 @@ class ForumsController @Inject() (implicit usersService: UsersService,
                     val threadToInsert = Thread(0, newTopicDTO.title, forum._id,
                       ThreadPostData(sessionInfo.userOpt.get._id, DateTime.now),
                       ThreadPostData(sessionInfo.userOpt.get._id, DateTime.now), 1, false, None)
-                    threadsService.insertThread(threadToInsert) map {
+                    threadService.insertThread(threadToInsert) map {
                       insertedThread => Ok(toJson(InsertedTopicDTO(insertedThread._id))).as("application/json")
                     }
                   }

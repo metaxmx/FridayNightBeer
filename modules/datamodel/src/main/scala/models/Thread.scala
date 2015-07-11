@@ -1,9 +1,11 @@
 package models
 
-import play.api.libs.json.Json
-import util.Joda.bsonHandler
 import org.joda.time.DateTime
+
+import play.api.libs.json.Json
+
 import reactivemongo.bson.Macros
+import util.Joda.bsonHandler
 
 case class ThreadPostData(
   user: Int,
@@ -28,7 +30,7 @@ case class Thread(
   restriction: Option[AccessRestriction]) {
 
   def accessGranted(implicit userOpt: Option[User]) = restriction map { _.allowed } getOrElse true
-  
+
   def withId(_id: Int) = Thread(_id, title, forum, threadStart, lastPost, posts, sticky, restriction)
 
 }
@@ -40,12 +42,12 @@ object Thread extends BaseModel {
   implicit val jsonFormat = Json.format[Thread]
 
   def collectionName = "threads"
-  
-  implicit val threadIdReader = new BaseModelIdReader[Thread] {
+
+  implicit val threadIdReader = new BaseModelIdReader[Thread, Int] {
     def getId = _._id
   }
-  
-  implicit val threadIdWriter = new BaseModelIdWriter[Thread] {
+
+  implicit val threadIdWriter = new BaseModelIdWriter[Thread, Int] {
     def withId = _ withId _
   }
 

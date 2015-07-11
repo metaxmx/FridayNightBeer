@@ -1,7 +1,6 @@
 package util
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
  * Extension of TypedCache with a fixed key for singleton without the need to differenciate

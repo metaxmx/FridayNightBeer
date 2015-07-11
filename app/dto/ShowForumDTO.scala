@@ -50,15 +50,14 @@ object ShowForumDTO {
 
 object ShowForumAggregation {
 
-  def createShowForum(forum: Forum, threads: Map[Int, Seq[Thread]], users: Seq[User])(implicit userOpt: Option[User]): ShowForumDTO = {
+  def createShowForum(forum: Forum, threads: Map[Int, Seq[Thread]], userIndex: Map[Int, User])(implicit userOpt: Option[User]): ShowForumDTO = {
     val visibleThreads = threads.get(forum._id).getOrElse(Seq()).filter { _.accessGranted }
-    val usersById = users.map { user => (user._id, user) }.toMap
     val threadDTOs = visibleThreads.map {
       thread =>
         // TODO: Check if user exists
-        val firstPostUser = usersById(thread.threadStart.user)
+        val firstPostUser = userIndex(thread.threadStart.user)
         val firstPost = ShowForumPost(firstPostUser._id, firstPostUser.displayName, thread.threadStart.date)
-        val latestPortUser = usersById(thread.lastPost.user)
+        val latestPortUser = userIndex(thread.lastPost.user)
         val latestPost = ShowForumPost(latestPortUser._id, latestPortUser.displayName, thread.lastPost.date)
         ShowForumThread.fromThread(thread, firstPost, latestPost)
     }

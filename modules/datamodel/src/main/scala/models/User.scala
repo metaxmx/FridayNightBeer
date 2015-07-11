@@ -1,6 +1,7 @@
 package models
 
 import play.api.libs.json.Json
+
 import reactivemongo.bson.Macros
 
 case class User(
@@ -9,7 +10,11 @@ case class User(
   password: String,
   displayName: String,
   fullName: Option[String],
-  groups: Option[Seq[Int]])
+  groups: Option[Seq[Int]]) {
+
+  def withId(_id: Int) = User(_id, username, password, displayName, fullName, groups)
+
+}
 
 object User extends BaseModel {
 
@@ -18,5 +23,13 @@ object User extends BaseModel {
   implicit val jsonFormat = Json.format[User]
 
   def collectionName = "users"
+
+  implicit val userIdReader = new BaseModelIdReader[User, Int] {
+    def getId = _._id
+  }
+
+  implicit val userIdWriter = new BaseModelIdWriter[User, Int] {
+    def withId = _ withId _
+  }
 
 }

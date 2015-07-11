@@ -6,7 +6,6 @@ import models.ForumCategory
 import models.User
 import models.Thread
 import util.Joda.dateTimeOrdering
-import services.ForumsAndCategories
 import org.joda.time.DateTime
 
 case class ListForumsLastPost(
@@ -53,26 +52,25 @@ object ListForumsCategory {
 
 object ListForumsAggregation {
 
-  def createListForums(forumsAndCats: ForumsAndCategories, threads: Map[Int, Seq[Thread]], users: Seq[User])(implicit userOpt: Option[User]): Seq[ListForumsCategory] = {
-    val forums = forumsAndCats.forums filter { _.accessGranted }
-    val categories = forumsAndCats.categories filter { _.accessGranted }
-    val threadsByForum = threads mapValues { _.filter { _.accessGranted } }
-    val forumsByCategory = forums groupBy { _.category } mapValues { _ sortBy { _.position } }
-    val usersById = users.map { user => (user._id, user) }.toMap
+  def createListForums(allCategories: Seq[ForumCategory], allForumsByCategory: Map[Int, Seq[Forum]],
+                       threads: Map[Int, Seq[Thread]], userIndex: Map[Int, User])(implicit userOpt: Option[User]): Seq[ListForumsCategory] = {
+    val categories = allCategories filter { _.accessGranted } sortBy { _.position }
+    val forumsByCategory = allForumsByCategory mapValues { _ filter { _.accessGranted } sortBy { _.position } }
+    val threadsByForum = threads mapValues { _ filter { _.accessGranted } }
     val listForumsByCategory = forumsByCategory mapValues {
       _ map {
         forum =>
-          val threadsForForum = threadsByForum(forum._id)
+          val threadsForForum = threadsByForum.getOrElse(forum._id, Seq())
           val lastPost = threadsForForum.sortBy { _.lastPost.date }.reverse.headOption
           val numThreads = threadsForForum.size
           val numPosts = threadsForForum.map { _.posts }.sum
-          val listFrumLastPost = lastPost.filter {
-            thread => usersById.contains(thread.lastPost.user)
-          }.map { thread => ListForumsLastPost.fromThread(thread, usersById(thread.lastPost.user)) }
-          ListForumsForum.fromForum(forum, numThreads, numPosts, listFrumLastPost)
+          val listForumLastPost = lastPost.filter { userIndex contains _.lastPost.user } map {
+            thread => ListForumsLastPost.fromThread(thread, userIndex(thread.lastPost.user))
+          }
+          ListForumsForum.fromForum(forum, numThreads, numPosts, listForumLastPost)
       }
     }
-    categories sortBy { _.position } map {
+    categories map {
       c => ListForumsCategory(c.name, listForumsByCategory.getOrElse(c._id, Seq()))
     } filter { !_.forums.isEmpty }
   }

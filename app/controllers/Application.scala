@@ -1,31 +1,23 @@
 package controllers
 
-import javax.inject.{ Singleton, Inject }
-import services.UUIDGenerator
-import play.api.mvc._
-import play.api.Logger
-import play.modules.reactivemongo.MongoController
-import play.modules.reactivemongo.json.collection.JSONCollection
-import play.api.libs.json.Json
-import play.api.libs.json.Json.toJson
-import reactivemongo.bson.BSONObjectID
-import models.FnbSession
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import scala.concurrent.Await
-import services.SessionsService
-import scala.concurrent.Future
-import services.SettingsService
-import services.Themes
-import com.typesafe.config.{ ConfigFactory, Config }
-import theme.Theme
+import javax.inject.{ Inject, Singleton }
 
-/**
- * Instead of declaring an object of Application as per the template project, we must declare a class given that
- * the application context is going to be responsible for creating it and wiring it up with the UUID generator service.
- * @param uuidGenerator the UUID generator service we wish to receive.
- */
+import scala.annotation.implicitNotFound
+import scala.concurrent.Future
+
+import play.api.Logger
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.Json.toJson
+import play.api.mvc.{ Action, Controller, RequestHeader }
+import play.modules.reactivemongo.MongoController
+
+import models.UserSession
+import services.{ SessionService, SettingsService, Themes, UUIDGenerator }
+
 @Singleton
-class Application @Inject() (uuidGenerator: UUIDGenerator, sessionsService: SessionsService, settingsService: SettingsService) extends Controller with MongoController {
+class Application @Inject() (uuidGenerator: UUIDGenerator,
+                             sessionService: SessionService,
+                             settingsService: SettingsService) extends Controller with MongoController {
 
   def parseSession(implicit req: RequestHeader) = req.session.get(Secured.fnbSessionHeaderName)
 
@@ -46,21 +38,21 @@ class Application @Inject() (uuidGenerator: UUIDGenerator, sessionsService: Sess
           }
       }
   }
-  
+
   def showForumPage(id: Int) = appPage
 
   def showNewTopicPage(id: Int) = appPage
 
-  def ensureSessionActive(sessionKey: String): Future[FnbSession] = {
+  def ensureSessionActive(sessionKey: String): Future[UserSession] = {
     Logger.info(s"Ensuring Session Key $sessionKey is loaded")
-    sessionsService.findSession(sessionKey) flatMap {
+    sessionService.getSession(sessionKey) flatMap {
       case Some(session) => {
         Future.successful(session)
       }
       case None => {
-        val newSession = FnbSession(sessionKey, None)
+        val newSession = UserSession(sessionKey, None)
         Logger.info(s"Inserting session for ${sessionKey}")
-        sessionsService.insertSession(newSession)
+        sessionService.insertSession(newSession)
       }
     }
   }
