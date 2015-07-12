@@ -1,6 +1,6 @@
 <div ng-controller="ForumsCtrl" class="view-listforums">
 
-	<div class="view-header">
+	<div class="view-header" ng-show="forumsStatus.successful">
 		<div class="breadcrumb-combined">
 			<ol class="breadcrumb">
 				<li><a ng-href="/#/forum">Friday Night Beer</a></li>
@@ -12,7 +12,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="main-content">
+	<div class="main-content" ng-show="forumsStatus.successful">
 		<div ng-repeat="category in categories" class="listforums-category">
 			<h2>{{category.name}}</h2>
 			<table st-table="category.forums" class="forums">
@@ -49,6 +49,6 @@
 			</table>
 		</div>
 	</div>
-	<alert type="warning" ng-show="categories.length == 0">Es sind keine Foren enthalten</alert>
-	
+	<div class="loading-spinner" ng-show="forumsStatus.loading"></div>
+	<alert type="danger" ng-show="forumsStatus.error">{{forumsStatus.errormessage}}</alert>
 </div>
