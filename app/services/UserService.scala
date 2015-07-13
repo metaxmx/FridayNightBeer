@@ -2,9 +2,12 @@ package services
 
 import javax.inject.{ Inject, Singleton }
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import dao.UserDAO
+import exceptions.ApiException.dbException
+import exceptions.QueryException
 import models.User
 
 @Singleton
@@ -17,5 +20,9 @@ class UserService @Inject() (userDAO: UserDAO) {
   def getUsers: Future[Seq[User]] = userDAO.getAll
 
   def getUserIndex: Future[Map[Int, User]] = userDAO.getIndex
+
+  def getUserIndexForApi = getUserIndex recover {
+    case e: QueryException => dbException
+  }
 
 }
