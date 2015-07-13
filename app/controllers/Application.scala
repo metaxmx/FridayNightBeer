@@ -2,7 +2,6 @@ package controllers
 
 import javax.inject.{ Inject, Singleton }
 
-import scala.annotation.implicitNotFound
 import scala.concurrent.Future
 
 import play.api.Logger
@@ -42,6 +41,8 @@ class Application @Inject() (uuidGenerator: UUIDGenerator,
   def showForumPage(id: Int) = appPage
 
   def showNewTopicPage(id: Int) = appPage
+
+  def showTopicPage(id: Int) = appPage
 
   def ensureSessionActive(sessionKey: String): Future[UserSession] = {
     Logger.info(s"Ensuring Session Key $sessionKey is loaded")

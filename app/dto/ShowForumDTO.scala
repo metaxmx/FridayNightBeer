@@ -1,11 +1,11 @@
 package dto
 
-import play.api.libs.json.Json
 import org.joda.time.DateTime
+
+import play.api.libs.json.Json
+
+import models.{ Forum, Thread, User }
 import util.Joda.dateTimeOrdering
-import models.Forum
-import models.Thread
-import models.User
 
 case class ShowForumPost(
   user: Int,

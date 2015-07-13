@@ -2,7 +2,6 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import scala.annotation.implicitNotFound
 import scala.concurrent.Future
 
 import org.joda.time.DateTime
@@ -19,15 +18,16 @@ import dto.ListForumsAggregation.createListForums
 import dto.NewTopicDTO
 import dto.ShowForumAggregation.createShowForum
 import dto.ShowNewTopicDTO
-import models.{Thread, ThreadPostData}
-import services.{ForumCategoryService, ForumService, SessionService, ThreadService, UserService}
+import models.{Post, Thread, ThreadPostData}
+import services.{ForumCategoryService, ForumService, PostService, SessionService, ThreadService, UserService}
 
 @Singleton
 class ForumsController @Inject() (implicit userService: UserService,
                                   sessionsService: SessionService,
                                   forumService: ForumService,
                                   forumCategoryService: ForumCategoryService,
-                                  threadService: ThreadService) extends Controller with MongoController with Secured {
+                                  threadService: ThreadService,
+                                  postService: PostService) extends Controller with MongoController with Secured {
 
   def getForums = Action.async {
     withSession[AnyContent] {
@@ -105,8 +105,13 @@ class ForumsController @Inject() (implicit userService: UserService,
                     val threadToInsert = Thread(0, newTopicDTO.title, forum._id,
                       ThreadPostData(sessionInfo.userOpt.get._id, DateTime.now),
                       ThreadPostData(sessionInfo.userOpt.get._id, DateTime.now), 1, false, None)
-                    threadService.insertThread(threadToInsert) map {
-                      insertedThread => Ok(toJson(InsertedTopicDTO(insertedThread._id))).as("application/json")
+                    threadService.insertThread(threadToInsert) flatMap {
+                      insertedThread =>
+                        val postToInsert = Post(0, insertedThread._id, newTopicDTO.htmlContent,
+                          sessionInfo.userOpt.get._id, DateTime.now, None)
+                        postService.insertPost(postToInsert) map { _ => insertedThread._id }
+                    } map {
+                      insertedThreadId => Ok(toJson(InsertedTopicDTO(insertedThreadId))).as("application/json")
                     }
                   }
               }

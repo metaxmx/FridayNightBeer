@@ -35,7 +35,7 @@ class Authentication @Inject() (implicit userService: UserService,
             loginParams =>
               val passwordEncoded = PasswordEncoder.encodePassword(loginParams.password)
               Logger.info(s"Trying login with user ${loginParams.username} and password hash ${passwordEncoded}")
-              userService.getUserByUsername(loginParams.username) map {
+              userService.getUserByUsername(loginParams.username.toLowerCase) map {
                 userOpt =>
                   {
                     Logger.info(s"Found user ${userOpt}")
