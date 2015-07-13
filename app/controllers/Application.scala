@@ -67,3 +67,9 @@ class Application @Inject() (uuidGenerator: UUIDGenerator,
   }
 
 }
+
+object Application {
+
+  val JSON_TYPE = "application/json;charset=UTF-8"
+
+}

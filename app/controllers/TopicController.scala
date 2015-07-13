@@ -9,6 +9,7 @@ import play.api.libs.json.Json.toJson
 import play.api.mvc.{ Action, AnyContent, Controller }
 import play.modules.reactivemongo.MongoController
 
+import Application.JSON_TYPE
 import dto.ShowThreadAggregation.createShowThread
 import services.{ ForumService, PostService, SessionService, ThreadService, UserService }
 
@@ -41,7 +42,7 @@ class TopicController @Inject() (implicit userService: UserService,
                         userIndex <- userService.getUserIndex
                       } yield (posts, userIndex)
                       dataFuture map {
-                        case (posts, userIndex) => Ok(toJson(createShowThread(thread, forum, posts, userIndex))).as("application/json")
+                        case (posts, userIndex) => Ok(toJson(createShowThread(thread, forum, posts, userIndex))).as(JSON_TYPE)
                       }
                     }
                 }

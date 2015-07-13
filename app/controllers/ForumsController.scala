@@ -1,6 +1,6 @@
 package controllers
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.{ Inject, Singleton }
 
 import scala.concurrent.Future
 
@@ -10,16 +10,17 @@ import play.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json.toJson
-import play.api.mvc.{Action, AnyContent, Controller}
+import play.api.mvc.{ Action, AnyContent, Controller }
 import play.modules.reactivemongo.MongoController
 
+import Application.JSON_TYPE
 import dto.InsertedTopicDTO
 import dto.ListForumsAggregation.createListForums
 import dto.NewTopicDTO
 import dto.ShowForumAggregation.createShowForum
 import dto.ShowNewTopicDTO
-import models.{Post, Thread, ThreadPostData}
-import services.{ForumCategoryService, ForumService, PostService, SessionService, ThreadService, UserService}
+import models.{ Post, Thread, ThreadPostData }
+import services.{ ForumCategoryService, ForumService, PostService, SessionService, ThreadService, UserService }
 
 @Singleton
 class ForumsController @Inject() (implicit userService: UserService,
@@ -42,7 +43,7 @@ class ForumsController @Inject() (implicit userService: UserService,
           } yield (categories, forums, threads, userIndex)
           dataFuture map {
             case (categories, forums, threads, userIndex) =>
-              Ok(toJson(createListForums(categories, forums, threads, userIndex))).as("application/json")
+              Ok(toJson(createListForums(categories, forums, threads, userIndex))).as(JSON_TYPE)
           }
     }
   }
@@ -63,7 +64,7 @@ class ForumsController @Inject() (implicit userService: UserService,
                   userIndex <- userService.getUserIndex
                 } yield (threads, userIndex)
                 dataFuture map {
-                  case (threads, userIndex) => Ok(toJson(createShowForum(forum, threads, userIndex))).as("application/json")
+                  case (threads, userIndex) => Ok(toJson(createShowForum(forum, threads, userIndex))).as(JSON_TYPE)
                 }
               }
           }
@@ -81,7 +82,7 @@ class ForumsController @Inject() (implicit userService: UserService,
               if (!forum.accessGranted)
                 Forbidden("Access to forum denied")
               else
-                Ok(toJson(ShowNewTopicDTO.fromForum(forum))).as("application/json")
+                Ok(toJson(ShowNewTopicDTO.fromForum(forum))).as(JSON_TYPE)
           }
     }
   }
@@ -111,7 +112,7 @@ class ForumsController @Inject() (implicit userService: UserService,
                           sessionInfo.userOpt.get._id, DateTime.now, None)
                         postService.insertPost(postToInsert) map { _ => insertedThread._id }
                     } map {
-                      insertedThreadId => Ok(toJson(InsertedTopicDTO(insertedThreadId))).as("application/json")
+                      insertedThreadId => Ok(toJson(InsertedTopicDTO(insertedThreadId))).as(JSON_TYPE)
                     }
                   }
               }
