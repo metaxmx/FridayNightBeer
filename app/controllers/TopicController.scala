@@ -76,7 +76,7 @@ class TopicController @Inject() (implicit userService: UserService,
   }
 
   def showTopic(id: Int) = Action.async {
-    withSession[AnyContent] {
+    withSessionOption[AnyContent] {
       sessionInfo =>
         request =>
           implicit val userOpt = sessionInfo.userOpt

@@ -2,15 +2,16 @@ package controllers
 
 import javax.inject.Singleton
 
+import scala.annotation.implicitNotFound
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import play.Logger
-import play.api.mvc.{Request, RequestHeader, Result}
-import play.api.mvc.Results.{BadRequest, InternalServerError}
+import play.api.mvc.{ Request, RequestHeader, Result }
+import play.api.mvc.Results.{ BadRequest, InternalServerError }
 
-import models.{User, UserSession}
-import services.{SessionService, UserService}
+import models.{ User, UserSession }
+import services.{ SessionService, UserService }
 
 trait Secured {
 
@@ -57,9 +58,30 @@ trait Secured {
           }
       }
 
+  def withSessionOption[A](block: => OptionalSessionInfo => Request[A] => Future[Result])(implicit userService: UserService, sessionService: SessionService): Request[A] => Future[Result] =
+    request =>
+      parseSessionKey(request) match {
+        case None => block(OptionalSessionInfo(None, None))(request)
+        case Some(sessionKey) =>
+          sessionService.getSession(sessionKey) flatMap {
+            case None => Future.successful(None)
+            case Some(session) => session.user_id match {
+              case None => Future.successful(Some(OptionalSessionInfo(Some(session), None)))
+              case Some(userId) => userService.getUser(userId) map {
+                _ map { user => OptionalSessionInfo(Some(session), Some(user)) }
+              }
+            }
+          } flatMap {
+            case None              => Future.successful(onSessionLoadingError(request))
+            case Some(sessionInfo) => block(sessionInfo)(request)
+          }
+      }
+
 }
 
 case class SessionInfo(session: UserSession, userOpt: Option[User])
+
+case class OptionalSessionInfo(sessionOpt: Option[UserSession], userOpt: Option[User])
 
 object Secured {
 

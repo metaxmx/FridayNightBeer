@@ -2,6 +2,8 @@ package controllers
 
 import javax.inject.{ Inject, Singleton }
 
+import scala.annotation.implicitNotFound
+
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json.toJson
 import play.api.mvc.{ Action, AnyContent, Controller }
@@ -22,7 +24,7 @@ class ForumsController @Inject() (implicit userService: UserService,
                                   postService: PostService) extends Controller with MongoController with Secured {
 
   def getForums = Action.async {
-    withSession[AnyContent] {
+    withSessionOption[AnyContent] {
       sessionInfo =>
         request =>
           implicit val userOpt = sessionInfo.userOpt
@@ -42,7 +44,7 @@ class ForumsController @Inject() (implicit userService: UserService,
   }
 
   def showForum(id: Int) = Action.async {
-    withSession[AnyContent] {
+    withSessionOption[AnyContent] {
       sessionInfo =>
         request =>
           implicit val userOpt = sessionInfo.userOpt
