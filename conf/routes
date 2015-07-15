@@ -29,7 +29,7 @@ GET     /api/forums/list            @controllers.ForumsController.getForums
 GET     /api/forum/:id              @controllers.ForumsController.showForum(id: Int)
 
 # Show Topic
-GET     /api/thread/:id             @controllers.TopicController.showTopic(id: Int)
+GET     /api/topic/:id              @controllers.TopicController.showTopic(id: Int)
 
 # New Topic
 GET     /api/newtopic/:id           @controllers.TopicController.showNewTopic(id: Int)

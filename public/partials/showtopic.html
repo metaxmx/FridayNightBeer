@@ -1,0 +1,56 @@
+<div ng-controller="ShowTopicCtrl" class="view-showtopic">
+
+	<div class="view-header">
+		<div class="breadcrumb-combined">
+			<ol class="breadcrumb">
+				<li><a ng-href="/#/">Friday Night Beer</a></li>
+				<li><a ng-href="/#/">Forum</a></li>
+				<li><a ng-href="/#/">{{forum.title}}</a></li>
+				<li class="active">{{thread.title}}</li>
+			</ol>
+			<div class="headeroptions">
+				<a href="/#/forum/{{forum.id}}/newtopic">Neuer Thread</a> |
+				<a href="/">Suche</a> |
+				<a href="/">Threads verwalten</a>
+			</div>
+		</div>
+	</div>
+	<div class="main-content">
+			<table st-table="forum.threads" class="threads">
+				<thead>
+				<tr>
+					<th width="2%" class="showforum-icon-col"></th>
+					<th width="48%" class="showforum-title-col">Thema</th>
+					<th width="20%" class="showforum-firstpost-col">Themenstart</th>
+					<th width="10%" class="showforum-posts-col">Antworten</th>
+					<th width="20%" class="showforum-latestpost-col">Letzter Beitrag</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr ng-repeat="thread in forum.threads">
+					<td class="showforum-icon-col"><img src="/assets/images/classic/forum_default.png"></td>
+					<td class="showforum-title-col">
+						<span ng-show="thread.sticky">[Ankündigung]</span>
+						<a ng-href="/#/topic/{{thread.id}}">{{thread.title}}</a>
+					</td>
+					<td class="showforum-firstpost-col">
+						<div>{{thread.firstPost.date | date:'dd.MM.yyyy HH:mm'}}</div>
+						<div>von <a ng-href="/#/user/{{thread.firstPost.user}}"> {{thread.firstPost.userName}}</a></div>
+					</td>
+					<td class="showforum-posts-col">
+						{{thread.posts}}
+					</td>
+					<td class="forum-latestpost-col">
+						<div ng-show="thread.latestPost">
+							<div><a ng-href="/#/topic/{{thread.id}}">{{thread.latestPost.date | date:'dd.MM.yyyy HH:mm'}}</a></div>
+							<div>von {{thread.latestPost.userName}}</div>
+						</div>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<alert type="warning" ng-show="categories.length == 0">Es sind keine Foren enthalten</alert>
+	
+</div>

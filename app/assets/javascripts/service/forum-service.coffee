@@ -1,11 +1,11 @@
 
-class ForumsService
+class ForumService
 
     @headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
     @defaultConfig = { headers: @headers }
 
     constructor: (@$log, @$http, @$q) ->
-        @$log.info "constructing ForumsService"
+        @$log.info "constructing ForumService"
 
     loadForums: () ->
         @$log.info "Fetch forums"
@@ -63,4 +63,4 @@ class ForumsService
             )
         deferred.promise
 
-servicesModule.service('ForumsService', ForumsService)
+servicesModule.service('ForumService', ForumService)

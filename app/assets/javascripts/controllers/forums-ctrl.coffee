@@ -1,7 +1,7 @@
 
 class ForumsCtrl
 
-    constructor: (@$log, @$scope, @ForumsService) ->
+    constructor: (@$log, @$scope, @ForumService) ->
         @$log.debug "constructing ForumsCtrl"
         @$scope.categories = []
         @$scope.forumsStatus = new AjaxStatus
@@ -10,7 +10,7 @@ class ForumsCtrl
     getAllForums: () ->
         @$log.debug "getAllForums()"
         @$scope.forumsStatus.load()
-        @ForumsService.loadForums()
+        @ForumService.loadForums()
         .then(
             (data) =>
                 @$log.debug "Promise returned #{data.length} Forums/Categories"

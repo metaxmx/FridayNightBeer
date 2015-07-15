@@ -1,13 +1,13 @@
 
 class ShowForumCtrl
 
-    constructor: (@$log, @$scope, @$routeParams, @ForumsService) ->
+    constructor: (@$log, @$scope, @$routeParams, @ForumService) ->
         @$log.debug "constructing ShowForumCtrl"
         @getForum()
 
     getForum: () ->
         @$log.debug "getForum()"
-        @ForumsService.loadForum(@$routeParams.id)
+        @ForumService.loadForum(@$routeParams.id)
         .then(
             (data) =>
                 @$log.debug "Promise returned Forum"

@@ -1,7 +1,7 @@
 
 class NewTopicCtrl
 
-    constructor: (@$log, @$scope, @$routeParams, @ForumsService) ->
+    constructor: (@$log, @$scope, @$routeParams, @ForumService) ->
         @$log.debug "constructing ShowForumCtrl"
         @$scope.newTopic = => @newTopic()
         @$scope.forum = {}
@@ -13,7 +13,7 @@ class NewTopicCtrl
 
     getForum: () ->
         @$log.debug "getForum()"
-        @ForumsService.initNewTopic(@$routeParams.id)
+        @ForumService.initNewTopic(@$routeParams.id)
         .then(
             (data) =>
                 @$log.debug "Promise returned Forum"
@@ -27,7 +27,7 @@ class NewTopicCtrl
     newTopic: () ->
         @$log.debug "createTopic()"
         @$scope.message = null
-        @ForumsService.newTopic(@$routeParams.id, @$scope.newTopicData)
+        @ForumService.newTopic(@$routeParams.id, @$scope.newTopicData)
         .then(
             (data) =>
                 @$log.debug "Promise returned success"
