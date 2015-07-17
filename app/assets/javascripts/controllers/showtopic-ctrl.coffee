@@ -12,6 +12,7 @@ class ShowTopicCtrl
             (data) =>
                 @$log.debug "Promise returned Topic"
                 @$scope.topic = data
+                console.log(data)
             ,
             (error) =>
                 @$log.error "Unable to get Topic: #{error}"

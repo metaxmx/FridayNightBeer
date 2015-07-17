@@ -7,14 +7,19 @@ import play.api.libs.json.Json
 import models.{ Forum, Post, Thread, User }
 import util.Joda.dateTimeOrdering
 
-case class ShowThreadPostDTO(id: Int, date: DateTime)
+case class ShowThreadPostDTO(
+  id: Int,
+  date: DateTime,
+  user: Int,
+  userName: String,
+  content: String)
 
 object ShowThreadPostDTO {
 
   implicit val jsonFormat = Json.format[ShowThreadPostDTO]
 
   def fromPost(post: Post, user: User) =
-    ShowThreadPostDTO(post._id, post.dateCreated)
+    ShowThreadPostDTO(post._id, post.dateCreated, user._id, user.displayName, post.text)
 
 }
 

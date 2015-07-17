@@ -82,7 +82,7 @@ class TopicController @Inject() (implicit userService: UserService,
           implicit val userOpt = sessionInfo.userOpt
           val dataFuture = for {
             thread <- threadService.getThreadForApi(id)
-            forum <- forumService.getForumForApi(thread._id)
+            forum <- forumService.getForumForApi(thread.forum)
             posts <- postService.getPostsByThreadForApi
             userIndex <- userService.getUserIndexForApi
           } yield (thread, forum, posts, userIndex)
