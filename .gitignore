@@ -22,3 +22,4 @@ server.pid
 activator-*.sbt
 /bin/
 /public/appdata/
+/appdata/

@@ -14,6 +14,9 @@ GET     /forum/:id                  @controllers.Application.showForumPage(id: I
 GET     /forum/:id/newtopic         @controllers.Application.showNewTopicPage(id: Int)
 GET     /topic/:id                  @controllers.Application.showTopicPage(id: Int)
 
+# Files
+GET     /avatar/:id                 @controllers.DownloadController.downloadAvatar(id: Int)
+
 # Authentication
 GET     /api/authentication/info    @controllers.Authentication.getAuthInfo
 POST    /api/authentication/login   @controllers.Authentication.login

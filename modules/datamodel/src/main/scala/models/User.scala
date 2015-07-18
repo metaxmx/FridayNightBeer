@@ -10,9 +10,10 @@ case class User(
   password: String,
   displayName: String,
   fullName: Option[String],
+  avatar: Option[String],
   groups: Option[Seq[Int]]) {
 
-  def withId(_id: Int) = User(_id, username, password, displayName, fullName, groups)
+  def withId(_id: Int) = User(_id, username, password, displayName, fullName, avatar, groups)
 
 }
 
