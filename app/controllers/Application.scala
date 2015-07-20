@@ -8,7 +8,6 @@ import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json.toJson
 import play.api.mvc.{ Action, Controller, RequestHeader }
-import play.modules.reactivemongo.MongoController
 
 import models.UserSession
 import services.{ SessionService, SettingsService, Themes, UUIDGenerator }
@@ -16,7 +15,7 @@ import services.{ SessionService, SettingsService, Themes, UUIDGenerator }
 @Singleton
 class Application @Inject() (uuidGenerator: UUIDGenerator,
                              sessionService: SessionService,
-                             settingsService: SettingsService) extends Controller with MongoController {
+                             settingsService: SettingsService) extends Controller {
 
   def parseSession(implicit req: RequestHeader) = req.session.get(Secured.fnbSessionHeaderName)
 

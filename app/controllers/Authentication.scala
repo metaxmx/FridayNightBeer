@@ -2,14 +2,12 @@ package controllers
 
 import javax.inject.{ Inject, Singleton }
 
-import scala.annotation.implicitNotFound
 import scala.concurrent.Future
 
 import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json.toJson
 import play.api.mvc.{ Action, AnyContent, Controller }
-import play.modules.reactivemongo.MongoController
 
 import dto.{ AuthInfoDTO, LoginParams }
 import services.{ SessionService, UserService }
@@ -17,7 +15,7 @@ import util.PasswordEncoder
 
 @Singleton
 class Authentication @Inject() (implicit userService: UserService,
-                                sessionsService: SessionService) extends Controller with MongoController with Secured {
+                                sessionsService: SessionService) extends Controller with Secured {
 
   def getAuthInfo = Action.async {
     withSession[AnyContent] {

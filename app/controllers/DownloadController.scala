@@ -1,12 +1,16 @@
 package controllers
 
 import java.io.File
+
 import javax.inject.{ Inject, Singleton }
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import play.api.mvc.{ Action, AnyContent, Controller }
-import services.{ SessionService, UserService }
+
 import play.api.Logger
+import play.api.mvc.{ Action, AnyContent, Controller }
+
+import services.{ SessionService, UserService }
 
 @Singleton
 class DownloadController @Inject() (implicit userService: UserService,
@@ -22,7 +26,7 @@ class DownloadController @Inject() (implicit userService: UserService,
             _ =>
               userService.getUser(id).map {
                 _.filter { _.avatar.isDefined }.map {
-                  userOpt => 
+                  userOpt =>
                     Logger info s"File: appdata/avatars/" + userOpt.avatar.get
                     new File("appdata/avatars/" + userOpt.avatar.get)
                 }.filter { _.exists }.fold {

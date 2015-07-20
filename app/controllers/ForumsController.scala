@@ -2,12 +2,9 @@ package controllers
 
 import javax.inject.{ Inject, Singleton }
 
-import scala.annotation.implicitNotFound
-
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json.toJson
 import play.api.mvc.{ Action, AnyContent, Controller }
-import play.modules.reactivemongo.MongoController
 
 import Application.JSON_TYPE
 import dto.ListForumsAggregation.createListForums
@@ -21,7 +18,7 @@ class ForumsController @Inject() (implicit userService: UserService,
                                   forumService: ForumService,
                                   forumCategoryService: ForumCategoryService,
                                   threadService: ThreadService,
-                                  postService: PostService) extends Controller with MongoController with Secured {
+                                  postService: PostService) extends Controller with Secured {
 
   def getForums = Action.async {
     withSessionOption[AnyContent] {

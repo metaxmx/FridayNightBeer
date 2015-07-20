@@ -2,7 +2,6 @@ package controllers
 
 import javax.inject.{ Inject, Singleton }
 
-import scala.annotation.implicitNotFound
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -12,7 +11,6 @@ import play.api.Logger
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json.toJson
 import play.api.mvc.{ Action, AnyContent, Controller }
-import play.modules.reactivemongo.MongoController
 
 import Application.JSON_TYPE
 import dto.{ InsertedTopicDTO, NewTopicDTO, ShowNewTopicDTO }
@@ -26,7 +24,7 @@ class TopicController @Inject() (implicit userService: UserService,
                                  sessionsService: SessionService,
                                  forumService: ForumService,
                                  threadService: ThreadService,
-                                 postService: PostService) extends Controller with MongoController with Secured {
+                                 postService: PostService) extends Controller with Secured {
 
   def showNewTopic(id: Int) = Action.async {
     withSession[AnyContent] {
