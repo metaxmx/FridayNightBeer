@@ -12,6 +12,7 @@ case class ShowThreadPostDTO(
   date: DateTime,
   user: Int,
   userName: String,
+  userFullname: Option[String],
   userAvatar: Boolean,
   content: String)
 
@@ -20,7 +21,7 @@ object ShowThreadPostDTO {
   implicit val jsonFormat = Json.format[ShowThreadPostDTO]
 
   def fromPost(post: Post, user: User) =
-    ShowThreadPostDTO(post._id, post.dateCreated, user._id, user.displayName, user.avatar.isDefined, post.text)
+    ShowThreadPostDTO(post._id, post.dateCreated, user._id, user.displayName, user.fullName, user.avatar.isDefined, post.text)
 
 }
 

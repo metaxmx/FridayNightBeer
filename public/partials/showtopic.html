@@ -21,6 +21,9 @@
 				<tr ng-repeat="post in topic.posts">
 					<td class="showtopic-user-col">
 						<div><a ng-href="/#/user/{{post.user}}">{{post.userName}}</a></div>
+						<div ng-show="{{post.userFullname}}">
+							{{post.userFullname}}
+						</div>
 						<div ng-show="{{post.userAvatar}}">
 							<img ng-src="/avatar/{{post.user}}" alt="[Avatar]" />
 						</div>
