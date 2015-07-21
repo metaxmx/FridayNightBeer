@@ -1,0 +1,35 @@
+// LESS Mixins for FNB CSS file: Modern Theme Mixins
+
+.visualTable() {
+	width: 100%;
+	font-size: 1.28rem;
+	border-collapse: separate;
+	border-spacing: 2px 2px;
+	table-layout: fixed;
+	
+	td {
+		background-color: @modern-color-background;
+		padding: 2px;
+		vertical-align: top;
+		
+		&.forum-title-col a {
+			font-weight: bold;
+		}
+		&.forum-latestpost-col a {
+			font-weight: bold;
+		}
+		
+		&.forum-icon-col {
+			text-align: center;
+		}
+	}
+	
+	th {
+		background-color: #dedede;
+		padding: 2px;
+	}
+	
+	tr:hover td {
+		background-color: #eeeeee;
+	}
+}

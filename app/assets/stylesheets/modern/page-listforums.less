@@ -1,0 +1,30 @@
+/*
+ * Page: Index / List Forums in Modern Theme
+ */
+
+@import "variables.less";
+@import "mixins.less";
+
+html.modern-theme {
+	
+	.listforums-category:first-child h2 {
+		margin-top: 0;
+	}
+	
+	table.forums {
+		.visualTable;
+		
+		.forum-icon-col {
+			width: 40px;
+		}
+		.forum-title-col {
+			width: 45%;
+		}
+		.forum-content-col {
+			width: 18%;
+		}
+		.forum-latestpost-col {
+			width: 34%;
+		}
+	}
+}

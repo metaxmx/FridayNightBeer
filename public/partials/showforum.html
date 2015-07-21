@@ -15,7 +15,7 @@
 		</div>
 	</div>
 	<div class="main-content">
-			<table st-table="forum.threads" class="threads">
+			<table st-table="forum.threads" class="forum">
 				<thead>
 				<tr>
 					<th width="2%" class="showforum-icon-col"></th>
@@ -27,7 +27,10 @@
 				</thead>
 				<tbody>
 				<tr ng-repeat="thread in forum.threads">
-					<td class="showforum-icon-col"><img src="/assets/images/classic/forum_default.png"></td>
+					<td class="showforum-icon-col">
+						<img src="/assets/images/modern/topic_pinned.png" ng-show={{thread.sticky}}>
+						<img src="/assets/images/modern/topic_default.png" ng-show={{!thread.sticky}}>
+					</td>
 					<td class="showforum-title-col">
 						<span ng-show="thread.sticky">[Ankündigung]</span>
 						<a ng-href="/#/topic/{{thread.id}}">{{thread.title}}</a>
