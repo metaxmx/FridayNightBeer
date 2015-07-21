@@ -1,6 +1,6 @@
 <div ng-controller="ShowTopicCtrl" class="view-showtopic">
 
-	<div class="view-header">
+	<div class="view-header" ng-show="topicStatus.successful">
 		<div class="breadcrumb-combined">
 			<ol class="breadcrumb">
 				<li><a ng-href="/#/">Friday Night Beer</a></li>
@@ -15,28 +15,29 @@
 			</div>
 		</div>
 	</div>
-	<div class="main-content">
-			<table st-table="topic.posts" class="topic">
-				<tbody>
-				<tr ng-repeat="post in topic.posts">
-					<td class="showtopic-user-col">
-						<div><a ng-href="/#/user/{{post.user}}">{{post.userName}}</a></div>
-						<div ng-show="{{post.userFullname}}">
-							{{post.userFullname}}
-						</div>
-						<div ng-show="{{post.userAvatar}}">
-							<img ng-src="/avatar/{{post.user}}" alt="[Avatar]" />
-						</div>
-						<div>{{post.date | date:'dd.MM.yyyy HH:mm'}}</div>
-					</td>
-					<td class="showtopic-content-col">
-						{{post.content}}
-					</td>
-				</tr>
-				</tbody>
-			</table>
-		</div>
+	<div class="main-content" ng-show="topicStatus.successful">
+		<h2>{{topic.title}}</h2>
+		<table st-table="topic.posts" class="topic">
+			<tbody>
+			<tr ng-repeat="post in topic.posts">
+				<td class="showtopic-user-col">
+					<div><a ng-href="/#/user/{{post.user}}">{{post.userName}}</a></div>
+					<div ng-show="post.userFullname">
+						{{post.userFullname}}
+					</div>
+					<div ng-if="post.userAvatar">
+						<img ng-src="/avatar/{{post.user}}" alt="[Avatar]" />
+					</div>
+					<div>{{post.date | date:'dd.MM.yyyy HH:mm'}}</div>
+				</td>
+				<td class="showtopic-content-col">
+					{{post.content}}
+				</td>
+			</tr>
+			</tbody>
+		</table>
 	</div>
-	<alert type="warning" ng-show="categories.length == 0">Es sind keine Foren enthalten</alert>
+	<div class="loading-spinner" ng-show="topicStatus.loading"></div>
+	<alert type="danger" ng-show="topicStatus.error">{{topicStatus.errormessage}}</alert>
 	
 </div>
