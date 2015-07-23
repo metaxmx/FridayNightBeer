@@ -30,8 +30,7 @@
 					</div>
 					<div>{{post.date | date:'dd.MM.yyyy HH:mm'}}</div>
 				</td>
-				<td class="showtopic-content-col">
-					{{post.content}}
+				<td class="showtopic-content-col" ng-bind-html="post.content">
 				</td>
 			</tr>
 			</tbody>
