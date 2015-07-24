@@ -37,7 +37,7 @@
 					</td>
 					<td class="forum-latestpost-col">
 						<div ng-show="forum.lastPost">
-							<div><a href="{{forum.lastPost.id}}">{{forum.lastPost.title}}</a></div>
+							<div><a ng-href="/#/topic/{{forum.lastPost.id}}">{{forum.lastPost.title}}</a></div>
 							<div>
 								von <a href="{{forum.lastPost.user}}">{{forum.lastPost.userName}}</a>
 								am {{forum.lastPost.date | date:'dd.MM.yyyy HH:mm'}}
