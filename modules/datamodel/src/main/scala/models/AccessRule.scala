@@ -3,7 +3,8 @@ package models
 import play.api.libs.json.Json
 import reactivemongo.bson.Macros
 
-case class AccessRestriction(
+case class AccessRule(
+  permission: String,
   forbiddenUsers: Option[Seq[Int]],
   forbiddenGroups: Option[Seq[String]],
   allowedUsers: Option[Seq[Int]],
@@ -11,7 +12,7 @@ case class AccessRestriction(
   allowGuest: Boolean) {
 
   def allowed(implicit userOpt: Option[User]): Boolean = userOpt.fold {
-    // If no user logged in, check anonymous access
+    // If no user logged in, check guest access
     allowGuest
   } {
     // If user is logged in:
@@ -34,10 +35,10 @@ case class AccessRestriction(
 
 }
 
-object AccessRestriction {
+object AccessRule {
 
-  implicit val bsonFormat = Macros.handler[AccessRestriction]
+  implicit val bsonFormat = Macros.handler[AccessRule]
 
-  implicit val jsonFormat = Json.format[AccessRestriction]
+  implicit val jsonFormat = Json.format[AccessRule]
 
 }

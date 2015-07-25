@@ -7,7 +7,7 @@ case class ForumCategory(
   _id: Int,
   name: String,
   position: Int,
-  restriction: Option[AccessRestriction]) {
+  restriction: Option[AccessRule]) {
 
   def accessGranted(implicit userOpt: Option[User]) = restriction map { _.allowed } getOrElse true
 

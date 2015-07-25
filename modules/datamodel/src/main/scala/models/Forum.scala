@@ -2,6 +2,7 @@ package models
 
 import play.api.libs.json.Json
 import reactivemongo.bson.Macros
+import models.ForumPermissions._
 
 case class Forum(
   _id: Int,
@@ -10,11 +11,17 @@ case class Forum(
   category: Int,
   position: Int,
   readonly: Boolean,
-  restriction: Option[AccessRestriction]) {
+  forumPermissions: Seq[AccessRule]) {
 
-  def accessGranted(implicit userOpt: Option[User]) = restriction map { _.allowed } getOrElse true
+  lazy val forumPermissionMap: Map[ForumPermission, AccessRule] =
+    forumPermissions.filter(ForumPermissions hasName _.permission).map(rule => ForumPermissions.withName(rule.permission) -> rule).toMap
 
-  def withId(_id: Int) = Forum(_id, name, description, category, position, readonly, restriction)
+  def permissionGranted(permission: ForumPermission)(implicit userOpt: Option[User]): Option[Boolean] =
+    forumPermissionMap.get(Access).map(_.allowed)
+
+  def accessGranted(implicit userOpt: Option[User]) = permissionGranted(Access).getOrElse(true)
+
+  def withId(_id: Int) = Forum(_id, name, description, category, position, readonly, forumPermissions)
 
 }
 

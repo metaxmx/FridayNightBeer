@@ -27,7 +27,7 @@ case class Thread(
   lastPost: ThreadPostData,
   posts: Int,
   sticky: Boolean,
-  restriction: Option[AccessRestriction]) {
+  restriction: Option[AccessRule]) {
 
   def accessGranted(implicit userOpt: Option[User]) = restriction map { _.allowed } getOrElse true
 
