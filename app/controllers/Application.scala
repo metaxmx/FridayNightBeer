@@ -10,12 +10,11 @@ import play.api.libs.json.Json.toJson
 import play.api.mvc.{ Action, Controller, RequestHeader }
 
 import models.UserSession
-import services.{ SessionService, SettingsService, Themes, UUIDGenerator }
+import services.{ SessionService, Themes, UUIDGenerator }
 
 @Singleton
 class Application @Inject() (uuidGenerator: UUIDGenerator,
-                             sessionService: SessionService,
-                             settingsService: SettingsService) extends Controller {
+                             sessionService: SessionService) extends Controller {
 
   def parseSession(implicit req: RequestHeader) = req.session.get(Secured.fnbSessionHeaderName)
 
@@ -59,10 +58,6 @@ class Application @Inject() (uuidGenerator: UUIDGenerator,
 
   def randomUUID = Action {
     Ok(uuidGenerator.generate.toString)
-  }
-
-  def getSettings = Action.async {
-    settingsService.findSettingsDto map { dto => Ok(toJson(dto)) }
   }
 
 }

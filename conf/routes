@@ -22,9 +22,6 @@ GET     /api/authentication/info    @controllers.Authentication.getAuthInfo
 POST    /api/authentication/login   @controllers.Authentication.login
 POST    /api/authentication/logout  @controllers.Authentication.logout
 
-# Settings
-GET     /api/settings               @controllers.Application.getSettings
-
 # Index / List Forums
 GET     /api/forums/list            @controllers.ForumsController.getForums
 

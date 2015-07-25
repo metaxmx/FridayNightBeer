@@ -9,6 +9,4 @@ class UserDAO extends GenericNumericKeyDAO[User] {
 
   override def getCacheKey = "db.users"
 
-  override def getCollectionName = User.collectionName
-
 }

@@ -21,7 +21,7 @@ class ApplicationUnitTest extends Specification with Mockito {
 
     "invoke the UUID generator" in {
       val uuidGenerator = mock[UUIDGenerator]
-      val application = new controllers.Application(uuidGenerator, null, null)
+      val application = new controllers.Application(uuidGenerator, null)
 
       uuidGenerator.generate returns UUID.randomUUID()
 

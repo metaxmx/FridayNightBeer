@@ -33,13 +33,13 @@ case class Post(
 
 }
 
-object Post extends BaseModel {
+object Post {
 
   implicit val bsonFormat = Macros.handler[Post]
 
   implicit val jsonFormat = Json.format[Post]
 
-  def collectionName = "posts"
+  implicit val baseModel = BaseModel[Post]("posts")
 
   implicit val postIdReader = new BaseModelIdReader[Post, Int] {
     def getId = _._id

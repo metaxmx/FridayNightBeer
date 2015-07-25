@@ -9,6 +9,4 @@ class ThreadDAO extends GenericNumericKeyDAO[Thread] {
 
   override def getCacheKey = "db.threads"
 
-  override def getCollectionName = Thread.collectionName
-
 }

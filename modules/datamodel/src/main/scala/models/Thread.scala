@@ -35,13 +35,13 @@ case class Thread(
 
 }
 
-object Thread extends BaseModel {
+object Thread {
 
   implicit val bsonFormat = Macros.handler[Thread]
 
   implicit val jsonFormat = Json.format[Thread]
 
-  def collectionName = "threads"
+  implicit val baseModel = BaseModel[Thread]("threads")
 
   implicit val threadIdReader = new BaseModelIdReader[Thread, Int] {
     def getId = _._id

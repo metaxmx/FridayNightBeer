@@ -1,10 +1,6 @@
 package models
 
-trait BaseModel {
-
-  def collectionName: String
-
-}
+case class BaseModel[T](collectionName: String)
 
 trait BaseModelIdReader[T, K] {
 

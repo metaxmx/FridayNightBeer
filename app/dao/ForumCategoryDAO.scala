@@ -9,6 +9,4 @@ class ForumCategoryDAO extends GenericNumericKeyDAO[ForumCategory] {
 
   override def getCacheKey = "db.categories"
 
-  override def getCollectionName = ForumCategory.collectionName
-
 }

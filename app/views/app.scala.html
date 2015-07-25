@@ -32,6 +32,7 @@
 	<script type="text/javascript" src="@routes.Assets.at("javascripts/app.js")"></script>
 	<script type="text/javascript" src="@routes.Assets.at("javascripts/common/config.js")"></script>
 	<script type="text/javascript" src="@routes.Assets.at("javascripts/common/ajaxstatus.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("javascripts/common/functions.js")"></script>
 	<script type="text/javascript" src="@routes.Assets.at("javascripts/directives/appversion.js")"></script>
 
 	<script type="text/javascript" src="@routes.Assets.at("javascripts/service/auth-service.js")"></script>
@@ -61,17 +62,17 @@
 				<img src="@routes.Assets.at("appdata/logo.png")" alt="" width="64" height="64">
 			</a>
 			<nav>
-				<ul id="pagemenu" ng-show="authenticated">
+				<ul id="pagemenu" ng-if="authenticated">
 					<li class="selected"><a ng-href="/#/">Forum</a></li>
-					<li><a href="/">Media</a></li>
-					<li><a href="/">Events</a></li>
-					<li><a href="/">Users</a></li>
-					<li><a href="/">Administration</a></li>
+					<li><a href="/" onclick="window.notimplemented()">Media</a></li>
+					<li><a href="/" onclick="window.notimplemented()">Events</a></li>
+					<li><a href="/" onclick="window.notimplemented()">Users</a></li>
+					<li><a href="/" onclick="window.notimplemented()">Administration</a></li>
 				</ul>
 				<ul id="usermenu">
-					<li ng-hide="authenticated"><a ng-href="/#/login">Login</a></li>
-					<li ng-show="authenticated"><a href="/">Settings</a></li>
-					<li ng-show="authenticated"><a ng-href="/#/login">Logout</a></li>
+					<li ng-if="!authenticated"><a ng-href="/#/login">Login</a></li>
+					<li ng-if="authenticated" onclick="window.notimplemented()"><a href="/">Settings</a></li>
+					<li ng-if="authenticated"><a ng-href="/#/login">Logout</a></li>
 				</ul>
 			</nav>
 		</header>

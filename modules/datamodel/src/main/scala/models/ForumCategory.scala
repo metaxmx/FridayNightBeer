@@ -1,7 +1,6 @@
 package models
 
 import play.api.libs.json.Json
-
 import reactivemongo.bson.Macros
 
 case class ForumCategory(
@@ -12,17 +11,17 @@ case class ForumCategory(
 
   def accessGranted(implicit userOpt: Option[User]) = restriction map { _.allowed } getOrElse true
 
-  def withId(id: Int) = ForumCategory(_id, name, position, restriction)
+  def withId(_id: Int) = ForumCategory(_id, name, position, restriction)
 
 }
 
-object ForumCategory extends BaseModel {
+object ForumCategory {
 
   implicit val bsonFormat = Macros.handler[ForumCategory]
 
   implicit val jsonFormat = Json.format[ForumCategory]
 
-  def collectionName = "categories"
+  implicit val baseModel = BaseModel[ForumCategory]("categories")
 
   implicit val forumCategoryIdReader = new BaseModelIdReader[ForumCategory, Int] {
     def getId = _._id

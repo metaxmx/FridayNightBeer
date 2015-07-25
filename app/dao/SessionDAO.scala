@@ -13,8 +13,6 @@ class SessionDAO extends GenericDAO[UserSession, String] {
 
   override def getCacheKey = "db.sessions"
 
-  override def getCollectionName = UserSession.collectionName
-
   def updateSessionUser(id: String, userOpt: Option[User]): Future[Option[UserSession]] = {
     val selector = BSONDocument("_id" -> id)
     val modifier = userOpt.fold {

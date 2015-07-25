@@ -9,6 +9,4 @@ class PostDAO extends GenericNumericKeyDAO[Post] {
 
   override def getCacheKey = "db.posts"
 
-  override def getCollectionName = Post.collectionName
-
 }
