@@ -2,7 +2,7 @@ name := """fnb-play"""
 
 version := "0.1-SNAPSHOT"
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.11.7"
 
 lazy val fnbDatamodel = (project in file("modules/datamodel"))
 

@@ -57,7 +57,7 @@ class TopicController @Inject() (implicit userService: UserService,
                 }
                 insertedPost <- {
                   val postToInsert = Post(0, insertedThread._id, newTopicDTO.htmlContent,
-                    sessionInfo.userOpt.get._id, DateTime.now, None)
+                    sessionInfo.userOpt.get._id, DateTime.now, None, Seq())
                   postService insertPost postToInsert
                 }
               } yield (forum, insertedThread, insertedPost)

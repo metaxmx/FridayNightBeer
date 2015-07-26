@@ -1,11 +1,23 @@
 package dto
 
 import org.joda.time.DateTime
-
 import play.api.libs.json.Json
-
-import models.{ Forum, Post, Thread, User }
+import models.{ Forum, Post, Thread, User, PostUpload }
 import util.Joda.dateTimeOrdering
+
+case class ShowThreadPostUploadDTO(
+  filename: String,
+  size: Long,
+  hits: Int)
+
+object ShowThreadPostUploadDTO {
+
+  implicit val jsonFormat = Json.format[ShowThreadPostUploadDTO]
+
+  def fromUpload(upload: PostUpload) =
+    ShowThreadPostUploadDTO(upload.filename, upload.size, upload.hits)
+
+}
 
 case class ShowThreadPostDTO(
   id: Int,
@@ -14,14 +26,16 @@ case class ShowThreadPostDTO(
   userName: String,
   userFullname: Option[String],
   userAvatar: Boolean,
-  content: String)
+  content: String,
+  uploads: Option[Seq[ShowThreadPostUploadDTO]])
 
 object ShowThreadPostDTO {
 
   implicit val jsonFormat = Json.format[ShowThreadPostDTO]
 
   def fromPost(post: Post, user: User) =
-    ShowThreadPostDTO(post._id, post.dateCreated, user._id, user.displayName, user.fullName, user.avatar.isDefined, post.text)
+    ShowThreadPostDTO(post._id, post.dateCreated, user._id, user.displayName, user.fullName, user.avatar.isDefined, post.text,
+      if (post.uploads.isEmpty) None else Some(post.uploads.map(ShowThreadPostUploadDTO fromUpload _)))
 
 }
 

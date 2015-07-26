@@ -16,6 +16,7 @@ GET     /topic/:id                  @controllers.Application.showTopicPage(id: I
 
 # Files
 GET     /avatar/:id                 @controllers.DownloadController.downloadAvatar(id: Int)
+GET     /uploads/:id/:filename      @controllers.DownloadController.downloadPostUpload(id: Int, filename: String)
 
 # Authentication
 GET     /api/authentication/info    @controllers.Authentication.getAuthInfo

@@ -27,9 +27,10 @@ case class Post(
   text: String,
   userCreated: Int,
   dateCreated: DateTime,
-  edits: Option[Seq[PostEdit]]) {
+  edits: Option[Seq[PostEdit]],
+  uploads: Seq[PostUpload]) {
 
-  def withId(_id: Int) = Post(_id, thread, text, userCreated, dateCreated, edits)
+  def withId(_id: Int) = Post(_id, thread, text, userCreated, dateCreated, edits, uploads)
 
 }
 

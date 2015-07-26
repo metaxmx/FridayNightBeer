@@ -30,7 +30,17 @@
 					</div>
 					<div>{{post.date | date:'dd.MM.yyyy HH:mm'}}</div>
 				</td>
-				<td class="showtopic-content-col" ng-bind-html="post.content">
+				<td class="showtopic-content-col">
+					<div class="post-content" ng-bind-html="post.content"></div>
+					<div class="post-uploads" ng-if="post.uploads">
+						<span class="post-uploads-title">Uploads:</span>
+						<ul>
+							<li ng-repeat="upload in post.uploads">
+								<a href="/uploads/{{post.id}}/{{upload.filename}}" target="_self">{{upload.filename}}</a>
+								({{upload.size}} bytes, {{upload.hits}} Hits)
+							</li>
+						</ul>
+					</div>
 				</td>
 			</tr>
 			</tbody>
