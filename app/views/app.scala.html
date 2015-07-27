@@ -1,5 +1,6 @@
 @* AngularJS Application Template *@
 @import theme.Theme
+@import services.Settings
 @(theme: Theme)
 <!DOCTYPE html>
 <html class="no-js modern-theme" lang="en" ng-app="fnbApp" ng-controller="AppCtrl">
@@ -11,7 +12,7 @@
 	<meta http-equiv="pragma" content="no-cache">
 	<meta http-equiv="expires" content="Mon, 8 Aug 2006 00:00:00 GMT">
 
-	<title>Friday Night Beer</title>
+	<title>@Settings.siteTitle</title>
 
 	<link type="text/css" rel="stylesheet" href="@routes.Assets.at("lib/bootstrap/css/bootstrap.css")" />
 	<link type="text/css" rel="stylesheet" href="@routes.Assets.at("lib/textAngular/textAngular.css")" />
@@ -19,6 +20,7 @@
 
 	<link type="text/css" rel="stylesheet" href="@routes.Assets.at("stylesheets/fnb.css")" />
 
+	<script type="text/javascript">window.fnbSettings = @play.twirl.api.Html(Settings.asJson);</script>
 	<script type="text/javascript" src="@routes.Assets.at("lib/jquery/jquery.min.js")"></script>
 	<script type="text/javascript" src="@routes.Assets.at("lib/bootstrap/js/bootstrap.min.js")"></script>
 	<script type="text/javascript" src="@routes.Assets.at("lib/angularjs/angular.js")"></script>
@@ -57,7 +59,7 @@
 <body>
 	<div id="content-header-wrapper">
 		<header>
-			<h1><a ng-href="/#/">Friday Night Beer</a></h1>
+			<h1><a ng-href="/#/" site-title>Friday Night Beer</a></h1>
 			<a id="logo" ng-href="/#/">
 				<img src="@routes.Assets.at("appdata/logo.png")" alt="" width="64" height="64">
 			</a>
