@@ -13,7 +13,7 @@ import play.api.libs.json.Json.toJson
 import play.api.mvc.{ Action, AnyContent, Controller }
 
 import Application.JSON_TYPE
-import dto.{ InsertedTopicDTO, NewTopicDTO, ShowNewTopicDTO }
+import dto.{ InsertTopicDTO, InsertTopicRequestDTO, InsertTopicResultDTO }
 import dto.ShowThreadAggregation.createShowThread
 import exceptions.ApiException
 import models.{ Post, Thread, ThreadPostData }
@@ -32,7 +32,7 @@ class TopicController @Inject() (implicit userService: UserService,
         request =>
           implicit val userOpt = sessionInfo.userOpt
           forumService.getForumForApi(id) map {
-            forum => Ok(toJson(ShowNewTopicDTO.fromForum(forum))).as(JSON_TYPE)
+            forum => Ok(toJson(InsertTopicRequestDTO.fromForum(forum))).as(JSON_TYPE)
           } recover {
             case e: ApiException => e.result
           }
@@ -44,7 +44,7 @@ class TopicController @Inject() (implicit userService: UserService,
       sessionInfo =>
         request =>
           implicit val userOpt = sessionInfo.userOpt
-          request.body.validate[NewTopicDTO].fold(
+          request.body.validate[InsertTopicDTO].fold(
             error => Future.successful(BadRequest("Bad JSON format")),
             newTopicDTO => {
               val dataFuture = for {
@@ -65,7 +65,7 @@ class TopicController @Inject() (implicit userService: UserService,
                 case (forum, insertedThread, insertedPost) =>
                   Logger info s"Create Thread with title ${newTopicDTO.title}"
                   Logger info s"HTML is: ${newTopicDTO.htmlContent}"
-                  Ok(toJson(InsertedTopicDTO(insertedThread._id))).as(JSON_TYPE)
+                  Ok(toJson(InsertTopicResultDTO(insertedThread._id))).as(JSON_TYPE)
               } recover {
                 case e: ApiException => e.result
               }

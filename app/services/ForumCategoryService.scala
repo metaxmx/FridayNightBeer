@@ -17,6 +17,8 @@ class ForumCategoryService @Inject() (forumCategoryDAO: ForumCategoryDAO) {
 
   def getCategories: Future[Seq[ForumCategory]] = forumCategoryDAO.getAll
 
+  def insertCategory(category: ForumCategory): Future[ForumCategory] = forumCategoryDAO << category
+  
   def getCategoriesForApi = getCategories recover {
     case e: QueryException => dbException
   }
