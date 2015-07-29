@@ -31,11 +31,9 @@ class TopicController @Inject() (implicit userService: UserService,
       sessionInfo =>
         request =>
           implicit val userOpt = sessionInfo.userOpt
-          forumService.getForumForApi(id) map {
-            forum => Ok(toJson(InsertTopicRequestDTO.fromForum(forum))).as(JSON_TYPE)
-          } recover {
-            case e: ApiException => e.result
-          }
+          for {
+            forum <- forumService.getForumForApi(id)
+          } yield Ok(toJson(InsertTopicRequestDTO.fromForum(forum))).as(JSON_TYPE)
     }
   }
 
@@ -47,7 +45,7 @@ class TopicController @Inject() (implicit userService: UserService,
           request.body.validate[InsertTopicDTO].fold(
             error => Future.successful(BadRequest("Bad JSON format")),
             newTopicDTO => {
-              val dataFuture = for {
+              for {
                 forum <- forumService.getForumForApi(id)
                 insertedThread <- {
                   val threadToInsert = Thread(0, newTopicDTO.title, forum._id,
@@ -60,14 +58,10 @@ class TopicController @Inject() (implicit userService: UserService,
                     sessionInfo.userOpt.get._id, DateTime.now, None, Seq())
                   postService insertPost postToInsert
                 }
-              } yield (forum, insertedThread, insertedPost)
-              dataFuture map {
-                case (forum, insertedThread, insertedPost) =>
-                  Logger info s"Create Thread with title ${newTopicDTO.title}"
-                  Logger info s"HTML is: ${newTopicDTO.htmlContent}"
-                  Ok(toJson(InsertTopicResultDTO(insertedThread._id))).as(JSON_TYPE)
-              } recover {
-                case e: ApiException => e.result
+              } yield {
+                Logger info s"Create Thread with title ${newTopicDTO.title}"
+                Logger info s"HTML is: ${newTopicDTO.htmlContent}"
+                Ok(toJson(InsertTopicResultDTO(insertedThread._id))).as(JSON_TYPE)
               }
             })
     }
@@ -78,18 +72,12 @@ class TopicController @Inject() (implicit userService: UserService,
       sessionInfo =>
         request =>
           implicit val userOpt = sessionInfo.userOpt
-          val dataFuture = for {
+          for {
             thread <- threadService.getThreadForApi(id)
             forum <- forumService.getForumForApi(thread.forum)
             posts <- postService.getPostsByThreadForApi
             userIndex <- userService.getUserIndexForApi
-          } yield (thread, forum, posts, userIndex)
-          dataFuture map {
-            case (thread, forum, posts, userIndex) =>
-              Ok(toJson(createShowThread(thread, forum, posts, userIndex))).as(JSON_TYPE)
-          } recover {
-            case e: ApiException => e.result
-          }
+          } yield Ok(toJson(createShowThread(thread, forum, posts, userIndex))).as(JSON_TYPE)
     }
   }
 

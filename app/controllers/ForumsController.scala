@@ -1,20 +1,21 @@
 package controllers
 
 import javax.inject.{ Inject, Singleton }
+
+import scala.concurrent.Future
+
+import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.JsValue
 import play.api.libs.json.Json.toJson
 import play.api.mvc.{ Action, AnyContent, Controller }
+
 import Application.JSON_TYPE
+import dto.InsertCategoryDTO
 import dto.ListForumsAggregation.createListForums
 import dto.ShowForumAggregation.createShowForum
-import exceptions.ApiException
+import models.{ ForumCategory, User }
 import services.{ ForumCategoryService, ForumService, PostService, SessionService, ThreadService, UserService }
-import play.api.libs.json.JsValue
-import models.ForumCategory
-import models.User
-import dto.InsertCategoryDTO
-import scala.concurrent.Future
-import play.api.Logger
 
 @Singleton
 class ForumsController @Inject() (implicit userService: UserService,
@@ -29,9 +30,7 @@ class ForumsController @Inject() (implicit userService: UserService,
       sessionInfo =>
         request =>
           implicit val userOpt = sessionInfo.userOpt
-          getForumsData recover {
-            case e: ApiException => e.result
-          }
+          getForumsData
     }
   }
 
@@ -48,17 +47,11 @@ class ForumsController @Inject() (implicit userService: UserService,
       sessionInfo =>
         request =>
           implicit val userOpt = sessionInfo.userOpt
-          val dataFuture = for {
+          for {
             forum <- forumService.getForumForApi(id)
             threads <- threadService.getThreadsByForumForApi
             userIndex <- userService.getUserIndexForApi
-          } yield (forum, threads, userIndex)
-          dataFuture map {
-            case (forum, threads, userIndex) =>
-              Ok(toJson(createShowForum(forum, threads, userIndex))).as(JSON_TYPE)
-          } recover {
-            case e: ApiException => e.result
-          }
+          } yield Ok(toJson(createShowForum(forum, threads, userIndex))).as(JSON_TYPE)
     }
   }
 
@@ -71,7 +64,7 @@ class ForumsController @Inject() (implicit userService: UserService,
             error => Future.successful(BadRequest("Bad JSON format")),
             newCategoryDTO => {
               // TODO: Check for permissions
-              val dataFuture = for {
+              for {
                 categories <- forumCategoryService.getCategoriesForApi
                 insertedCategory <- {
                   // TODO: Concurrent position
@@ -84,9 +77,6 @@ class ForumsController @Inject() (implicit userService: UserService,
                   getForumsData
                 }
               } yield result
-              dataFuture recover {
-                case e: ApiException => e.result
-              }
             })
     }
   }

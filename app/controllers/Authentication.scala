@@ -32,7 +32,6 @@ class Authentication @Inject() (implicit userService: UserService,
           request.body.validate[LoginParams].map {
             loginParams =>
               val passwordEncoded = PasswordEncoder.encodePassword(loginParams.password)
-              Logger.info(s"Trying login with user ${loginParams.username} and password hash ${passwordEncoded}")
               userService.getUserByUsername(loginParams.username.toLowerCase) map {
                 userOpt =>
                   {

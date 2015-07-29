@@ -47,26 +47,24 @@ class DownloadController @Inject() (implicit userService: UserService,
       sessionInfo =>
         request =>
           implicit val userOpt = sessionInfo.userOpt
-          val postFuture = for {
+          for {
             post <- postService.getPostForApi(id)
             thread <- threadService.getThreadForApi(post.thread)
             forum <- forumService.getForumForApi(thread.forum)
-          } yield post
-          postFuture map {
-            post =>
-              val postId = post._id
-              val uploadOpt = post.uploads.find(_.filename == filename)
-              val fileOpt = uploadOpt map {
-                upload =>
-                  Logger.info(s"appdata/uploads/$postId/${upload.source}")
-                  new File(s"appdata/uploads/$postId/${upload.source}")
-              } filter { _.exists }
-              fileOpt.fold {
-                NotFound("not found")
-              } {
-                file =>
-                  Ok.sendFile(content = file, fileName = (_ => filename))
-              }
+          } yield {
+            val postId = post._id
+            val uploadOpt = post.uploads.find(_.filename == filename)
+            val fileOpt = uploadOpt map {
+              upload =>
+                Logger.info(s"appdata/uploads/$postId/${upload.source}")
+                new File(s"appdata/uploads/$postId/${upload.source}")
+            } filter { _.exists }
+            fileOpt.fold {
+              NotFound("not found")
+            } {
+              file =>
+                Ok.sendFile(content = file, fileName = (_ => filename))
+            }
           }
     }
   }
