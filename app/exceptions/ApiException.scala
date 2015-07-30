@@ -1,10 +1,11 @@
 package exceptions
 
-import play.api.http.Status.{ FORBIDDEN, INTERNAL_SERVER_ERROR, NOT_FOUND }
-import play.api.mvc.Results
-import dto.ErrorDTO
+import play.api.http.Status.{ BAD_REQUEST, FORBIDDEN, INTERNAL_SERVER_ERROR, NOT_FOUND }
 import play.api.libs.json.Json
+import play.api.mvc.Results
+
 import controllers.Application.JSON_TYPE
+import dto.ErrorDTO
 
 case class ApiException(code: Int, message: String, cause: Throwable) extends Exception(message, cause) {
 
@@ -31,5 +32,9 @@ object ApiException {
   def notFoundException = throw ApiException(NOT_FOUND, "not found")
 
   def accessDeniedException = throw ApiException(FORBIDDEN, "access denied")
+
+  def badRequestException = throw ApiException(BAD_REQUEST, "bad request")
+
+  def invalidSessionException = throw ApiException(BAD_REQUEST, "invalid session")
 
 }

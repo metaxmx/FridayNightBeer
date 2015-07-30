@@ -8,6 +8,7 @@ import models.User
 import exceptions.QueryException
 import exceptions.ApiException.{ dbException, notFoundException }
 import scala.concurrent.ExecutionContext.Implicits.global
+import controllers.UserOptionRequest
 
 @Singleton
 class PostService @Inject() (postDAO: PostDAO) {

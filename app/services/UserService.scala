@@ -21,6 +21,10 @@ class UserService @Inject() (userDAO: UserDAO) {
 
   def getUserIndex: Future[Map[Int, User]] = userDAO.getIndex
 
+  def getUserForApi(id: Int): Future[Option[User]] = getUser(id) recover {
+    case e: QueryException => dbException
+  }
+
   def getUserIndexForApi = getUserIndex recover {
     case e: QueryException => dbException
   }

@@ -8,6 +8,7 @@ import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json.toJson
 import play.api.mvc.{ Action, Controller, RequestHeader }
+import Secured.parseSessionKey
 
 import models.UserSession
 import services.{ SessionService, Themes, UUIDGenerator }
@@ -16,11 +17,9 @@ import services.{ SessionService, Themes, UUIDGenerator }
 class Application @Inject() (uuidGenerator: UUIDGenerator,
                              sessionService: SessionService) extends Controller {
 
-  def parseSession(implicit req: RequestHeader) = req.session.get(Secured.fnbSessionHeaderName)
-
   def appPage = Action.async {
     implicit request =>
-      parseSession.fold {
+      parseSessionKey.fold {
         // No cookie with authkey found - generate one
         val sessionKey = uuidGenerator.generate.toString
         Logger.info(s"Creating new Session Key $sessionKey")
@@ -42,19 +41,14 @@ class Application @Inject() (uuidGenerator: UUIDGenerator,
 
   def showTopicPage(id: Int) = appPage
 
-  def ensureSessionActive(sessionKey: String): Future[UserSession] = {
-    Logger.info(s"Ensuring Session Key $sessionKey is loaded")
-    sessionService.getSession(sessionKey) flatMap {
-      case Some(session) => {
-        Future.successful(session)
-      }
-      case None => {
-        val newSession = UserSession(sessionKey, None)
-        Logger.info(s"Inserting session for ${sessionKey}")
-        sessionService.insertSession(newSession)
-      }
+  def ensureSessionActive(sessionKey: String): Future[UserSession] = for {
+    maybeSession <- sessionService.getSession(sessionKey)
+    existingSession <- maybeSession.fold {
+      sessionService.insertSession(UserSession(sessionKey, None))
+    } {
+      session => Future.successful(session)
     }
-  }
+  } yield existingSession
 
   def randomUUID = Action {
     Ok(uuidGenerator.generate.toString)

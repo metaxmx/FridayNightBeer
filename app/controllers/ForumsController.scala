@@ -18,20 +18,17 @@ import models.{ ForumCategory, User }
 import services.{ ForumCategoryService, ForumService, PostService, SessionService, ThreadService, UserService }
 
 @Singleton
-class ForumsController @Inject() (implicit userService: UserService,
-                                  sessionsService: SessionService,
+class ForumsController @Inject() (implicit val userService: UserService,
+                                  val sessionService: SessionService,
                                   forumService: ForumService,
                                   forumCategoryService: ForumCategoryService,
                                   threadService: ThreadService,
                                   postService: PostService) extends Controller with Secured {
 
-  def getForums = Action.async {
-    withSessionOption[AnyContent] {
-      sessionInfo =>
-        request =>
-          implicit val userOpt = sessionInfo.userOpt
-          getForumsData
-    }
+  def getForums = OptionalSessionAction.async {
+    request =>
+      implicit val userOpt = request.maybeUser
+      getForumsData
   }
 
   private def getForumsData(implicit userOpt: Option[User]) =
@@ -42,43 +39,39 @@ class ForumsController @Inject() (implicit userService: UserService,
       userIndex <- userService.getUserIndexForApi
     } yield Ok(toJson(createListForums(categories, forums, threads, userIndex))).as(JSON_TYPE)
 
-  def showForum(id: Int) = Action.async {
-    withSessionOption[AnyContent] {
-      sessionInfo =>
-        request =>
-          implicit val userOpt = sessionInfo.userOpt
-          for {
-            forum <- forumService.getForumForApi(id)
-            threads <- threadService.getThreadsByForumForApi
-            userIndex <- userService.getUserIndexForApi
-          } yield Ok(toJson(createShowForum(forum, threads, userIndex))).as(JSON_TYPE)
-    }
+  def showForum(id: Int) = OptionalSessionAction.async {
+    request =>
+      implicit val userOpt = request.maybeUser
+      for {
+        forum <- forumService.getForumForApi(id)
+        threads <- threadService.getThreadsByForumForApi
+        userIndex <- userService.getUserIndexForApi
+      } yield Ok(toJson(createShowForum(forum, threads, userIndex))).as(JSON_TYPE)
+
   }
 
-  def insertCategory = Action.async(parse.json) {
-    withSessionOption[JsValue] {
-      sessionInfo =>
-        request =>
-          implicit val userOpt = sessionInfo.userOpt
-          request.body.validate[InsertCategoryDTO].fold(
-            error => Future.successful(BadRequest("Bad JSON format")),
-            newCategoryDTO => {
-              // TODO: Check for permissions
-              for {
-                categories <- forumCategoryService.getCategoriesForApi
-                insertedCategory <- {
-                  // TODO: Concurrent position
-                  val maxCategorySequence = categories.sortBy(_.position).reverse.headOption.map(_.position).getOrElse(0)
-                  val categoryToInsert = ForumCategory(0, newCategoryDTO.title, maxCategorySequence + 1, None)
-                  forumCategoryService.insertCategory(categoryToInsert)
-                }
-                result <- {
-                  Logger.info(s"Created Category with title ${insertedCategory.name}")
-                  getForumsData
-                }
-              } yield result
-            })
-    }
+  def insertCategory = UserAction.async(parse.json) {
+    request =>
+      implicit val userOpt = request.maybeUser
+      request.body.validate[InsertCategoryDTO].fold(
+        error => Future.successful(BadRequest("Bad JSON format")),
+        newCategoryDTO => {
+          // TODO: Check for permissions
+          for {
+            categories <- forumCategoryService.getCategoriesForApi
+            insertedCategory <- {
+              // TODO: Concurrent position
+              val maxCategorySequence = categories.sortBy(_.position).reverse.headOption.map(_.position).getOrElse(0)
+              val categoryToInsert = ForumCategory(0, newCategoryDTO.title, maxCategorySequence + 1, None)
+              forumCategoryService.insertCategory(categoryToInsert)
+            }
+            result <- {
+              Logger.info(s"Created Category with title ${insertedCategory.name}")
+              getForumsData
+            }
+          } yield result
+        })
+
   }
 
 }

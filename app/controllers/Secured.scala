@@ -1,90 +1,101 @@
 package controllers
 
 import javax.inject.Singleton
-
 import scala.annotation.implicitNotFound
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
 import play.Logger
 import play.api.mvc.{ Request, RequestHeader, Result }
 import play.api.mvc.Results.{ BadRequest, InternalServerError }
-
 import models.{ User, UserSession }
 import services.{ SessionService, UserService }
+import play.api.mvc.WrappedRequest
+import play.api.mvc.ActionBuilder
+import play.api.mvc.ActionTransformer
+import exceptions.ApiException.{ dbException, invalidSessionException, accessDeniedException }
 
 trait Secured {
 
-  def parseSessionKey(request: RequestHeader) = request.session.get(Secured.fnbSessionHeaderName)
+  import Secured.parseSessionKey
 
-  def onMissingSession(request: RequestHeader) = {
-    Logger.warn("Returning API request without session header")
-    BadRequest("unauthorized")
-  }
+  implicit val userService: UserService
 
-  def onSessionLoadingError[A](request: Request[A]) = {
-    Logger.error("Error reading Session from DB")
-    InternalServerError("session not found")
-  }
+  implicit val sessionService: SessionService
 
-  def withSessionKeyAsync[A](block: => String => Request[A] => Future[Result]): Request[A] => Future[Result] =
-    request => parseSessionKey(request) match {
-      case None          => Future.successful(onMissingSession(request))
-      case Some(session) => block(session)(request)
-    }
+  object OptionalSessionAction extends ActionBuilder[OptionalSessionRequest] with ActionTransformer[Request, OptionalSessionRequest] {
 
-  def withSessionKey[A](block: => String => Request[A] => Result): Request[A] => Result =
-    request => parseSessionKey(request) match {
-      case None          => onMissingSession(request)
-      case Some(session) => block(session)(request)
-    }
-
-  def withSession[A](block: => SessionInfo => Request[A] => Future[Result])(implicit userService: UserService, sessionService: SessionService): Request[A] => Future[Result] =
-    request =>
-      parseSessionKey(request) match {
-        case None => Future.successful(onMissingSession(request))
-        case Some(sessionKey) =>
-          sessionService.getSession(sessionKey) flatMap {
-            case None => Future.successful(None)
-            case Some(session) => session.user_id match {
-              case None => Future.successful(Some(SessionInfo(session, None)))
-              case Some(userId) => userService.getUser(userId) map {
-                _ map { user => SessionInfo(session, Some(user)) }
-              }
-            }
-          } flatMap {
-            case None              => Future.successful(onSessionLoadingError(request))
-            case Some(sessionInfo) => block(sessionInfo)(request)
-          }
+    override def transform[A](request: Request[A]): Future[OptionalSessionRequest[A]] =
+      parseSessionKey(request).fold {
+        Future.successful(new OptionalSessionRequest(None, None, request))
+      } {
+        sessionKey =>
+          for {
+            session <- sessionService.getSessionForApi(sessionKey)
+            maybeUser <- session.user_id map { userId => userService.getUserForApi(userId) } getOrElse Future.successful(None)
+          } yield new OptionalSessionRequest(Some(session), maybeUser, request)
       }
 
-  def withSessionOption[A](block: => OptionalSessionInfo => Request[A] => Future[Result])(implicit userService: UserService, sessionService: SessionService): Request[A] => Future[Result] =
-    request =>
-      parseSessionKey(request) match {
-        case None => block(OptionalSessionInfo(None, None))(request)
-        case Some(sessionKey) =>
-          sessionService.getSession(sessionKey) flatMap {
-            case None => Future.successful(None)
-            case Some(session) => session.user_id match {
-              case None => Future.successful(Some(OptionalSessionInfo(Some(session), None)))
-              case Some(userId) => userService.getUser(userId) map {
-                _ map { user => OptionalSessionInfo(Some(session), Some(user)) }
-              }
-            }
-          } flatMap {
-            case None              => Future.successful(onSessionLoadingError(request))
-            case Some(sessionInfo) => block(sessionInfo)(request)
-          }
-      }
+  }
+
+  object SessionAction extends ActionBuilder[SessionRequest] with ActionTransformer[Request, SessionRequest] {
+
+    override def transform[A](request: Request[A]): Future[SessionRequest[A]] =
+      OptionalSessionAction.transform(request) map { _.maybeSessionRequest getOrElse accessDeniedException }
+
+  }
+
+  object UserAction extends ActionBuilder[UserRequest] with ActionTransformer[Request, UserRequest] {
+
+    override def transform[A](request: Request[A]) =
+      SessionAction.transform(request) map { _.maybeUserRequest getOrElse accessDeniedException }
+
+  }
 
 }
-
-case class SessionInfo(session: UserSession, userOpt: Option[User])
-
-case class OptionalSessionInfo(sessionOpt: Option[UserSession], userOpt: Option[User])
 
 object Secured {
 
   val fnbSessionHeaderName = "fnbsessionid"
+
+  def parseSessionKey(implicit request: RequestHeader) = request.session.get(fnbSessionHeaderName)
+
+}
+
+trait UserOptionRequest {
+
+  val maybeUser: Option[User]
+
+}
+
+class OptionalSessionRequest[A](val maybeSession: Option[UserSession],
+                                val maybeUser: Option[User],
+                                request: Request[A]) extends WrappedRequest[A](request) with UserOptionRequest {
+
+  def maybeSessionRequest: Option[SessionRequest[A]] = maybeSession map {
+    session => new SessionRequest[A](session, maybeUser, request)
+  }
+
+  def maybeUserRequest: Option[UserRequest[A]] = for {
+    session <- maybeSession
+    user <- maybeUser
+  } yield new UserRequest[A](session, user, request)
+
+}
+
+class SessionRequest[A](val userSession: UserSession,
+                        val maybeUser: Option[User],
+                        request: Request[A]) extends WrappedRequest[A](request) with UserOptionRequest {
+
+  def maybeUserRequest: Option[UserRequest[A]] = maybeUser map {
+    user => new UserRequest[A](userSession, user, request)
+  }
+
+}
+
+class UserRequest[A](val userSession: UserSession,
+                     val user: User,
+                     request: Request[A]) extends WrappedRequest[A](request) with UserOptionRequest {
+
+  override val maybeUser = Some(user)
 
 }
