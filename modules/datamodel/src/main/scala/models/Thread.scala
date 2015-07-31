@@ -33,6 +33,8 @@ case class Thread(
 
   def withId(_id: Int) = Thread(_id, title, forum, threadStart, lastPost, posts, sticky, restriction)
 
+  def withLastPost(lastPost: ThreadPostData) = Thread(_id, title, forum, threadStart, lastPost, posts, sticky, restriction)
+
 }
 
 object Thread {

@@ -43,10 +43,36 @@
 					</div>
 				</td>
 			</tr>
+			<tr ng-if="!insertPost.visible">
+				<td></td>
+				<td>
+					<button type="button" class="btn btn-success" id="btn_showinsertpost"
+						ng-click="showInsertPost()">Antworten</button>
+				</td>
+			</tr>
 			</tbody>
 		</table>
 	</div>
 	<div class="loading-spinner" ng-show="topicStatus.loading"></div>
 	<alert type="danger" ng-show="topicStatus.error">{{topicStatus.errormessage}}</alert>
-	
+	<form id="insertPostForm" name="insertPostForm" class="form-horizontal form-dialog" role="form" ng-if="insertPost.visible">
+
+		<h2 class="form-header">Antworten</h2>
+		<div class="form-body" ng-show="insertPost.status.successful || insertPost.status.error">
+
+			<alert type="danger" ng-show="insertPost.status.error" close="clearInsertPostErrors()">{{insertPost.status.errormessage}}</alert>
+
+			<div text-angular ng-model="insertPost.form.content" name="demo-editor" ta-text-editor-class="form-control"
+				ta-html-editor-class="form-control" required></div>
+
+		</div>
+		<div class="form-body" ng-show="insertPost.status.loading">
+			<div class="loading-spinner"></div>
+		</div>
+		<div class="form-footer clearfix">
+			<a ng-click="hideInsertPost()" id="btn_cancel" class="btn btn-warning">Cancel</a>
+
+			<button type="submit" class="btn btn-success" id="btn_login" ng-click="insertPost.execute()">Antworten</button>
+		</div>
+	</form>
 </div>

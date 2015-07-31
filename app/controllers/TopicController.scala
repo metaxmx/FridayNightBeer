@@ -1,23 +1,23 @@
 package controllers
 
 import javax.inject.{ Inject, Singleton }
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
 import org.joda.time.DateTime
-
 import play.api.Logger
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json.toJson
 import play.api.mvc.{ Action, AnyContent, Controller }
-
 import Application.JSON_TYPE
 import dto.{ InsertTopicDTO, InsertTopicRequestDTO, InsertTopicResultDTO }
 import dto.ShowThreadAggregation.createShowThread
 import exceptions.ApiException
-import models.{ Post, Thread, ThreadPostData }
+import models.{ Post, Thread, ThreadPostData, User }
 import services.{ ForumService, PostService, SessionService, ThreadService, UserService }
+import play.api.data._
+import play.api.data.Forms._
+import dto.InsertPostDTO
+import dto.InsertPostErrorDTO
 
 @Singleton
 class TopicController @Inject() (implicit val userService: UserService,
@@ -64,13 +64,40 @@ class TopicController @Inject() (implicit val userService: UserService,
 
   def showTopic(id: Int) = OptionalSessionAction.async {
     request =>
-      implicit val userOpt = request.maybeUser
-      for {
-        thread <- threadService.getThreadForApi(id)
-        forum <- forumService.getForumForApi(thread.forum)
-        posts <- postService.getPostsByThreadForApi
-        userIndex <- userService.getUserIndexForApi
-      } yield Ok(toJson(createShowThread(thread, forum, posts, userIndex))).as(JSON_TYPE)
+      implicit val maybeUser = request.maybeUser
+      showTopicData(id)
+  }
+
+  private def showTopicData(id: Int)(implicit maybeUser: Option[User]) = for {
+    thread <- threadService.getThreadForApi(id)
+    forum <- forumService.getForumForApi(thread.forum)
+    posts <- postService.getPostsByThreadForApi
+    userIndex <- userService.getUserIndexForApi
+  } yield Ok(toJson(createShowThread(thread, forum, posts, userIndex))).as(JSON_TYPE)
+
+  val insertPostForm = Form(
+    mapping(
+      "content" -> nonEmptyText)(InsertPostDTO.apply)(InsertPostDTO.unapply))
+
+  def insertPost(id: Int) = UserAction.async(parse.json) {
+    implicit request =>
+      implicit val maybeUser = request.maybeUser
+      insertPostForm.bindFromRequest.fold(
+        formWithErrors => Future.successful(BadRequest(toJson(InsertPostErrorDTO(formWithErrors.errors.map(_.message))))),
+        insertPostDTO =>
+          for {
+            thread <- threadService.getThreadForApi(id)
+            forum <- forumService.getForumForApi(thread.forum)
+            posts <- postService.getPostsByThreadForApi
+            userIndex <- userService.getUserIndexForApi
+            insertedPost <- {
+              val postToInsert = Post(0, thread._id, insertPostDTO.content,
+                request.user._id, DateTime.now, None, Seq())
+              postService insertPost postToInsert
+            }
+            updatedThread <- threadService.updateLastPostForApi(id, insertedPost.userCreated, insertedPost.dateCreated)
+            result <- showTopicData(id)
+          } yield result)
   }
 
 }

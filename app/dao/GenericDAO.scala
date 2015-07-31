@@ -77,5 +77,7 @@ trait GenericDAO[T, K] {
     }
   }
 
+  def invalidateCache = cache.remove
+
 }
 
