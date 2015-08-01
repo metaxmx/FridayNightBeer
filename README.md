@@ -44,11 +44,11 @@ Planned Milestones
   * [x] List Forums
   * [x] Show Topics in Forum
   * [x] Show Posts in Forum
-  * [ ] Reply
+  * [x] Reply
   * [ ] Create / Edit / Delete / Reorder Forums
-  * [ ] Start new Threads
+  * [x] Start new Threads
   * [ ] Register new users
-  * [ ] Basic Post formatting, e.g. bold, italic, lists
+  * [x] Basic Post formatting, e.g. bold, italic, lists
 * [ ] Version 0.2 Alpha: Advanced Forum Features:
   * [ ] Pin / Unpin Topics
   * [ ] Close Topics
