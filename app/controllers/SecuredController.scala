@@ -21,6 +21,8 @@ trait SecuredController extends AbstractController {
 
   implicit val sessionService: SessionService
 
+  implicit def request2maybeUser(implicit request: UserOptionRequest) = request.maybeUser
+
   object OptionalSessionApiAction extends ApiActionRefiner[OptionalSessionRequest] {
 
     override def refine[A](request: Request[A]): Future[Either[Result, OptionalSessionRequest[A]]] = {

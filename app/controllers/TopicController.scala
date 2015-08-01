@@ -26,8 +26,7 @@ class TopicController @Inject() (implicit val userService: UserService,
                                  postService: PostService) extends Controller with SecuredController {
 
   def showNewTopic(id: Int) = UserApiAction.async {
-    request =>
-      implicit val userOpt = request.maybeUser
+    implicit request =>
       for {
         forum <- forumService.getForumForApi(id)
       } yield Ok(toJson(InsertTopicRequestDTO.fromForum(forum))).as(JSON)
@@ -35,8 +34,7 @@ class TopicController @Inject() (implicit val userService: UserService,
   }
 
   def newTopic(id: Int) = UserApiAction.async(parse.json) {
-    request =>
-      implicit val userOpt = request.maybeUser
+    implicit request =>
       request.body.validate[InsertTopicDTO].fold(
         error => Future.successful(BadRequest("Bad JSON format")),
         newTopicDTO => {
@@ -44,13 +42,13 @@ class TopicController @Inject() (implicit val userService: UserService,
             forum <- forumService.getForumForApi(id)
             insertedThread <- {
               val threadToInsert = Thread(0, newTopicDTO.title, forum._id,
-                ThreadPostData(userOpt.get._id, DateTime.now),
-                ThreadPostData(userOpt.get._id, DateTime.now), 1, false, None)
+                ThreadPostData(request.user._id, DateTime.now),
+                ThreadPostData(request.user._id, DateTime.now), 1, false, None)
               threadService insertThread threadToInsert
             }
             insertedPost <- {
               val postToInsert = Post(0, insertedThread._id, newTopicDTO.htmlContent,
-                userOpt.get._id, DateTime.now, None, Seq())
+                request.user._id, DateTime.now, None, Seq())
               postService insertPost postToInsert
             }
           } yield {
@@ -62,8 +60,7 @@ class TopicController @Inject() (implicit val userService: UserService,
   }
 
   def showTopic(id: Int) = OptionalSessionApiAction.async {
-    request =>
-      implicit val maybeUser = request.maybeUser
+    implicit request =>
       showTopicData(id)
   }
 
@@ -80,7 +77,6 @@ class TopicController @Inject() (implicit val userService: UserService,
 
   def insertPost(id: Int) = UserApiAction.async(parse.json) {
     implicit request =>
-      implicit val maybeUser = request.maybeUser
       insertPostForm.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(toJson(InsertPostErrorDTO(formWithErrors.errors.map(_.message))))),
         insertPostDTO =>

@@ -19,7 +19,8 @@ class DownloadController @Inject() (implicit val userService: UserService,
                                     forumService: ForumService) extends Controller with SecuredController {
 
   def downloadAvatar(id: Int) = UserApiAction.async {
-    request =>
+    implicit request =>
+      // TODO: Check for permissions
       userService.getUser(id).map {
         _.filter { _.avatar.isDefined }.map {
           userOpt =>
@@ -34,8 +35,7 @@ class DownloadController @Inject() (implicit val userService: UserService,
   }
 
   def downloadPostUpload(id: Int, filename: String) = OptionalSessionApiAction.async {
-    request =>
-      implicit val userOpt = request.maybeUser
+    implicit request =>
       for {
         post <- postService.getPostForApi(id)
         thread <- threadService.getThreadForApi(post.thread)

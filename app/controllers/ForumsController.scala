@@ -24,8 +24,7 @@ class ForumsController @Inject() (implicit val userService: UserService,
                                   postService: PostService) extends Controller with SecuredController {
 
   def getForums = OptionalSessionApiAction.async {
-    request =>
-      implicit val userOpt = request.maybeUser
+    implicit request =>
       getForumsData
   }
 
@@ -38,8 +37,7 @@ class ForumsController @Inject() (implicit val userService: UserService,
     } yield Ok(toJson(createListForums(categories, forums, threads, userIndex))).as(JSON)
 
   def showForum(id: Int) = OptionalSessionApiAction.async {
-    request =>
-      implicit val userOpt = request.maybeUser
+    implicit request =>
       for {
         forum <- forumService.getForumForApi(id)
         threads <- threadService.getThreadsByForumForApi
@@ -49,8 +47,7 @@ class ForumsController @Inject() (implicit val userService: UserService,
   }
 
   def insertCategory = UserApiAction.async(parse.json) {
-    request =>
-      implicit val userOpt = request.maybeUser
+    implicit request =>
       request.body.validate[InsertCategoryDTO].fold(
         error => Future.successful(BadRequest("Bad JSON format")),
         newCategoryDTO => {
