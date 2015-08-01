@@ -12,8 +12,11 @@ import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.bson.{ BSONDocument, BSONDocumentReader, BSONDocumentWriter }
 import util.{ IndexedEntityCollection, TypedSingletonCache }
 import models.BaseModel
+import play.modules.reactivemongo.ReactiveMongoComponents
 
 trait GenericDAO[T, K] {
+
+  self: ReactiveMongoComponents =>
 
   def getCacheInterval: Int = 60 * 10
 
@@ -23,7 +26,7 @@ trait GenericDAO[T, K] {
 
   val cache = new TypedSingletonCache[IndexedEntityCollection[T, K]](getCacheKey, getCacheInterval)
 
-  implicit def collection(implicit baseModel: BaseModel[T]) = db.collection[BSONCollection](getCollectionName)
+  implicit def collection(implicit baseModel: BaseModel[T]) = reactiveMongoApi.db.collection[BSONCollection](getCollectionName)
 
   def getAll(implicit baseModel: BaseModel[T], reader: BSONDocumentReader[T], cp: CursorProducer[T],
              idReader: BaseModelIdReader[T, K]): Future[Seq[T]] =

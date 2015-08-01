@@ -1,11 +1,13 @@
 package dao
 
-import javax.inject.Singleton
+import javax.inject.{ Inject, Singleton }
+
+import play.modules.reactivemongo.{ ReactiveMongoApi, ReactiveMongoComponents }
 
 import models.Forum
 
 @Singleton
-class ForumDAO extends GenericNumericKeyDAO[Forum] {
+class ForumDAO @Inject() (val reactiveMongoApi: ReactiveMongoApi) extends GenericNumericKeyDAO[Forum] with ReactiveMongoComponents {
 
   override def getCacheKey = "db.forums"
 

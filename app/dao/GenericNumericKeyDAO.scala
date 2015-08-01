@@ -2,16 +2,20 @@ package dao
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+
+import play.modules.reactivemongo.ReactiveMongoComponents
+
 import exceptions.QueryException
-import models.{ BaseModelIdReader, BaseModelIdWriter }
+import models.{ BaseModel, BaseModelIdReader, BaseModelIdWriter }
 import reactivemongo.api.CursorProducer
 import reactivemongo.api.ReadPreference.Primary
 import reactivemongo.api.commands.DefaultWriteResult
 import reactivemongo.bson.{ BSONDocument, BSONDocumentReader, BSONDocumentWriter }
 import reactivemongo.bson.Producer.nameValue2Producer
-import models.BaseModel
 
 trait GenericNumericKeyDAO[T] extends GenericDAO[T, Int] {
+
+  self: ReactiveMongoComponents =>
 
   def insertOptimistic(entity: T)(implicit baseModel: BaseModel[T], idReader: BaseModelIdReader[T, Int], idWriter: BaseModelIdWriter[T, Int],
                                   reader: BSONDocumentReader[T], writer: BSONDocumentWriter[T],

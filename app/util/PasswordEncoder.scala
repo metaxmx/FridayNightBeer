@@ -1,8 +1,7 @@
 package util
 
+import java.nio.charset.StandardCharsets.UTF_8
 import java.security.MessageDigest
-
-import org.apache.commons.codec.Charsets.UTF_8
 
 object PasswordEncoder {
 

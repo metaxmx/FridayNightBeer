@@ -15,13 +15,16 @@ lazy val fnbPlay = (project in file("."))
 	.enablePlugins(SbtWeb)
 
 resolvers += "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
+resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
 libraryDependencies ++= Seq(
   cache,
-  "com.google.inject" % "guice" % "3.0",
-  "com.google.guava" % "guava" % "15.0",
+  specs2 % Test,
+  "com.google.inject" % "guice" % "4.0",
+  "com.google.guava" % "guava" % "18.0",
   "javax.inject" % "javax.inject" % "1",
-  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.0.play23",
+  "joda-time" % "joda-time" % "2.8.1",
+  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.4.play24",
   "org.webjars" % "bootstrap" % "3.3.4",
   "org.webjars" % "jquery" % "1.11.3",
   "org.webjars" % "angularjs" % "1.3.15",
@@ -37,6 +40,8 @@ libraryDependencies ++= Seq(
 includeFilter in (Assets, LessKeys.less) := "*.less"
 
 excludeFilter in (Assets, LessKeys.less) := "_*.less"
+
+EclipseKeys.preTasks := Seq(compile in Compile)
 
 EclipseKeys.withSource := true
 

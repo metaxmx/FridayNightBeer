@@ -1,33 +1,29 @@
 package controllers
 
 import javax.inject.{ Inject, Singleton }
-
 import scala.concurrent.Future
-
 import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.{ Action, Controller }
-
 import SecuredController.{ fnbSessionHeaderName, parseSessionKey }
 import models.UserSession
 import services.{ SessionService, Themes, UUIDGenerator }
+import exceptions.ApiException
 
 @Singleton
 class Application @Inject() (uuidGenerator: UUIDGenerator,
-                             sessionService: SessionService) extends Controller {
+                             sessionService: SessionService) extends Controller with AbstractController {
 
   def appPage = Action.async {
     implicit request =>
       parseSessionKey.fold {
         // No cookie with authkey found - generate one
         val sessionKey = uuidGenerator.generate.toString
-        Logger.info(s"Creating new Session Key $sessionKey")
         ensureSessionActive(sessionKey) map { _ =>
           Ok(views.html.app(Themes.defaultTheme)).withSession(fnbSessionHeaderName -> sessionKey)
         }
       } {
         sessionKey =>
-          Logger.info(s"Found Session Key $sessionKey")
           ensureSessionActive(sessionKey) map { _ =>
             Ok(views.html.app(Themes.defaultTheme))
           }

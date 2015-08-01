@@ -1,15 +1,17 @@
 package dao
 
-import javax.inject.Singleton
+import javax.inject.{ Inject, Singleton }
 
 import scala.concurrent.Future
+
+import play.modules.reactivemongo.{ ReactiveMongoApi, ReactiveMongoComponents }
 
 import models.{ User, UserSession }
 import reactivemongo.bson.BSONDocument
 import reactivemongo.bson.Producer.nameValue2Producer
 
 @Singleton
-class SessionDAO extends GenericDAO[UserSession, String] {
+class SessionDAO @Inject() (val reactiveMongoApi: ReactiveMongoApi) extends GenericDAO[UserSession, String] with ReactiveMongoComponents {
 
   override def getCacheKey = "db.sessions"
 
