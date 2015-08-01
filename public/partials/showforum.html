@@ -8,7 +8,9 @@
 				<li class="active">{{forum.title}}</li>
 			</ol>
 			<div class="headeroptions">
-				<a href="/#/forum/{{forum.id}}/newtopic">Neuer Thread</a> |
+				<span ng-if="authenticated">
+					<a href="/#/forum/{{forum.id}}/newtopic">Neuer Thread</a> |
+				</span>
 				<a href="/">Suche</a> |
 				<a href="/">Threads verwalten</a>
 			</div>

@@ -9,9 +9,9 @@
 				<li class="active">{{topic.title}}</li>
 			</ol>
 			<div class="headeroptions">
-				<a href="/#/forum/{{forum.id}}/newtopic">Neuer Thread</a> |
-				<a href="/">Suche</a> |
-				<a href="/">Threads verwalten</a>
+				<span ng-if="authenticated">
+					<a ng-click="showInsertPost()">Antworten</a>
+				</span>
 			</div>
 		</div>
 	</div>
@@ -43,7 +43,7 @@
 					</div>
 				</td>
 			</tr>
-			<tr ng-if="!insertPost.visible">
+			<tr ng-if="!insertPost.visible && authenticated">
 				<td></td>
 				<td>
 					<button type="button" class="btn btn-success" id="btn_showinsertpost"
