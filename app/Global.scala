@@ -27,8 +27,8 @@ object Global extends GlobalSettings {
   override def getControllerInstance[A](controllerClass: Class[A]): A = injector.getInstance(controllerClass)
 
   override def onError(request: RequestHeader, ex: Throwable): Future[Result] = ex match {
-    case e: ApiException          => Future.successful(e.result)
-    case ApiExceptionExtractor(e) => Future.successful(e.result)
+    case e: ApiException          => Future.successful(e.toResult)
+    case ApiExceptionExtractor(e) => Future.successful(e.toResult)
     case _                        => super.onError(request, ex)
   }
 

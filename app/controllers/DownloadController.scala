@@ -1,25 +1,24 @@
 package controllers
 
 import java.io.File
+
 import javax.inject.{ Inject, Singleton }
+
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+
 import play.api.Logger
-import play.api.mvc.{ Action, AnyContent, Controller }
-import services.{ SessionService, UserService }
-import services.PostService
-import services.ThreadService
-import services.ForumService
-import models._
+import play.api.mvc.Controller
+
+import services.{ ForumService, PostService, SessionService, ThreadService, UserService }
 
 @Singleton
 class DownloadController @Inject() (implicit val userService: UserService,
                                     val sessionService: SessionService,
                                     postService: PostService,
                                     threadService: ThreadService,
-                                    forumService: ForumService) extends Controller with Secured {
+                                    forumService: ForumService) extends Controller with SecuredController {
 
-  def downloadAvatar(id: Int) = UserAction.async {
+  def downloadAvatar(id: Int) = UserApiAction.async {
     request =>
       userService.getUser(id).map {
         _.filter { _.avatar.isDefined }.map {
@@ -34,7 +33,7 @@ class DownloadController @Inject() (implicit val userService: UserService,
       }
   }
 
-  def downloadPostUpload(id: Int, filename: String) = OptionalSessionAction.async {
+  def downloadPostUpload(id: Int, filename: String) = OptionalSessionApiAction.async {
     request =>
       implicit val userOpt = request.maybeUser
       for {

@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import dao.ForumDAO
-import exceptions.ApiException.{ accessDeniedException, dbException, notFoundException }
+import exceptions.ApiExceptions.{ accessDeniedException, dbException, notFoundException }
 import exceptions.QueryException
 import models.{ Forum, User }
 

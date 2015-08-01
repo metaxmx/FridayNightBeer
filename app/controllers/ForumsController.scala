@@ -6,11 +6,9 @@ import scala.concurrent.Future
 
 import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.json.JsValue
 import play.api.libs.json.Json.toJson
-import play.api.mvc.{ Action, AnyContent, Controller }
+import play.api.mvc.Controller
 
-import Application.JSON_TYPE
 import dto.InsertCategoryDTO
 import dto.ListForumsAggregation.createListForums
 import dto.ShowForumAggregation.createShowForum
@@ -23,9 +21,9 @@ class ForumsController @Inject() (implicit val userService: UserService,
                                   forumService: ForumService,
                                   forumCategoryService: ForumCategoryService,
                                   threadService: ThreadService,
-                                  postService: PostService) extends Controller with Secured {
+                                  postService: PostService) extends Controller with SecuredController {
 
-  def getForums = OptionalSessionAction.async {
+  def getForums = OptionalSessionApiAction.async {
     request =>
       implicit val userOpt = request.maybeUser
       getForumsData
@@ -37,20 +35,20 @@ class ForumsController @Inject() (implicit val userService: UserService,
       forums <- forumService.getForumsByCategoryForApi
       threads <- threadService.getThreadsByForumForApi
       userIndex <- userService.getUserIndexForApi
-    } yield Ok(toJson(createListForums(categories, forums, threads, userIndex))).as(JSON_TYPE)
+    } yield Ok(toJson(createListForums(categories, forums, threads, userIndex))).as(JSON)
 
-  def showForum(id: Int) = OptionalSessionAction.async {
+  def showForum(id: Int) = OptionalSessionApiAction.async {
     request =>
       implicit val userOpt = request.maybeUser
       for {
         forum <- forumService.getForumForApi(id)
         threads <- threadService.getThreadsByForumForApi
         userIndex <- userService.getUserIndexForApi
-      } yield Ok(toJson(createShowForum(forum, threads, userIndex))).as(JSON_TYPE)
+      } yield Ok(toJson(createShowForum(forum, threads, userIndex))).as(JSON)
 
   }
 
-  def insertCategory = UserAction.async(parse.json) {
+  def insertCategory = UserApiAction.async(parse.json) {
     request =>
       implicit val userOpt = request.maybeUser
       request.body.validate[InsertCategoryDTO].fold(

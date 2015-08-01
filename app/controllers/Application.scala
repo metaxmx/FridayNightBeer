@@ -6,10 +6,9 @@ import scala.concurrent.Future
 
 import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.json.Json.toJson
-import play.api.mvc.{ Action, Controller, RequestHeader }
-import Secured.parseSessionKey
+import play.api.mvc.{ Action, Controller }
 
+import SecuredController.{ fnbSessionHeaderName, parseSessionKey }
 import models.UserSession
 import services.{ SessionService, Themes, UUIDGenerator }
 
@@ -24,7 +23,7 @@ class Application @Inject() (uuidGenerator: UUIDGenerator,
         val sessionKey = uuidGenerator.generate.toString
         Logger.info(s"Creating new Session Key $sessionKey")
         ensureSessionActive(sessionKey) map { _ =>
-          Ok(views.html.app(Themes.defaultTheme)).withSession(Secured.fnbSessionHeaderName -> sessionKey)
+          Ok(views.html.app(Themes.defaultTheme)).withSession(fnbSessionHeaderName -> sessionKey)
         }
       } {
         sessionKey =>
@@ -53,11 +52,5 @@ class Application @Inject() (uuidGenerator: UUIDGenerator,
   def randomUUID = Action {
     Ok(uuidGenerator.generate.toString)
   }
-
-}
-
-object Application {
-
-  val JSON_TYPE = "application/json;charset=UTF-8"
 
 }

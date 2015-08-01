@@ -4,7 +4,7 @@ import javax.inject.{ Inject, Singleton }
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import dao.ThreadDAO
-import exceptions.ApiException.{ accessDeniedException, dbException, notFoundException }
+import exceptions.ApiExceptions.{ accessDeniedException, dbException, notFoundException }
 import exceptions.QueryException
 import models.{ Thread, User }
 import org.joda.time.DateTime

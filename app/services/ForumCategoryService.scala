@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import dao.ForumCategoryDAO
-import exceptions.ApiException.dbException
+import exceptions.ApiExceptions.dbException
 import exceptions.QueryException
 import models.ForumCategory
 

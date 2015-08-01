@@ -6,7 +6,7 @@ import dao.PostDAO
 import models.Post
 import models.User
 import exceptions.QueryException
-import exceptions.ApiException.{ dbException, notFoundException }
+import exceptions.ApiExceptions.{ dbException, notFoundException }
 import scala.concurrent.ExecutionContext.Implicits.global
 import controllers.UserOptionRequest
 

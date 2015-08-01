@@ -10,20 +10,20 @@ import play.api.libs.json.Json.toJson
 import play.api.mvc.Controller
 
 import dto.{ AuthInfoDTO, LoginParams }
-import exceptions.ApiException.badRequestException
+import exceptions.ApiExceptions.badRequestException
 import services.{ SessionService, UserService }
 import util.PasswordEncoder
 
 @Singleton
 class Authentication @Inject() (implicit val userService: UserService,
-                                val sessionService: SessionService) extends Controller with Secured {
+                                val sessionService: SessionService) extends Controller with SecuredController {
 
-  def getAuthInfo = OptionalSessionAction {
+  def getAuthInfo = OptionalSessionApiAction {
     request =>
       Ok(toJson(AuthInfoDTO.of(request.maybeUser))).as("application/json")
   }
 
-  def login = SessionAction.async(parse.json) {
+  def login = SessionApiAction.async(parse.json) {
     request =>
       request.body.validate[LoginParams].map {
         loginParams =>
@@ -48,7 +48,7 @@ class Authentication @Inject() (implicit val userService: UserService,
       } getOrElse badRequestException
   }
 
-  def logout = SessionAction.async {
+  def logout = SessionApiAction.async {
     request =>
       sessionService.updateSessionUser(request.userSession._id, None) map {
         // TODO: Create new session ID
