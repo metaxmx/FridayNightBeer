@@ -36,6 +36,22 @@ Installation
   * Activator will download dependencies with `sbt` (Scala build tool)
   * In the interactive shell, execute `run` to start the Play! application
 
+Software Used
+-------------
+
+* [Scala](http://www.scala-lang.org/) Version 2.11.7
+* [SBT](http://www.scala-sbt.org/) (Scala Build Tool) Version 0.13.8
+* [Play! Framework](https://www.playframework.com/) Version 2.4.2
+* [ReactiveMongo](http://reactivemongo.org/) Version 0.11.4
+* [AngularJS](https://angularjs.org/) Version 1.3.15
+* [Bootstrap](http://getbootstrap.com/) Version 3.3.4
+* Diverse general libraries and utilities: jQuery, Guice, Guava, Joda-Time, Angular Add-Ons, Polyfills
+* Frontend Assets for the Themes:
+  * [Font Awesome](http://fortawesome.github.io/Font-Awesome/)
+  * [FamFamFam Silk Icons](http://famfamfam.com/lab/icons/silk/)
+  * Crystal Project Icons by [Everaldo Coelho](http://www.everaldo.com)
+
+
 Planned Milestones
 ------------------
 
@@ -104,3 +120,4 @@ Planned Milestones
   * [ ] Public API for TapaTalk Forum App
   * [ ] Content-Pages visible on the site, e.g. imprint or forum rules
   * [ ] Limit Content-Page Access to specific users/groups
+
