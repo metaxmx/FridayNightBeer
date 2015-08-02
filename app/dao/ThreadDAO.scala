@@ -8,12 +8,15 @@ import org.joda.time.DateTime
 
 import play.modules.reactivemongo.{ ReactiveMongoApi, ReactiveMongoComponents }
 
-import models.{ Thread, ThreadPostData }
+import models.{ BaseModelSpec, Thread, ThreadPostData }
 import reactivemongo.bson.BSONDocument
 import reactivemongo.bson.Producer.nameValue2Producer
 
 @Singleton
-class ThreadDAO @Inject() (val reactiveMongoApi: ReactiveMongoApi) extends GenericNumericKeyDAO[Thread] with ReactiveMongoComponents {
+class ThreadDAO @Inject() (val reactiveMongoApi: ReactiveMongoApi)
+    extends GenericNumericKeyDAO[Thread] with ReactiveMongoComponents with BaseModelComponents[Thread, Int] {
+
+  override def spec: BaseModelSpec[Thread, Int] = implicitly
 
   override def getCacheKey = "db.threads"
 

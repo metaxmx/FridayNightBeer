@@ -30,7 +30,7 @@ trait SecuredController extends AbstractController {
       if (sessionKey.isDefined)
         (for {
           maybeSession <- sessionService.getSessionForApi(sessionKey.get)
-          maybeUser <- if (maybeSession.exists(_.user_id.isDefined)) userService.getUserForApi(maybeSession.get.user_id.get) else Future.successful(None)
+          maybeUser <- if (maybeSession.exists(_.user.isDefined)) userService.getUserForApi(maybeSession.get.user.get) else Future.successful(None)
         } yield {
           if (maybeSession.isDefined)
             Right(new OptionalSessionRequest(maybeSession, maybeUser, request))

@@ -22,13 +22,13 @@ object PostEdit {
 }
 
 case class Post(
-  _id: Int,
-  thread: Int,
-  text: String,
-  userCreated: Int,
-  dateCreated: DateTime,
-  edits: Option[Seq[PostEdit]],
-  uploads: Seq[PostUpload]) {
+    _id: Int,
+    thread: Int,
+    text: String,
+    userCreated: Int,
+    dateCreated: DateTime,
+    edits: Option[Seq[PostEdit]],
+    uploads: Seq[PostUpload]) {
 
   def withId(_id: Int) = Post(_id, thread, text, userCreated, dateCreated, edits, uploads)
 
@@ -49,6 +49,8 @@ object Post {
   implicit val postIdWriter = new BaseModelIdWriter[Post, Int] {
     def withId = _ withId _
   }
+
+  implicit val spec = new BaseModelImplicitSpec
 
 }
 

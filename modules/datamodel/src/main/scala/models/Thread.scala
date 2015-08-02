@@ -20,14 +20,14 @@ object ThreadPostData {
 }
 
 case class Thread(
-  _id: Int,
-  title: String,
-  forum: Int,
-  threadStart: ThreadPostData,
-  lastPost: ThreadPostData,
-  posts: Int,
-  sticky: Boolean,
-  restriction: Option[AccessRule]) {
+    _id: Int,
+    title: String,
+    forum: Int,
+    threadStart: ThreadPostData,
+    lastPost: ThreadPostData,
+    posts: Int,
+    sticky: Boolean,
+    restriction: Option[AccessRule]) {
 
   def accessGranted(implicit userOpt: Option[User]) = restriction map { _.allowed } getOrElse true
 
@@ -52,6 +52,8 @@ object Thread {
   implicit val threadIdWriter = new BaseModelIdWriter[Thread, Int] {
     def withId = _ withId _
   }
+
+  implicit val spec = new BaseModelImplicitSpec
 
 }
 

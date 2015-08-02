@@ -2,63 +2,49 @@ package dao
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import play.api.Play.current
-import play.modules.reactivemongo.ReactiveMongoPlugin.db
+
+import play.modules.reactivemongo.ReactiveMongoComponents
+
 import exceptions.QueryException
-import models.BaseModelIdReader
-import reactivemongo.api.CursorProducer
 import reactivemongo.api.ReadPreference.Primary
 import reactivemongo.api.collections.bson.BSONCollection
-import reactivemongo.bson.{ BSONDocument, BSONDocumentReader, BSONDocumentWriter }
+import reactivemongo.bson.BSONDocument
 import util.{ IndexedEntityCollection, TypedSingletonCache }
-import models.BaseModel
-import play.modules.reactivemongo.ReactiveMongoComponents
 
 trait GenericDAO[T, K] {
 
-  self: ReactiveMongoComponents =>
+  self: ReactiveMongoComponents with BaseModelComponents[T, K] =>
 
-  def getCacheInterval: Int = 60 * 10
+  def getCacheInterval: Int = 60 * 60 * 24
 
   def getCacheKey: String
 
-  def getCollectionName(implicit baseModel: BaseModel[T]): String = baseModel.collectionName
+  def getCollectionName: String = baseModel.collectionName
 
   val cache = new TypedSingletonCache[IndexedEntityCollection[T, K]](getCacheKey, getCacheInterval)
 
-  implicit def collection(implicit baseModel: BaseModel[T]) = reactiveMongoApi.db.collection[BSONCollection](getCollectionName)
+  implicit def collection = reactiveMongoApi.db.collection[BSONCollection](getCollectionName)
 
-  def getAll(implicit baseModel: BaseModel[T], reader: BSONDocumentReader[T], cp: CursorProducer[T],
-             idReader: BaseModelIdReader[T, K]): Future[Seq[T]] =
-    getIndexedCollection map { _.entities }
+  def getAll: Future[Seq[T]] = getIndexedCollection map { _.entities }
 
-  def getById(id: K)(implicit baseModel: BaseModel[T], reader: BSONDocumentReader[T], cp: CursorProducer[T],
-                     idReader: BaseModelIdReader[T, K]): Future[Option[T]] =
-    getIndexedCollection map { _.entitiesById.get(id) }
+  def getById(id: K): Future[Option[T]] = getIndexedCollection map { _.entitiesById get id }
 
-  def getIndexedCollection(implicit baseModel: BaseModel[T], reader: BSONDocumentReader[T], cp: CursorProducer[T],
-                           idReader: BaseModelIdReader[T, K]): Future[IndexedEntityCollection[T, K]] =
+  def getIndexedCollection: Future[IndexedEntityCollection[T, K]] =
     cache.getOrElseAsyncDef { findAll map { IndexedEntityCollection[T, K](_) } }
 
-  def findAll(implicit baseModel: BaseModel[T], reader: BSONDocumentReader[T], cp: CursorProducer[T]): Future[Seq[T]] =
-    collection.find(BSONDocument()).cursor[T](Primary).collect[Seq]() recover {
-      case exc => throw new QueryException(s"Error loading from collection $getCollectionName", exc)
-    }
+  def findAll: Future[Seq[T]] = collection.find(BSONDocument()).cursor[T](Primary).collect[Seq]() recover {
+    case exc => throw new QueryException(s"Error loading from collection $getCollectionName", exc)
+  }
 
-  def ??(id: K)(implicit baseModel: BaseModel[T], reader: BSONDocumentReader[T], cp: CursorProducer[T],
-                idReader: BaseModelIdReader[T, K]): Future[Option[T]] = getById(id)
+  def ??(id: K): Future[Option[T]] = getById(id)
 
-  def map[S](f: Seq[T] => S)(implicit baseModel: BaseModel[T], reader: BSONDocumentReader[T], cp: CursorProducer[T],
-                             idReader: BaseModelIdReader[T, K]): Future[S] = getAll map f
+  def map[S](f: Seq[T] => S): Future[S] = getAll map f
 
-  def >>[S](f: Seq[T] => S)(implicit baseModel: BaseModel[T], reader: BSONDocumentReader[T], cp: CursorProducer[T],
-                            idReader: BaseModelIdReader[T, K]): Future[S] = map(f)
+  def >>[S](f: Seq[T] => S): Future[S] = map(f)
 
-  def getIndex(implicit baseModel: BaseModel[T], reader: BSONDocumentReader[T], cp: CursorProducer[T],
-               idReader: BaseModelIdReader[T, K]): Future[Map[K, T]] =
-    getIndexedCollection map { _.entitiesById }
+  def getIndex: Future[Map[K, T]] = getIndexedCollection map { _.entitiesById }
 
-  def insertWithGivenId(entity: T)(implicit baseModel: BaseModel[T], writer: BSONDocumentWriter[T]): Future[T] =
+  def insertWithGivenId(entity: T): Future[T] =
     collection.insert(entity) flatMap {
       _ => Future.successful(entity)
     } andThen {
@@ -67,16 +53,15 @@ trait GenericDAO[T, K] {
       case exc => throw new QueryException(s"Error inserting to collection $getCollectionName", exc)
     }
 
-  def <<!(entity: T)(implicit baseModel: BaseModel[T], writer: BSONDocumentWriter[T]): Future[T] = insertWithGivenId(entity)
+  def <<!(entity: T): Future[T] = insertWithGivenId(entity)
 
-  def update(id: K, selector: BSONDocument, modifier: BSONDocument)(implicit baseModel: BaseModel[T], reader: BSONDocumentReader[T], cp: CursorProducer[T],
-                                                                    idReader: BaseModelIdReader[T, K]): Future[Option[T]] = {
+  def update(id: K, selector: BSONDocument, modifier: BSONDocument): Future[Option[T]] = {
     collection.update(selector, modifier) flatMap {
       _ =>
         cache.remove
         getById(id)
     } recover {
-      case exc => throw new QueryException(s"Error inserting to collection $getCollectionName", exc)
+      case exc => throw new QueryException(s"Error updating collection $getCollectionName", exc)
     }
   }
 

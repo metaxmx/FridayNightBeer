@@ -4,10 +4,10 @@ import play.api.libs.json.Json
 import reactivemongo.bson.Macros
 
 case class ForumCategory(
-  _id: Int,
-  name: String,
-  position: Int,
-  restriction: Option[AccessRule]) {
+    _id: Int,
+    name: String,
+    position: Int,
+    restriction: Option[AccessRule]) {
 
   def accessGranted(implicit userOpt: Option[User]) = restriction map { _.allowed } getOrElse true
 
@@ -30,5 +30,7 @@ object ForumCategory {
   implicit val forumCategoryIdWriter = new BaseModelIdWriter[ForumCategory, Int] {
     def withId = _ withId _
   }
+
+  implicit val spec = new BaseModelImplicitSpec
 
 }

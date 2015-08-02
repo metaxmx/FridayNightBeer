@@ -5,13 +5,13 @@ import reactivemongo.bson.Macros
 import models.ForumPermissions._
 
 case class Forum(
-  _id: Int,
-  name: String,
-  description: Option[String],
-  category: Int,
-  position: Int,
-  readonly: Boolean,
-  forumPermissions: Seq[AccessRule]) {
+    _id: Int,
+    name: String,
+    description: Option[String],
+    category: Int,
+    position: Int,
+    readonly: Boolean,
+    forumPermissions: Seq[AccessRule]) {
 
   lazy val forumPermissionMap: Map[ForumPermission, AccessRule] =
     forumPermissions.filter(ForumPermissions hasName _.permission).map(rule => ForumPermissions.withName(rule.permission) -> rule).toMap
@@ -40,5 +40,7 @@ object Forum {
   implicit val forumIdWriter = new BaseModelIdWriter[Forum, Int] {
     def withId = _ withId _
   }
+
+  implicit val spec = new BaseModelImplicitSpec
 
 }
