@@ -22,15 +22,15 @@ class ThreadService @Inject() (threadDAO: ThreadDAO) {
     case None         => notFoundException
     case Some(thread) => if (thread.accessGranted) thread else accessDeniedException
   } recover {
-    case e: QueryException => dbException
+    case e: QueryException => dbException(e)
   }
 
   def getThreadsByForumForApi = getThreadsByForum recover {
-    case e: QueryException => dbException
+    case e: QueryException => dbException(e)
   }
 
   def updateLastPostForApi(id: Int, user: Int, date: DateTime) = threadDAO.updateLastPost(id, user, date) recover {
-    case e: QueryException => dbException
+    case e: QueryException => dbException(e)
   }
 
 }

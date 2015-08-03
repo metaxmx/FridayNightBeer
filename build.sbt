@@ -24,6 +24,7 @@ libraryDependencies ++= Seq(
   "com.google.guava" % "guava" % "18.0",
   "javax.inject" % "javax.inject" % "1",
   "joda-time" % "joda-time" % "2.8.1",
+  "commons-io" % "commons-io" % "2.4",
   "org.reactivemongo" %% "play2-reactivemongo" % "0.11.4.play24",
   "org.webjars" % "bootstrap" % "3.3.4",
   "org.webjars" % "jquery" % "1.11.3",

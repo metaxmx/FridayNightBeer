@@ -23,12 +23,12 @@ class SessionDAO @Inject() (val reactiveMongoApi: ReactiveMongoApi)
     val modifier = userOpt.fold {
       BSONDocument(
         "$unset" -> BSONDocument(
-          "user_id" -> 1))
+          "user" -> 1))
     } {
       user =>
         BSONDocument(
           "$set" -> BSONDocument(
-            "user_id" -> user._id))
+            "user" -> user._id))
     }
     update(id, selector, modifier)
   }

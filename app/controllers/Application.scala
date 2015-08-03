@@ -9,10 +9,12 @@ import SecuredController.{ fnbSessionHeaderName, parseSessionKey }
 import models.UserSession
 import services.{ SessionService, Themes, UUIDGenerator }
 import exceptions.ApiException
+import services.PermissionService
 
 @Singleton
 class Application @Inject() (uuidGenerator: UUIDGenerator,
-                             sessionService: SessionService) extends Controller with AbstractController {
+                             sessionService: SessionService,
+                             permissionService: PermissionService) extends Controller with AbstractController {
 
   def appPage = Action.async {
     implicit request =>

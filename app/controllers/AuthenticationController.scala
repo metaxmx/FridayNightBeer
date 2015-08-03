@@ -11,16 +11,19 @@ import play.api.mvc.Controller
 
 import dto.{ AuthInfoDTO, LoginParams }
 import exceptions.ApiExceptions.badRequestException
-import services.{ SessionService, UserService }
+import models.User
+import services.{ PermissionService, SessionService, UserService }
 import util.PasswordEncoder
 
 @Singleton
-class Authentication @Inject() (implicit val userService: UserService,
-                                val sessionService: SessionService) extends Controller with SecuredController {
+class AuthenticationController @Inject() (implicit val userService: UserService,
+                                val sessionService: SessionService,
+                                permissionService: PermissionService) extends Controller with SecuredController {
 
   def getAuthInfo = OptionalSessionApiAction {
-    request =>
-      Ok(toJson(AuthInfoDTO.of(request.maybeUser))).as("application/json")
+    implicit request =>
+      Logger.info(request.maybeUser.toString())
+      Ok(toJson(byAuthenticationStatus)).as("application/json")
   }
 
   def login = SessionApiAction.async(parse.json) {
@@ -35,11 +38,11 @@ class Authentication @Inject() (implicit val userService: UserService,
                 userOpt filter (_.password == passwordEncoded)
               }
           } flatMap {
-            case None => Future.successful(AuthInfoDTO.unauthenticated)
+            case None => Future.successful(unauthenticated)
             case Some(user) => {
               // Store User in Session
               sessionService.updateSessionUser(request.userSession._id, Some(user)) map {
-                _ => AuthInfoDTO.authenticated(user)
+                _ => authenticated(user)
               }
             }
           } map {
@@ -52,8 +55,17 @@ class Authentication @Inject() (implicit val userService: UserService,
     request =>
       sessionService.updateSessionUser(request.userSession._id, None) map {
         // TODO: Create new session ID
-        _ => Ok(toJson(AuthInfoDTO.unauthenticated))
+        _ => Ok(toJson(unauthenticated))
       }
+  }
+
+  private def unauthenticated = new AuthInfoDTO(permissionService.getAllowedGlobalPermissions(None).map(_.name))
+
+  private def authenticated(user: User) = new AuthInfoDTO(user, permissionService.getAllowedGlobalPermissions(Some(user)).map(_.name))
+
+  private def byAuthenticationStatus(implicit userOpt: Option[User]) = userOpt match {
+    case None       => unauthenticated
+    case Some(user) => authenticated(user)
   }
 
 }

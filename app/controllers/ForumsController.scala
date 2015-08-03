@@ -1,19 +1,19 @@
 package controllers
 
 import javax.inject.{ Inject, Singleton }
-
 import scala.concurrent.Future
-
 import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json.toJson
 import play.api.mvc.Controller
-
-import dto.InsertCategoryDTO
-import dto.ListForumsAggregation.createListForums
-import dto.ShowForumAggregation.createShowForum
-import models.{ ForumCategory, User }
-import services.{ ForumCategoryService, ForumService, PostService, SessionService, ThreadService, UserService }
+import dto.{ InsertCategoryDTO, ListForumsCategory, ListForumsForum, ListForumsLastPost }
+import models.{ Forum, ForumCategory, ForumPermissions, Thread, User }
+import services.{ ForumCategoryService, ForumService, PermissionService, PostService, SessionService, ThreadService, UserService }
+import util.Joda.dateTimeOrdering
+import dto.ShowForumDTO
+import dto.ShowForumPost
+import models.ForumPermissions.Access
+import dto.ShowForumThread
 
 @Singleton
 class ForumsController @Inject() (implicit val userService: UserService,
@@ -21,7 +21,8 @@ class ForumsController @Inject() (implicit val userService: UserService,
                                   forumService: ForumService,
                                   forumCategoryService: ForumCategoryService,
                                   threadService: ThreadService,
-                                  postService: PostService) extends Controller with SecuredController {
+                                  postService: PostService,
+                                  permissionService: PermissionService) extends Controller with SecuredController {
 
   def getForums = OptionalSessionApiAction.async {
     implicit request =>
@@ -40,10 +41,10 @@ class ForumsController @Inject() (implicit val userService: UserService,
     implicit request =>
       for {
         forum <- forumService.getForumForApi(id)
+        category <- forumCategoryService.getCategoryForApi(forum.category)
         threads <- threadService.getThreadsByForumForApi
         userIndex <- userService.getUserIndexForApi
-      } yield Ok(toJson(createShowForum(forum, threads, userIndex))).as(JSON)
-
+      } yield Ok(toJson(createShowForum(forum, category, threads, userIndex))).as(JSON)
   }
 
   def insertCategory = UserApiAction.async(parse.json) {
@@ -66,7 +67,49 @@ class ForumsController @Inject() (implicit val userService: UserService,
             }
           } yield result
         })
+  }
 
+  private def createListForums(allCategories: Seq[ForumCategory],
+                               allForumsByCategory: Map[Int, Seq[Forum]],
+                               threads: Map[Int, Seq[Thread]],
+                               userIndex: Map[Int, User])(implicit userOpt: Option[User]): Seq[ListForumsCategory] =
+    allCategories sortBy { _.position } map {
+      category =>
+        val forums = allForumsByCategory.getOrElse(category._id, Seq()) filter {
+          permissionService.hasForumPermission(Access, _, category)
+        } sortBy { _.position }
+        val forumDtos = forums map {
+          forum =>
+            val threadsForForum = threads.getOrElse(forum._id, Seq()) filter { _.accessGranted }
+            val lastPost = threadsForForum.sortBy { _.lastPost.date }.reverse.headOption
+            val numThreads = threadsForForum.size
+            val numPosts = threadsForForum.map { _.posts }.sum
+            val listForumLastPost = lastPost.filter { userIndex contains _.lastPost.user } map {
+              thread => ListForumsLastPost.fromThread(thread, userIndex(thread.lastPost.user))
+            }
+            ListForumsForum.fromForum(forum, numThreads, numPosts, listForumLastPost)
+        }
+
+        ListForumsCategory(category.name, forumDtos)
+    } filter { !_.forums.isEmpty }
+
+  private def createShowForum(forum: Forum,
+                              category: ForumCategory,
+                              threads: Map[Int, Seq[Thread]],
+                              userIndex: Map[Int, User])(implicit userOpt: Option[User]): ShowForumDTO = {
+    val visibleThreads = threads.get(forum._id).getOrElse(Seq()).filter { _.accessGranted }
+    val threadDTOs = visibleThreads.map {
+      thread =>
+        // TODO: Check if user exists
+        val firstPostUser = userIndex(thread.threadStart.user)
+        val firstPost = ShowForumPost(firstPostUser._id, firstPostUser.displayName, thread.threadStart.date)
+        val latestPortUser = userIndex(thread.lastPost.user)
+        val latestPost = ShowForumPost(latestPortUser._id, latestPortUser.displayName, thread.lastPost.date)
+        ShowForumThread.fromThread(thread, firstPost, latestPost)
+    }
+    val threadDTOsSorted = threadDTOs.sortBy { _.latestPost.date }.reverse.sortWith((a, b) => a.sticky && !b.sticky)
+    val permissions = permissionService.getAllowedForumPermissions(forum, category).map(_.name)
+    ShowForumDTO.fromForum(forum, threadDTOsSorted, permissions)
   }
 
 }

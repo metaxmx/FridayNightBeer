@@ -19,9 +19,9 @@ GET     /avatar/:id                 @controllers.DownloadController.downloadAvat
 GET     /uploads/:id/:filename      @controllers.DownloadController.downloadPostUpload(id: Int, filename: String)
 
 # Authentication
-GET     /api/authentication/info    @controllers.Authentication.getAuthInfo
-POST    /api/authentication/login   @controllers.Authentication.login
-POST    /api/authentication/logout  @controllers.Authentication.logout
+GET     /api/authentication/info    @controllers.AuthenticationController.getAuthInfo
+POST    /api/authentication/login   @controllers.AuthenticationController.login
+POST    /api/authentication/logout  @controllers.AuthenticationController.logout
 
 # Index / List Forums
 GET     /api/forums/list            @controllers.ForumsController.getForums

@@ -37,32 +37,14 @@ object ShowForumThread {
 case class ShowForumDTO(
   id: Int,
   title: String,
-  threads: Seq[ShowForumThread])
+  threads: Seq[ShowForumThread],
+  permissions: Seq[String])
 
 object ShowForumDTO {
 
   implicit val jsonFormat = Json.format[ShowForumDTO]
 
-  def fromForum(forum: Forum, threads: Seq[ShowForumThread]) =
-    ShowForumDTO(forum._id, forum.name, threads)
-
-}
-
-object ShowForumAggregation {
-
-  def createShowForum(forum: Forum, threads: Map[Int, Seq[Thread]], userIndex: Map[Int, User])(implicit userOpt: Option[User]): ShowForumDTO = {
-    val visibleThreads = threads.get(forum._id).getOrElse(Seq()).filter { _.accessGranted }
-    val threadDTOs = visibleThreads.map {
-      thread =>
-        // TODO: Check if user exists
-        val firstPostUser = userIndex(thread.threadStart.user)
-        val firstPost = ShowForumPost(firstPostUser._id, firstPostUser.displayName, thread.threadStart.date)
-        val latestPortUser = userIndex(thread.lastPost.user)
-        val latestPost = ShowForumPost(latestPortUser._id, latestPortUser.displayName, thread.lastPost.date)
-        ShowForumThread.fromThread(thread, firstPost, latestPost)
-    }
-    val threadDTOsSorted = threadDTOs.sortBy { _.latestPost.date }.reverse.sortWith((a, b) => a.sticky && !b.sticky)
-    ShowForumDTO.fromForum(forum, threadDTOsSorted)
-  }
+  def fromForum(forum: Forum, threads: Seq[ShowForumThread], permissions: Seq[String]) =
+    ShowForumDTO(forum._id, forum.name, threads, permissions)
 
 }

@@ -23,11 +23,11 @@ class PostService @Inject() (postDAO: PostDAO) {
     case None       => notFoundException
     case Some(post) => post
   } recover {
-    case e: QueryException => dbException
+    case e: QueryException => dbException(e)
   }
 
   def getPostsByThreadForApi = getPostsByThread recover {
-    case e: QueryException => dbException
+    case e: QueryException => dbException(e)
   }
 
 }

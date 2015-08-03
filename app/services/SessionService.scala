@@ -20,7 +20,7 @@ class SessionService @Inject() (sessionDAO: SessionDAO) {
   def updateSessionUser(id: String, userOpt: Option[User]): Future[Option[UserSession]] = sessionDAO.updateSessionUser(id, userOpt)
 
   def getSessionForApi(id: String): Future[Option[UserSession]] = getSession(id) recover {
-    case e: QueryException => dbException
+    case e: QueryException => dbException(e)
   }
 
 }

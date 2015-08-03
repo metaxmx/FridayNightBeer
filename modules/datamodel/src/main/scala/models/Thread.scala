@@ -1,11 +1,10 @@
 package models
 
 import org.joda.time.DateTime
-
 import play.api.libs.json.Json
-
 import reactivemongo.bson.Macros
 import util.Joda.bsonHandler
+import models.TopicPermissions.TopicPermission
 
 case class ThreadPostData(
   user: Int,

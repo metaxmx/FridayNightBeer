@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import dao.ForumDAO
-import exceptions.ApiExceptions.{ accessDeniedException, dbException, notFoundException }
+import exceptions.ApiExceptions.{ dbException, notFoundException }
 import exceptions.QueryException
 import models.{ Forum, User }
 
@@ -17,15 +17,15 @@ class ForumService @Inject() (forumDAO: ForumDAO) {
 
   def getForumsByCategory: Future[Map[Int, Seq[Forum]]] = forumDAO >> { _.groupBy { _.category } }
 
-  def getForumForApi(id: Int)(implicit userOpt: Option[User]): Future[Forum] = getForum(id) map {
+  def getForumForApi(id: Int): Future[Forum] = getForum(id) map {
     case None        => notFoundException
-    case Some(forum) => if (forum.accessGranted) forum else accessDeniedException
+    case Some(forum) => forum
   } recover {
-    case e: QueryException => dbException
+    case e: QueryException => dbException(e)
   }
 
   def getForumsByCategoryForApi = getForumsByCategory recover {
-    case e: QueryException => dbException
+    case e: QueryException => dbException(e)
   }
 
 }

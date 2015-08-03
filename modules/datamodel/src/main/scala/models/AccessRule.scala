@@ -1,15 +1,16 @@
 package models
 
 import play.api.libs.json.Json
+
 import reactivemongo.bson.Macros
 
 case class AccessRule(
-  permission: String,
-  forbiddenUsers: Option[Seq[Int]],
-  forbiddenGroups: Option[Seq[String]],
-  allowedUsers: Option[Seq[Int]],
-  allowedGroups: Option[Seq[String]],
-  allowGuest: Boolean) {
+    permission: String,
+    forbiddenUsers: Option[Seq[Int]],
+    forbiddenGroups: Option[Seq[String]],
+    allowedUsers: Option[Seq[Int]],
+    allowedGroups: Option[Seq[String]],
+    allowGuest: Boolean) {
 
   def allowed(implicit userOpt: Option[User]): Boolean = userOpt.fold {
     // If no user logged in, check guest access
