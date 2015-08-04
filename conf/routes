@@ -5,14 +5,14 @@
 # ~~~~
 
 # Single endpoint for serving AngularJS
-GET     /                           @controllers.Application.appPage
-GET     /randomUUID                 @controllers.Application.randomUUID
+GET     /                           @controllers.ApplicationController.appPage
+GET     /randomUUID                 @controllers.ApplicationController.randomUUID
 
 # Virtual Pages
-GET     /login                      @controllers.Application.appPage
-GET     /forum/:id                  @controllers.Application.showForumPage(id: Int)
-GET     /forum/:id/newtopic         @controllers.Application.showNewTopicPage(id: Int)
-GET     /topic/:id                  @controllers.Application.showTopicPage(id: Int)
+GET     /login                      @controllers.ApplicationController.appPage
+GET     /forum/:id                  @controllers.ApplicationController.showForumPage(id: Int)
+GET     /forum/:id/newtopic         @controllers.ApplicationController.showNewTopicPage(id: Int)
+GET     /topic/:id                  @controllers.ApplicationController.showTopicPage(id: Int)
 
 # Files
 GET     /avatar/:id                 @controllers.DownloadController.downloadAvatar(id: Int)

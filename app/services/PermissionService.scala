@@ -104,6 +104,9 @@ class PermissionService @Inject() (configuration: Configuration) {
   def requireGlobalPermission(permission: GlobalPermission)(implicit maybeUser: Option[User]): Unit =
     if (!hasGlobalPermission(permission)) accessDeniedException
 
+  def requireGlobalPermissions(permissions: GlobalPermission*)(implicit maybeUser: Option[User]): Unit =
+    if (!permissions.filterNot { hasGlobalPermission(_) }.isEmpty) accessDeniedException
+
   def hasForumPermission(permission: ForumPermission, forum: Forum, category: ForumCategory)(implicit maybeUser: Option[User]): Boolean =
     permissions.forumPermissionAllowed(permission, forum, category).getOrElse(false)
 

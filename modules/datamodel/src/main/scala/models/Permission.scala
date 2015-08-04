@@ -1,7 +1,5 @@
 package models
 
-import scala.annotation.implicitNotFound
-
 import play.api.libs.json.{ Format, JsPath, JsResult, JsString, JsValue }
 
 import reactivemongo.bson.{ BSON, BSONHandler, BSONString }

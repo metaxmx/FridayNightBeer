@@ -1,11 +1,19 @@
 package controllers
 
+import scala.annotation.implicitNotFound
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.language.higherKinds
 
+import play.api.data.Form
+import play.api.http.ContentTypes.JSON
+import play.api.http.Status.BAD_REQUEST
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json.toJson
 import play.api.mvc.{ ActionBuilder, Request, Result }
+import play.api.mvc.Results.Status
 
+import dto.FormErrorsDTO
 import exceptions.ApiException
 
 trait AbstractController {
@@ -36,5 +44,10 @@ trait AbstractController {
     override def invokeInner[A](request: Request[A], block: (Request[A]) => Future[Result]) = block(request)
 
   }
+
+  def validateApiForm[T](form: Form[T])(success: T => Future[Result])(implicit request: Request[JsValue]): Future[Result] =
+    form.bindFromRequest.fold(form => {
+      Future.successful(Status(BAD_REQUEST).apply(toJson(FormErrorsDTO.fromFormErrors(form.errors))).as(JSON))
+    }, success)
 
 }

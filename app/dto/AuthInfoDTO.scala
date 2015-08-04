@@ -4,7 +4,7 @@ import play.api.libs.json.Json
 
 import models.User
 
-case class AuthInfoDTO(
+case class AuthInfoResultDTO(
     authenticated: Boolean,
     userId: String,
     name: String,
@@ -17,8 +17,8 @@ case class AuthInfoDTO(
 
 }
 
-object AuthInfoDTO {
+object AuthInfoResultDTO {
 
-  implicit val jsonFormat = Json.format[AuthInfoDTO]
+  implicit val jsonFormat = Json.format[AuthInfoResultDTO]
 
 }

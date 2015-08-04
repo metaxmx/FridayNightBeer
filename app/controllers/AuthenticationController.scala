@@ -4,39 +4,39 @@ import javax.inject.{ Inject, Singleton }
 
 import scala.concurrent.Future
 
-import play.api.Logger
+import play.api.data.Form
+import play.api.data.Forms.{ mapping, nonEmptyText }
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json.toJson
 import play.api.mvc.Controller
 
-import dto.{ AuthInfoDTO, LoginParams }
-import exceptions.ApiExceptions.badRequestException
+import dto.{ AuthInfoResultDTO, LoginRequestDTO }
 import models.User
 import services.{ PermissionService, SessionService, UserService }
 import util.PasswordEncoder
 
 @Singleton
 class AuthenticationController @Inject() (implicit val userService: UserService,
-                                val sessionService: SessionService,
-                                permissionService: PermissionService) extends Controller with SecuredController {
+                                          val sessionService: SessionService,
+                                          permissionService: PermissionService) extends Controller with SecuredController {
+
+  val loginForm = Form(
+    mapping(
+      "username" -> nonEmptyText,
+      "password" -> nonEmptyText)(LoginRequestDTO.apply)(LoginRequestDTO.unapply))
 
   def getAuthInfo = OptionalSessionApiAction {
     implicit request =>
-      Logger.info(request.maybeUser.toString())
       Ok(toJson(byAuthenticationStatus)).as("application/json")
   }
 
   def login = SessionApiAction.async(parse.json) {
-    request =>
-      request.body.validate[LoginParams].map {
-        loginParams =>
-          val passwordEncoded = PasswordEncoder encodePassword loginParams.password
-          userService.getUserByUsername(loginParams.username.toLowerCase) map {
-            userOpt =>
-              {
-                Logger.info(s"Found user ${userOpt}")
-                userOpt filter (_.password == passwordEncoded)
-              }
+    implicit request =>
+      validateApiForm(loginForm) {
+        loginRequest =>
+          val passwordEncoded = PasswordEncoder encodePassword loginRequest.password
+          userService.getUserByUsername(loginRequest.username.toLowerCase) map {
+            _ filter (_.password == passwordEncoded)
           } flatMap {
             case None => Future.successful(unauthenticated)
             case Some(user) => {
@@ -48,7 +48,7 @@ class AuthenticationController @Inject() (implicit val userService: UserService,
           } map {
             authInfoDto => Ok(toJson(authInfoDto))
           }
-      } getOrElse badRequestException
+      }
   }
 
   def logout = SessionApiAction.async {
@@ -59,9 +59,9 @@ class AuthenticationController @Inject() (implicit val userService: UserService,
       }
   }
 
-  private def unauthenticated = new AuthInfoDTO(permissionService.getAllowedGlobalPermissions(None).map(_.name))
+  private def unauthenticated = new AuthInfoResultDTO(permissionService.getAllowedGlobalPermissions(None).map(_.name))
 
-  private def authenticated(user: User) = new AuthInfoDTO(user, permissionService.getAllowedGlobalPermissions(Some(user)).map(_.name))
+  private def authenticated(user: User) = new AuthInfoResultDTO(user, permissionService.getAllowedGlobalPermissions(Some(user)).map(_.name))
 
   private def byAuthenticationStatus(implicit userOpt: Option[User]) = userOpt match {
     case None       => unauthenticated

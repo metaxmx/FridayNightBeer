@@ -14,6 +14,8 @@ import dto.ShowForumDTO
 import dto.ShowForumPost
 import models.ForumPermissions.Access
 import dto.ShowForumThread
+import models.GlobalPermissions.Forums
+import models.GlobalPermissions.Admin
 
 @Singleton
 class ForumsController @Inject() (implicit val userService: UserService,
@@ -26,19 +28,13 @@ class ForumsController @Inject() (implicit val userService: UserService,
 
   def getForums = OptionalSessionApiAction.async {
     implicit request =>
+      permissionService.requireGlobalPermission(Forums)
       getForumsData
   }
 
-  private def getForumsData(implicit userOpt: Option[User]) =
-    for {
-      categories <- forumCategoryService.getCategoriesForApi
-      forums <- forumService.getForumsByCategoryForApi
-      threads <- threadService.getThreadsByForumForApi
-      userIndex <- userService.getUserIndexForApi
-    } yield Ok(toJson(createListForums(categories, forums, threads, userIndex))).as(JSON)
-
   def showForum(id: Int) = OptionalSessionApiAction.async {
     implicit request =>
+      permissionService.requireGlobalPermission(Forums)
       for {
         forum <- forumService.getForumForApi(id)
         category <- forumCategoryService.getCategoryForApi(forum.category)
@@ -49,6 +45,7 @@ class ForumsController @Inject() (implicit val userService: UserService,
 
   def insertCategory = UserApiAction.async(parse.json) {
     implicit request =>
+      permissionService.requireGlobalPermissions(Admin, Forums)
       request.body.validate[InsertCategoryDTO].fold(
         error => Future.successful(BadRequest("Bad JSON format")),
         newCategoryDTO => {
@@ -68,6 +65,14 @@ class ForumsController @Inject() (implicit val userService: UserService,
           } yield result
         })
   }
+  
+  private def getForumsData(implicit userOpt: Option[User]) =
+    for {
+      categories <- forumCategoryService.getCategoriesForApi
+      forums <- forumService.getForumsByCategoryForApi
+      threads <- threadService.getThreadsByForumForApi
+      userIndex <- userService.getUserIndexForApi
+    } yield Ok(toJson(createListForums(categories, forums, threads, userIndex))).as(JSON)
 
   private def createListForums(allCategories: Seq[ForumCategory],
                                allForumsByCategory: Map[Int, Seq[Forum]],

@@ -12,7 +12,7 @@ import exceptions.ApiException
 import services.PermissionService
 
 @Singleton
-class Application @Inject() (uuidGenerator: UUIDGenerator,
+class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
                              sessionService: SessionService,
                              permissionService: PermissionService) extends Controller with AbstractController {
 
