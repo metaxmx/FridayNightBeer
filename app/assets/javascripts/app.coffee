@@ -31,6 +31,9 @@ angular.module('fnbApp.routeConfig', ['ngRoute'])
             .when('/login', {
                 templateUrl: '/assets/partials/login.html'
             })
+            .when('/admin/forum/configure', {
+                templateUrl: '/assets/partials/configureforums.html'
+            })
             .otherwise({redirectTo: '/'})
     .config ($locationProvider) ->
         $locationProvider.html5Mode({

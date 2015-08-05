@@ -266,6 +266,23 @@ html.modern-theme {
 				text-align: right;
 				border: 1px solid #dedede;
 				border-left: none;
+				list-style: none;
+				
+				.glyphicon {
+					color: #999999;
+					font-soze: 1.3rem;
+					margin-right: 6px;
+				}
+				
+				> li {
+					display: inline-block;
+					
+					+ li:before {
+						content: "/ \00a0"; // Unicode space added since inline-block means non-collapsing white-space
+						padding: 0 5px;
+						color: #cccccc;
+					}
+				}
 			}
 			
 		}

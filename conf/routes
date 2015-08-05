@@ -1,7 +1,6 @@
 # Routes
 # This file defines all application routes (Higher priority routes first)
 #
-# Note: @controllers syntax signifies the actual controller instance, retrieved via GlobalSettings.getController().
 # ~~~~
 
 # Single endpoint for serving AngularJS
@@ -13,6 +12,7 @@ GET     /login                      @controllers.ApplicationController.appPage
 GET     /forum/:id                  @controllers.ApplicationController.showForumPage(id: Int)
 GET     /forum/:id/newtopic         @controllers.ApplicationController.showNewTopicPage(id: Int)
 GET     /topic/:id                  @controllers.ApplicationController.showTopicPage(id: Int)
+GET     /admin/forum/configure      @controllers.ApplicationController.appPage
 
 # Files
 GET     /avatar/:id                 @controllers.DownloadController.downloadAvatar(id: Int)

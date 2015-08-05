@@ -1,0 +1,15 @@
+<div ng-controller="ConfigureForumsCtrl" class="view-configureforums">
+
+	<div class="view-header" ng-show="forumsStatus.successful">
+		<ol class="breadcrumb">
+			<li><a ng-href="/#/" site-title>Friday Night Beer</a></li>
+			<li><a ng-href="/#/">Forum</a></li>
+			<li class="active">Foren Verwalten</li>
+		</ol>
+	</div>
+	<div class="main-content" ng-show="forumsStatus.successful">
+		TODO
+	</div>
+	<div class="loading-spinner" ng-show="forumsStatus.loading"></div>
+	<alert type="danger" ng-show="forumsStatus.error">{{forumsStatus.errormessage}}</alert>
+</div>

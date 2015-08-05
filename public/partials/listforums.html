@@ -6,10 +6,16 @@
 				<li><a ng-href="/#/forum" site-title>Friday Night Beer</a></li>
 				<li class="active">Forum</li>
 			</ol>
-			<div class="headeroptions">
-				<a href="/">Suche</a> |
-				<a href="/">Foren verwalten</a>
-			</div>
+			<ul class="headeroptions">
+				<li ng-if="checkPermission('foo')">
+					<span class="glyphicon glyphicon-search"></span>
+					<a href="/">Suche</a>
+				</li>
+				<li ng-if="checkPermission('Admin')">
+					<span class="glyphicon glyphicon-wrench"></span>
+					<a ng-href="/#/admin/forum/configure">Foren verwalten</a>
+				</li>
+			</ul>
 		</div>
 	</div>
 	<div class="main-content" ng-show="forumsStatus.successful">
