@@ -8,6 +8,7 @@
 @import "page-listforums.less";
 @import "page-showforum.less";
 @import "page-showtopic.less";
+@import "page-configureforums.less";
 
 html.modern-theme {
 	margin: 0;
@@ -321,6 +322,40 @@ html.modern-theme {
 		background-image: url(@modern-img-spinner);
 		background-position: 50% 50%;
 		background-repeat: no-repeat;
+	}
+	
+	.btn-icon {
+		display: inline-block;
+		height: 16px;
+		width: 16px;
+		text-align: center;
+		font-size: 1.4rem;
+		font-weight: normal;
+		cursor: pointer;
+	}
+	
+	.btn-icon-ok {
+		.glyphicon;
+		.btn-icon;
+		color: #43b31b;
+		&:hover {
+			color: #45db0f;
+		}
+		&:before {
+			content: "\e013";
+		}
+	}
+	
+	.btn-icon-cancel {
+		.glyphicon;
+		.btn-icon;
+		color: #b31b1b;
+		&:hover {
+			color: #fe0606;
+		}
+		&:before {
+			content: "\e014";
+		}
 	}
 	
 }

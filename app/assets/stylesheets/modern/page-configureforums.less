@@ -1,0 +1,45 @@
+/*
+ * Page: Configure Forums in Modern Theme
+ */
+
+@import "variables.less";
+@import "../mixins.less";
+
+html.modern-theme {
+
+	div.configureforums-categoryheader {
+		color: #333333;
+		background-color: #ffffff;
+		font-weight: bold;
+	}
+	
+	div.configureforums-categoryforums {
+		margin: 0;
+		padding: 0 0 0 16px;
+	}
+	
+	div.configureforums-forum {
+		color: #666666;
+		background-color: #eeeeee;
+		font-weight: normal;
+	}
+	
+	div.configureforums-categoryheader,
+	div.configureforums-forum {
+		.box-shadow(3px 3px 5px, rgba(0, 0, 0, 0.08));
+		border: 1px solid #bbbbbb;
+		padding: 8px;
+		
+		.icon-restricted {
+			display: block;
+			height: 16px;
+			width: 16px;
+			text-align: center;
+			float: right;
+			color: #f3c91f;
+			.text-shadow(1px 1px 2px, @modern-color-shadow);
+			cursor: help;
+		}
+	}
+
+}
