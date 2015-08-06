@@ -10,8 +10,8 @@
 	<div class="main-content" ng-show="forumsStatus.successful">
 		<div id="configureforums">
 			<div class="configureforums-category" ng-repeat="category in categories">
-				<div class="configureforums-categoryheader">
-					<span ng-hide="category.edited" ng-click="startEdit(category, 'name')">{{category.name}}</span>
+				<div class="configureforums-categoryheader edit-container">
+					<label ng-hide="category.edited" ng-click="startEdit(category, 'name', $event)">{{category.name}}</label>
 					<input ng-show="category.edited" ng-model="category.name" type="text" />
 					<span ng-show="category.edited" class="btn-icon-ok" ng-click="saveEdit(category)"></span>
 					<span ng-show="category.edited" class="btn-icon-cancel" ng-click="cancelEdit(category, 'name')"></span>
@@ -20,8 +20,11 @@
 					</span>
 				</div>
 				<div class="configureforums-categoryforums">
-					<div class="configureforums-forum" ng-repeat="forum in category.forums">
-						<strong>{{forum.name}}</strong>
+					<div class="configureforums-forum edit-container" ng-repeat="forum in category.forums">
+						<label ng-hide="forum.edited" ng-click="startEdit(forum, 'name', $event)">{{forum.name}}</label>
+						<input ng-show="forum.edited" ng-model="forum.name" type="text" />
+						<span ng-show="forum.edited" class="btn-icon-ok" ng-click="saveEdit(forum)"></span>
+						<span ng-show="forum.edited" class="btn-icon-cancel" ng-click="cancelEdit(forum, 'name')"></span>
 						<span class="icon-restricted">
 							<span class="glyphicon glyphicon-lock"></span>
 						</span>
