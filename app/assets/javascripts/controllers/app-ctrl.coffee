@@ -2,19 +2,12 @@
 class AppCtrl
 
     constructor: (@$log, @$scope, @AuthenticationService) ->
-        @$log.debug "constructing AppCtrl"
-        @$scope.authdata = null
-        @$scope.authenticated = false
+        [@$scope.authenticated, @$scope.authdata] = [null, false]
         @$scope.refreshAuth = => @refreshNavi()
         @$scope.checkPermission = (permission) => @checkPermission(permission)
-        @initNavi()
+        @AuthenticationService.fetchAuthData().then => @refreshNavi()
 
-    initNavi: () ->
-        @$log.debug "initNavi()"
-        @AuthenticationService.updateAuthData => @refreshNavi()
-
-    refreshNavi: () ->
-        @$log.debug "refreshNavi()"
+    refreshNavi: ->
         [@$scope.authenticated, @$scope.authdata] = [@AuthenticationService.authenticated, @AuthenticationService.authdata]
 
     checkPermission: (permission) ->

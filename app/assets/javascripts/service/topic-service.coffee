@@ -10,7 +10,7 @@ class TopicService
     loadTopic: (id) ->
         @$log.info "Fetch topic $id"
         deferred = @$q.defer()
-        @$http.get('/api/topic/' + id)
+        @$http.get('/api/1/topic/' + id)
         .success((data, status, headers) =>
                 @$log.info("Successfully got topic - status #{status}")
                 deferred.resolve(data)
@@ -24,7 +24,7 @@ class TopicService
     insertPost: (id, form) ->
         @$log.info "Insert new post for topic $id"
         deferred = @$q.defer()
-        @$http.post('/api/topic/' + id, form)
+        @$http.post('/api/1/topic/' + id, form)
         .success((data, status, headers) =>
                 @$log.info("Successfully inserted post for topic - status #{status}")
                 deferred.resolve(data)

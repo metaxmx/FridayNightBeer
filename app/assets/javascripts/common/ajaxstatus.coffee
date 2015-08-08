@@ -1,25 +1,27 @@
 
 class AjaxStatus
 
-    constructor: ->
-        @succeed()
+    constructor: (@onSucceed) ->
+        @setStatus(false, false, false)
+        @reset()
+
+    setStatus: (@loading, @error, @successful) ->
+
+    reset: ->
+        @errorData = null
+        @statusCode = null
+        @headers = {}
 
     load: ->
-        @loading = true
-        @error = false
-        @successful = false
-        @errormessage = null
+        @reset()
+        @setStatus(true, false, false)
 
-    succeed: ->
-        @loading = false
-        @error = false
-        @successful = true
-        @errormessage = null
+    succeed: (data, @statusCode, @headers) ->
+        @setStatus(false, false, true)
+        @errorData = null
+        @onSucceed?(data)
 
-    fail: (msg) ->
-        @loading = false
-        @error = true
-        @successful = false
-        @errormessage = msg
+    fail: (@errorData, @statusCode, @headers) ->
+        @setStatus(false, true, false)
 
 @AjaxStatus = AjaxStatus

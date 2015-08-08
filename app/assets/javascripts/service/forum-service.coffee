@@ -10,7 +10,21 @@ class ForumService
     loadForums: () ->
         @$log.info "Fetch forums"
         deferred = @$q.defer()
-        @$http.get('/api/forums/list')
+        @$http.get('/api/1/forums/list')
+        .success((data, status, headers) =>
+                @$log.info("Successfully got forums - status #{status}")
+                deferred.resolve(data)
+            )
+        .error((data, status, headers) =>
+                @$log.error("Failed to get forums - status #{status}")
+                deferred.reject(data)
+            )
+        deferred.promise
+
+    loadConfigureForums: () ->
+        @$log.info "Fetch configure forums"
+        deferred = @$q.defer()
+        @$http.get('/api/1/forums/configure')
         .success((data, status, headers) =>
                 @$log.info("Successfully got forums - status #{status}")
                 deferred.resolve(data)
@@ -24,7 +38,7 @@ class ForumService
     loadForum: (id) ->
         @$log.info "Fetch forum $id"
         deferred = @$q.defer()
-        @$http.get('/api/forum/' + id)
+        @$http.get('/api/1/forum/' + id)
         .success((data, status, headers) =>
                 @$log.info("Successfully got forum - status #{status}")
                 deferred.resolve(data)
@@ -38,7 +52,7 @@ class ForumService
     initNewTopic: (id) ->
         @$log.info "Fetch forum $id"
         deferred = @$q.defer()
-        @$http.get('/api/newtopic/' + id)
+        @$http.get('/api/1/newtopic/' + id)
         .success((data, status, headers) =>
                 @$log.info("Successfully got forum - status #{status}")
                 deferred.resolve(data)
@@ -52,7 +66,7 @@ class ForumService
     newTopic: (id, form) ->
         @$log.info "Create new topic for forum $id"
         deferred = @$q.defer()
-        @$http.post('/api/newtopic/' + id, form)
+        @$http.post('/api/1/newtopic/' + id, form)
         .success((data, status, headers) =>
                 @$log.info("Successfully created topic - status #{status}")
                 deferred.resolve(data)
