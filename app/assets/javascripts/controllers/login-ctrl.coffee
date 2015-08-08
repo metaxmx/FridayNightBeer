@@ -11,7 +11,6 @@ class LoginCtrl
     login: ->
         @AuthenticationService.login(@$scope.loginForm).then(
             (data) =>
-                @$log.debug "Promise returned #{data}"
                 if data.authenticated
                     @$scope.message = null
                     @$scope.loginForm = {}

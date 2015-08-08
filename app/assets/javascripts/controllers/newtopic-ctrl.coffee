@@ -1,40 +1,21 @@
 
 class NewTopicCtrl
 
-    constructor: (@$log, @$scope, @$routeParams, @ForumService) ->
-        @$log.debug "constructing ShowForumCtrl"
-        @$scope.newTopic = => @newTopic()
+    constructor: (@$log, @$scope, @$routeParams, @$location, @ForumService) ->
         @$scope.forum = {}
-        @$scope.message = null
+        @$scope.forumStatus = new AjaxStatus (data) => @$scope.forum = data
+        @$scope.insertStatus = new AjaxStatus (data) => @topicInserted(data)
         @$scope.newTopicData =
             title: "Dummy Title"
             htmlContent: "<p>Foo</p>"
-        @getForum()
+        @$scope.newTopic = => @newTopic()
+        @ForumService.initNewTopic(@$routeParams.id, @$scope.forumStatus)
 
-    getForum: () ->
-        @$log.debug "getForum()"
-        @ForumService.initNewTopic(@$routeParams.id)
-        .then(
-            (data) =>
-                @$log.debug "Promise returned Forum"
-                @$scope.forum = data
-            ,
-            (error) =>
-                @$log.error "Unable to get Forums: #{error}"
-                @$scope.forum = {}
-            )
-
-    newTopic: () ->
-        @$log.debug "createTopic()"
+    newTopic: ->
         @$scope.message = null
-        @ForumService.newTopic(@$routeParams.id, @$scope.newTopicData)
-        .then(
-            (data) =>
-                @$log.debug "Promise returned success"
-            ,
-            (error) =>
-                @$log.error "Unable to create new topic: #{error}"
-                @$scope.message = error
-            )
+        @ForumService.newTopic(@$routeParams.id, @$scope.newTopicData, @$scope.insertStatus)
+
+    topicInserted: (data) ->
+        @$location.path("/topic/" + data.id)
 
 controllersModule.controller('NewTopicCtrl', NewTopicCtrl)

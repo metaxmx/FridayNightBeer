@@ -26,32 +26,14 @@ class PropertyEdit
 class ConfigureForumsCtrl
 
     constructor: (@$log, @$scope, @ForumService) ->
-        @$log.debug "constructing ForumsCtrl"
         @$scope.categories = []
         @edits = {}
-        @$scope.forumsStatus = new AjaxStatus
+        @$scope.forumsStatus = new AjaxStatus (data) => @$scope.categories = data
         @$scope.categoryEdit = (category) => @getEditCategoryName(category)
 #        @$scope.startEdit = (entity, prop, event) => @startEdit(entity, prop, event)
 #        @$scope.saveEdit = (entity, prop) => @saveEdit(entity, prop)
 #        @$scope.cancelEdit = (entity) => @cancelEdit(entity)
-        @getAllForums()
-
-    getAllForums: () ->
-        @$log.debug "getAllForums()"
-        @$scope.forumsStatus.load()
-        @edits = {}
-        @ForumService.loadConfigureForums()
-        .then(
-            (data) =>
-                @$log.debug "Promise returned #{data.length} Forums/Categories"
-                @$scope.categories = data
-                @$scope.forumsStatus.succeed()
-            ,
-            (error) =>
-                @$log.error "Unable to get Forums: #{error}"
-                @$scope.categories = []
-                @$scope.forumsStatus.fail(error)
-            )
+        @ForumService.loadConfigureForums(@$scope.forumsStatus)
 
     getEditCategoryName: (category) ->
         result = @edits['cat_name_' + category.id]

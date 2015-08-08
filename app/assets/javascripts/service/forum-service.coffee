@@ -1,80 +1,22 @@
 
-class ForumService
-
-    @headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
-    @defaultConfig = { headers: @headers }
+class ForumService extends ApiService
 
     constructor: (@$log, @$http, @$q) ->
-        @$log.info "constructing ForumService"
+        super($log, $http, $q)
 
-    loadForums: () ->
-        @$log.info "Fetch forums"
-        deferred = @$q.defer()
-        @$http.get('/api/1/forums/list')
-        .success((data, status, headers) =>
-                @$log.info("Successfully got forums - status #{status}")
-                deferred.resolve(data)
-            )
-        .error((data, status, headers) =>
-                @$log.error("Failed to get forums - status #{status}")
-                deferred.reject(data)
-            )
-        deferred.promise
+    loadForums: (ajaxStatus) ->
+        @apiGet('/forums/list', ajaxStatus)
 
-    loadConfigureForums: () ->
-        @$log.info "Fetch configure forums"
-        deferred = @$q.defer()
-        @$http.get('/api/1/forums/configure')
-        .success((data, status, headers) =>
-                @$log.info("Successfully got forums - status #{status}")
-                deferred.resolve(data)
-            )
-        .error((data, status, headers) =>
-                @$log.error("Failed to get forums - status #{status}")
-                deferred.reject(data)
-            )
-        deferred.promise
+    loadConfigureForums: (ajaxStatus) ->
+        @apiGet('/forums/configure', ajaxStatus)
 
-    loadForum: (id) ->
-        @$log.info "Fetch forum $id"
-        deferred = @$q.defer()
-        @$http.get('/api/1/forum/' + id)
-        .success((data, status, headers) =>
-                @$log.info("Successfully got forum - status #{status}")
-                deferred.resolve(data)
-            )
-        .error((data, status, headers) =>
-                @$log.error("Failed to get forum - status #{status}")
-                deferred.reject(data)
-            )
-        deferred.promise
+    loadForum: (id, ajaxStatus) ->
+        @apiGet('/forum/' + id, ajaxStatus)
 
-    initNewTopic: (id) ->
-        @$log.info "Fetch forum $id"
-        deferred = @$q.defer()
-        @$http.get('/api/1/newtopic/' + id)
-        .success((data, status, headers) =>
-                @$log.info("Successfully got forum - status #{status}")
-                deferred.resolve(data)
-            )
-        .error((data, status, headers) =>
-                @$log.error("Failed to get forum - status #{status}")
-                deferred.reject(data)
-            )
-        deferred.promise
+    initNewTopic: (id, ajaxStatus) ->
+        @apiGet('/newtopic/' + id, ajaxStatus)
 
-    newTopic: (id, form) ->
-        @$log.info "Create new topic for forum $id"
-        deferred = @$q.defer()
-        @$http.post('/api/1/newtopic/' + id, form)
-        .success((data, status, headers) =>
-                @$log.info("Successfully created topic - status #{status}")
-                deferred.resolve(data)
-            )
-        .error((data, status, headers) =>
-                @$log.error("Failed to create topic - status #{status}")
-                deferred.reject(data)
-            )
-        deferred.promise
+    newTopic: (id, form, ajaxStatus) ->
+        @apiPost('/newtopic/' + id, form, ajaxStatus)
 
 servicesModule.service('ForumService', ForumService)

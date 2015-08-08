@@ -2,7 +2,6 @@
 class ShowTopicCtrl
 
     constructor: (@$log, @$scope, @$routeParams, @TopicService) ->
-        @$log.debug "constructing ShowTopicCtrl"
         @$scope.topic = {}
         @$scope.topicStatus = new AjaxStatus
         @$scope.insertPost =
