@@ -58,7 +58,7 @@
 	<form id="insertPostForm" name="insertPostForm" class="form-horizontal form-dialog" role="form" ng-if="insertPost.visible">
 
 		<h2 class="form-header">Antworten</h2>
-		<div class="form-body" ng-show="insertPost.status.successful || insertPost.status.error">
+		<div class="form-body" ng-hide="insertPost.status.loading">
 
 			<alert type="danger" ng-show="insertPost.status.error" close="clearInsertPostErrors()">{{insertPost.status.errormessage}}</alert>
 

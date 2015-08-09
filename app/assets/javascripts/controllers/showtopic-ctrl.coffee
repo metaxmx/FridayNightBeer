@@ -3,58 +3,33 @@ class ShowTopicCtrl
 
     constructor: (@$log, @$scope, @$routeParams, @TopicService) ->
         @$scope.topic = {}
-        @$scope.topicStatus = new AjaxStatus
+        @$scope.topicStatus = new AjaxStatus (data) => @$scope.topic = data
         @$scope.insertPost =
             visible: false
             form: {}
-            status: new AjaxStatus
+            status: new AjaxStatus (data) => @afterPostInserted(data)
             execute: => @insertPost()
         @$scope.showInsertPost = => @showInsertPost()
         @$scope.hideInsertPost = => @hideInsertPost()
         @$scope.clearInsertPostErrors = => @clearInsertPostErrors()
-        @getTopic()
+        @TopicService.loadTopic(@$routeParams.id, @$scope.topicStatus)
 
-    getTopic: () ->
-        @$log.debug "getTopic()"
-        @$scope.topicStatus.load()
-        @TopicService.loadTopic(@$routeParams.id)
-        .then(
-            (data) =>
-                @$log.debug "Promise returned Topic"
-                @$scope.topic = data
-                @$scope.topicStatus.succeed()
-            ,
-            (error) =>
-                @$log.error "Unable to get Topic: #{error}"
-                @$scope.topic = {}
-                @$scope.topicStatus.fail(error)
-            )
-
-    showInsertPost: () ->
+    showInsertPost: ->
         @$scope.insertPost.visible = true
         @$scope.insertPost.form = {}
-        @$scope.insertPost.status.succeed()
+        @$scope.insertPost.status.reset()
 
-    hideInsertPost: () ->
+    hideInsertPost: ->
         @$scope.insertPost.visible = false
 
-    clearInsertPostErrors: () ->
+    clearInsertPostErrors: ->
         @$scope.insertPost.status.succeed()
 
-    insertPost: () ->
-        @$log.debug "insertPost()"
-        @$scope.insertPost.status.load()
-        @TopicService.insertPost(@$routeParams.id, @$scope.insertPost.form)
-        .then(
-            (data) =>
-                @$log.debug "Promise returned Success"
-                @$scope.topic = data
-                @$scope.insertPost.status.succeed()
-                @hideInsertPost()
-            ,
-            (error) =>
-                @$log.error "Unable to execute: #{error}"
-                @$scope.insertPost.status.fail(error)
-            )
+    afterPostInserted: (data) ->
+        @$scope.topic = data
+        @hideInsertPost()
+
+    insertPost: ->
+        @TopicService.insertPost(@$routeParams.id, @$scope.insertPost.form, @$scope.insertPost.status)
 
 controllersModule.controller('ShowTopicCtrl', ShowTopicCtrl)
