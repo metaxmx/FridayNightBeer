@@ -10,24 +10,28 @@ import models.UserSession
 import services.{ SessionService, Themes, UUIDGenerator }
 import exceptions.ApiException
 import services.PermissionService
+import services.SettingsService
 
 @Singleton
 class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
                              sessionService: SessionService,
-                             permissionService: PermissionService) extends Controller with AbstractController {
+                             permissionService: PermissionService,
+                             settingsService: SettingsService) extends Controller with AbstractController {
 
   def appPage = Action.async {
     implicit request =>
+      val theme = Themes.defaultTheme
+      val settings = settingsService.asDto
       parseSessionKey.fold {
         // No cookie with authkey found - generate one
         val sessionKey = uuidGenerator.generate.toString
         ensureSessionActive(sessionKey) map { _ =>
-          Ok(views.html.app(Themes.defaultTheme)).withSession(fnbSessionHeaderName -> sessionKey)
+          Ok(views.html.app(theme, settings)).withSession(fnbSessionHeaderName -> sessionKey)
         }
       } {
         sessionKey =>
           ensureSessionActive(sessionKey) map { _ =>
-            Ok(views.html.app(Themes.defaultTheme))
+            Ok(views.html.app(theme, settings))
           }
       }
   }

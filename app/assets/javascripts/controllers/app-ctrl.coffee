@@ -1,10 +1,11 @@
 
 class AppCtrl
 
-    constructor: (@$log, @$scope, @AuthenticationService) ->
+    constructor: (@$log, @$scope, @AuthenticationService, fnbSettings) ->
         [@$scope.authenticated, @$scope.authdata] = [null, false]
         @$scope.refreshAuth = => @refreshNavi()
         @$scope.checkPermission = (permission) => @checkPermission(permission)
+        @$scope.settings = fnbSettings
         @AuthenticationService.fetchAuthData().then => @refreshNavi()
 
     refreshNavi: ->

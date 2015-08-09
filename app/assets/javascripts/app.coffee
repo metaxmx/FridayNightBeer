@@ -31,6 +31,9 @@ angular.module('fnbApp.routeConfig', ['ngRoute'])
             .when('/login', {
                 templateUrl: '/assets/partials/login.html'
             })
+            .when('/register', {
+                templateUrl: '/assets/partials/register.html'
+            })
             .when('/admin/forum/configure', {
                 templateUrl: '/assets/partials/configureforums.html'
             })

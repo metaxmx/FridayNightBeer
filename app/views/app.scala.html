@@ -1,7 +1,7 @@
 @* AngularJS Application Template *@
 @import theme.Theme
-@import services.Settings
-@(theme: Theme)
+@import services.SettingsDTO
+@(theme: Theme, settings: SettingsDTO)
 <!DOCTYPE html>
 <html class="no-js modern-theme" lang="en" ng-app="fnbApp" ng-controller="AppCtrl">
 <head>
@@ -12,7 +12,7 @@
 	<meta http-equiv="pragma" content="no-cache">
 	<meta http-equiv="expires" content="Mon, 8 Aug 2006 00:00:00 GMT">
 
-	<title>@Settings.siteTitle</title>
+	<title>@settings.siteTitle</title>
 
 	<link type="text/css" rel="stylesheet" href="@routes.Assets.at("lib/bootstrap/css/bootstrap.css")" />
 	<link type="text/css" rel="stylesheet" href="@routes.Assets.at("lib/textAngular/textAngular.css")" />
@@ -20,7 +20,7 @@
 
 	<link type="text/css" rel="stylesheet" href="@routes.Assets.at("stylesheets/fnb.css")" />
 
-	<script type="text/javascript">window.fnbSettings = @play.twirl.api.Html(Settings.asJson);</script>
+	<script type="text/javascript">window.fnbSettings = @play.twirl.api.Html(settings.toJson);</script>
 	<script type="text/javascript" src="@routes.Assets.at("lib/jquery/jquery.min.js")"></script>
 	<script type="text/javascript" src="@routes.Assets.at("lib/bootstrap/js/bootstrap.min.js")"></script>
 	<script type="text/javascript" src="@routes.Assets.at("lib/angularjs/angular.js")"></script>
@@ -61,7 +61,7 @@
 <body>
 	<div id="content-header-wrapper">
 		<header>
-			<h1><a ng-href="/#/" site-title>Friday Night Beer</a></h1>
+			<h1><a ng-href="/#/" site-title>@settings.siteTitle</a></h1>
 			<a id="logo" ng-href="/#/">
 				<img src="@routes.Assets.at("appdata/logo.png")" alt="" width="64" height="64">
 			</a>
@@ -75,6 +75,7 @@
 				</ul>
 				<ul id="usermenu">
 					<li ng-if="!authenticated"><a ng-href="/#/login">Login</a></li>
+					<li ng-if="!authenticated && settings.registerEnabled"><a ng-href="/#/register">Register</a></li>
 					<li ng-if="authenticated" onclick="window.notimplemented()"><a href="/">Settings</a></li>
 					<li ng-if="authenticated"><a ng-href="/#/login">Logout</a></li>
 				</ul>
