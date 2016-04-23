@@ -1,10 +1,10 @@
 name := """fnb-play"""
 
-version := "0.1-SNAPSHOT"
+version := "0.2"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
-lazy val fnbDatamodel = (project in file("modules/datamodel"))
+lazy val fnbDatamodel = project in file("modules/datamodel")
 
 lazy val fnbDefaultTheme = (project in file("modules/default-theme")).dependsOn(fnbDatamodel)
 
@@ -25,7 +25,7 @@ libraryDependencies ++= Seq(
   "javax.inject" % "javax.inject" % "1",
   "joda-time" % "joda-time" % "2.8.1",
   "commons-io" % "commons-io" % "2.4",
-  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.4.play24",
+  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.11",
   "org.webjars" % "bootstrap" % "3.3.4",
   "org.webjars" % "jquery" % "1.11.3",
   "org.webjars" % "angularjs" % "1.3.15",

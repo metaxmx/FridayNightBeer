@@ -1,8 +1,8 @@
 name := """fnb-theme-default"""
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
-lazy val fnbDatamodel = (project in file("../datamodel"))
+lazy val fnbDatamodel = project in file("../datamodel")
 
 lazy val fnbDefaultTheme = (project in file("."))
 	.dependsOn(fnbDatamodel)

@@ -2,14 +2,13 @@ package dao
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
 import play.modules.reactivemongo.ReactiveMongoComponents
-
 import exceptions.QueryException
 import reactivemongo.api.ReadPreference.Primary
 import reactivemongo.api.commands.DefaultWriteResult
 import reactivemongo.bson.BSONDocument
 import reactivemongo.bson.Producer.nameValue2Producer
+import reactivemongo.core.errors.DatabaseException
 
 trait GenericNumericKeyDAO[T] extends GenericDAO[T, Int] {
 
@@ -24,7 +23,7 @@ trait GenericNumericKeyDAO[T] extends GenericDAO[T, Int] {
         case _ => cache.remove
       } recoverWith {
         // Duplicate key - try again
-        case DefaultWriteResult(false, _, _, _, Some(11000), _) => insertOptimistic(entity)
+        case e: DatabaseException if e.code contains 11000 => insertOptimistic(entity)
       } recover {
         case exc => throw new QueryException(s"Error inserting to collection $getCollectionName", exc)
       }
