@@ -2,37 +2,38 @@ package services
 
 import java.io.File
 import java.nio.charset.StandardCharsets.UTF_8
+import javax.inject.Singleton
 
-import javax.inject.{ Inject, Singleton }
-
-import org.apache.commons.io.FileUtils.{ readFileToString, writeStringToFile }
-
-import play.api.{ Configuration, Logger }
-import play.api.libs.json.Json
-
+import org.apache.commons.io.FileUtils.{readFileToString, writeStringToFile}
+import play.api.Logger
 import exceptions.ApiExceptions.accessDeniedException
-import models.{ AccessRule, Forum, ForumCategory, ForumPermissions }
-import models.{ PermissionConfiguration, User }
-import models.ForumPermissions.{ Access, Close, ForumPermission, Sticky }
+import models.{AccessRule, Forum, ForumCategory, ForumPermissions}
+import models.{PermissionConfiguration, User}
+import models.ForumPermissions.{Access, Close, ForumPermission, Sticky}
 import models.GlobalPermissions
-import models.GlobalPermissions.{ Admin, Forums, GlobalPermission }
+import models.GlobalPermissions.{Admin, Forums, GlobalPermission}
+import org.json4s.{DefaultFormats, Extraction}
+import org.json4s.native._
 
 @Singleton
-class PermissionService @Inject() (configuration: Configuration) {
+class PermissionService {
 
+  implicit val formats = DefaultFormats
+
+  // TODO: Move to DB
   val permissionsFile = new File("appdata/permissions.json")
 
   val permissions = validateAndAddDefaultPermissions(readPermissions())
 
   private def readPermissions(): PermissionConfiguration =
     if (permissionsFile.exists)
-      Json.parse(readFileToString(permissionsFile, UTF_8)).as[PermissionConfiguration]
+      JsonParser.parse(readFileToString(permissionsFile, UTF_8)).extract[PermissionConfiguration]
     else
       PermissionConfiguration(Seq(), Seq())
 
   def savePermissions() = {
     Logger.info("Saving permissions to file")
-    writeStringToFile(permissionsFile, Json.prettyPrint(Json.toJson(permissions)))
+    writeStringToFile(permissionsFile, Serialization.writePretty(Extraction.decompose(permissions)))
   }
 
   // Save permissions of service initializcation

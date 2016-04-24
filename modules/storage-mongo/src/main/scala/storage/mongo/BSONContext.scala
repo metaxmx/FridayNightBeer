@@ -5,8 +5,8 @@ import reactivemongo.bson.{BSONDocumentReader, BSONDocumentWriter}
 
 trait BSONContext[T] {
 
-  def bsonWriter: BSONDocumentWriter[T]
+  implicit val bsonWriter: BSONDocumentWriter[T]
 
-  def bsonReader: BSONDocumentReader[T]
+  implicit val bsonReader: BSONDocumentReader[T]
 
 }

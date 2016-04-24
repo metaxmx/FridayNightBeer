@@ -7,7 +7,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json.toJson
 import play.api.mvc.Controller
 import dto.{ InsertCategoryDTO, ListForumsCategory, ListForumsForum, ListForumsLastPost }
-import models.{ Forum, ForumCategory, ForumPermissions, Thread, User }
+import models.{ Forum, ForumCategory, Thread, User }
 import services.{ ForumCategoryService, ForumService, PermissionService, PostService, SessionService, ThreadService, UserService }
 import util.Joda.dateTimeOrdering
 import dto.ShowForumDTO
@@ -16,7 +16,6 @@ import models.ForumPermissions.Access
 import dto.ShowForumThread
 import models.GlobalPermissions.Forums
 import models.GlobalPermissions.Admin
-import models.GlobalPermissions
 import dto.ConfigureForumsForum
 import dto.ConfigureForumsCategory
 
@@ -52,7 +51,7 @@ class ForumsController @Inject() (implicit val userService: UserService,
       } yield Ok(toJson(createShowForum(forum, category, threads, userIndex))).as(JSON)
   }
 
-  def insertCategory = UserApiAction.async(parse.json) {
+  def insertCategory() = UserApiAction.async(parse.json) {
     implicit request =>
       permissionService.requireGlobalPermissions(Admin, Forums)
       request.body.validate[InsertCategoryDTO].fold(
@@ -112,7 +111,7 @@ class ForumsController @Inject() (implicit val userService: UserService,
         }
 
         ListForumsCategory(category.name, forumDtos)
-    } filter { !_.forums.isEmpty }
+    } filter { _.forums.nonEmpty }
 
   private def createConfigureForums(allCategories: Seq[ForumCategory],
                                     allForumsByCategory: Map[String, Seq[Forum]],

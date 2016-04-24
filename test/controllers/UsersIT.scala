@@ -21,13 +21,14 @@ class UsersIT extends Specification {
   "Users" should {
 
     "insert a valid json" in {
-      running(FakeApplication()) {
+      val app = FakeApplication()
+      running(app) {
         val request = FakeRequest.apply(POST, "/user").withJsonBody(Json.obj(
           "firstName" -> "Jack",
           "lastName" -> "London",
           "age" -> 27,
           "active" -> true))
-        val response = route(request)
+        val response = route(app, request)
         response.isDefined mustEqual true
         val result = Await.result(response.get, timeout)
         result.header.status must equalTo(CREATED)
@@ -35,12 +36,13 @@ class UsersIT extends Specification {
     }
 
     "fail inserting a non valid json" in {
-      running(FakeApplication()) {
+      val app = FakeApplication()
+      running(app) {
         val request = FakeRequest.apply(POST, "/user").withJsonBody(Json.obj(
           "firstName" -> 98,
           "lastName" -> "London",
           "age" -> 27))
-        val response = route(request)
+        val response = route(app, request)
         response.isDefined mustEqual true
         val result = Await.result(response.get, timeout)
         contentAsString(response.get) mustEqual "invalid json"
@@ -49,13 +51,14 @@ class UsersIT extends Specification {
     }
 
     "update a valid json" in {
-      running(FakeApplication()) {
+      val app = FakeApplication()
+      running(app) {
         val request = FakeRequest.apply(PUT, "/user/Jack/London").withJsonBody(Json.obj(
           "firstName" -> "Jack",
           "lastName" -> "London",
           "age" -> 27,
           "active" -> true))
-        val response = route(request)
+        val response = route(app, request)
         response.isDefined mustEqual true
         val result = Await.result(response.get, timeout)
         result.header.status must equalTo(CREATED)
@@ -63,12 +66,13 @@ class UsersIT extends Specification {
     }
 
     "fail updating a non valid json" in {
-      running(FakeApplication()) {
+      val app = FakeApplication()
+      running(app) {
         val request = FakeRequest.apply(PUT, "/user/Jack/London").withJsonBody(Json.obj(
           "firstName" -> "Jack",
           "lastName" -> "London",
           "age" -> 27))
-        val response = route(request)
+        val response = route(app, request)
         response.isDefined mustEqual true
         val result = Await.result(response.get, timeout)
         contentAsString(response.get) mustEqual "invalid json"

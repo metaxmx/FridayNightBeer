@@ -24,10 +24,6 @@ abstract class MongoGenericDAO[T <: BaseModel[T]](cacheApi: CacheApi, collection
 
   protected def cachePrefix = collectionName
 
-  protected lazy implicit val implicitBsonReader = bsonReader
-
-  protected lazy implicit val implicitBsonWriter = bsonWriter
-
   protected val cache = new BaseModelMapCache[T](cacheApi, cachePrefix, cacheDuration)
 
   implicit def collection = reactiveMongoApi.db.collection[BSONCollection](collectionName)
