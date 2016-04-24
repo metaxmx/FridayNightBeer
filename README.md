@@ -1,8 +1,8 @@
 Friday Night Beer
 =================
 
-Author: Christian Simon <simon@illucit.com>  
-Copyright: illucIT Software GmbH  
+Author: Christian Simon (<simon@illucit.com>)  
+Copyright: [illucIT Software GmbH](https://www.illucit.com)  
 Version 0.1 Alpha (In Progress)
 
 About
@@ -15,8 +15,8 @@ Requirements
 ------------
 
 * Any OS with Java Support
-* Java 1.6
-* Typesafe Activator
+* Java 1.8
+* Lightbend Activator or SBT
 * MongoDB
 * Apache HTTPD (Optional as Proxy)
 
@@ -24,25 +24,25 @@ Installation
 ------------
 
 * Install and start MongoDB Server
-* Install Java Development Toolkit (JDK), at least version 1.6
-* Install Typesafe Activator
+* Install Java Development Toolkit (JDK), at least version 1.8
+* Install Lightbend Activator *or* install sbt (Scala Build Tool)
 * Checkout FNB sourcecode to target directory
   * Create directory `appdata`, writeable for application user
   * Copy application configuration `cp conf/application.conf conf/instance.conf`,
     change application settings (database settings, fnb settings) to your needs and
     remove all unchanged properties and the include statement
   * Copy public application assets: `cp public/appdata_template public/appdata` and change to your needs (e.g. favicon, logo, ...)
-* Run `activator`
-  * Activator will download dependencies with `sbt` (Scala build tool)
-  * In the interactive shell, execute `run` to start the Play! application
+* Run `activator` or `sbt`
+  * Activator/sbt will download project dependencies
+  * In the interactive shell, execute `run` to start the Play application
 
 Software Used
 -------------
 
-* [Scala](http://www.scala-lang.org/) Version 2.11.7
-* [SBT](http://www.scala-sbt.org/) (Scala Build Tool) Version 0.13.8
-* [Play! Framework](https://www.playframework.com/) Version 2.4.2
-* [ReactiveMongo](http://reactivemongo.org/) Version 0.11.4
+* [Scala](http://www.scala-lang.org/) Version 2.11.8
+* [SBT](http://www.scala-sbt.org/) (Scala Build Tool) Version 0.13.11
+* [Play Framework](https://www.playframework.com/) Version 2.5.2
+* [ReactiveMongo](http://reactivemongo.org/) Version 0.11.11
 * [AngularJS](https://angularjs.org/) Version 1.3.15
 * [Bootstrap](http://getbootstrap.com/) Version 3.3.4
 * Diverse general libraries and utilities: jQuery, Guice, Guava, Joda-Time, Angular Add-Ons, Polyfills
