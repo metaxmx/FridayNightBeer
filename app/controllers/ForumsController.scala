@@ -41,7 +41,7 @@ class ForumsController @Inject() (implicit val userService: UserService,
       getConfigureForumsData
   }
 
-  def showForum(id: Int) = OptionalSessionApiAction.async {
+  def showForum(id: String) = OptionalSessionApiAction.async {
     implicit request =>
       permissionService.requireGlobalPermission(Forums)
       for {
@@ -64,7 +64,7 @@ class ForumsController @Inject() (implicit val userService: UserService,
             insertedCategory <- {
               // TODO: Concurrent position
               val maxCategorySequence = categories.sortBy(_.position).reverse.headOption.map(_.position).getOrElse(0)
-              val categoryToInsert = ForumCategory(0, newCategoryDTO.title, maxCategorySequence + 1, None)
+              val categoryToInsert = ForumCategory("", newCategoryDTO.title, maxCategorySequence + 1, None)
               forumCategoryService.insertCategory(categoryToInsert)
             }
             result <- {
@@ -91,9 +91,9 @@ class ForumsController @Inject() (implicit val userService: UserService,
     } yield Ok(toJson(createConfigureForums(categories, forums, threads))).as(JSON)
 
   private def createListForums(allCategories: Seq[ForumCategory],
-                               allForumsByCategory: Map[Int, Seq[Forum]],
-                               allThreadsByForum: Map[Int, Seq[Thread]],
-                               userIndex: Map[Int, User])(implicit userOpt: Option[User]): Seq[ListForumsCategory] =
+                               allForumsByCategory: Map[String, Seq[Forum]],
+                               allThreadsByForum: Map[String, Seq[Thread]],
+                               userIndex: Map[String, User])(implicit userOpt: Option[User]): Seq[ListForumsCategory] =
     allCategories sortBy { _.position } map {
       category =>
         val forums = allForumsByCategory.getOrElse(category._id, Seq()) filter {
@@ -115,14 +115,14 @@ class ForumsController @Inject() (implicit val userService: UserService,
     } filter { !_.forums.isEmpty }
 
   private def createConfigureForums(allCategories: Seq[ForumCategory],
-                                    allForumsByCategory: Map[Int, Seq[Forum]],
-                                    allThreadsByForum: Map[Int, Seq[Thread]]) =
+                                    allForumsByCategory: Map[String, Seq[Forum]],
+                                    allThreadsByForum: Map[String, Seq[Thread]]) =
     allCategories sortBy { _.position } map {
       category =>
         val forums = allForumsByCategory.getOrElse(category._id, Seq()) sortBy { _.position }
         val forumDtos = forums map {
           forum =>
-            val empty = allThreadsByForum.get(forum._id).map { _.isEmpty }.getOrElse(true)
+            val empty = allThreadsByForum.get(forum._id).forall(_.isEmpty)
             ConfigureForumsForum.fromForum(forum, empty)
         }
 
@@ -131,9 +131,9 @@ class ForumsController @Inject() (implicit val userService: UserService,
 
   private def createShowForum(forum: Forum,
                               category: ForumCategory,
-                              threads: Map[Int, Seq[Thread]],
-                              userIndex: Map[Int, User])(implicit userOpt: Option[User]): ShowForumDTO = {
-    val visibleThreads = threads.get(forum._id).getOrElse(Seq()).filter { _.accessGranted }
+                              threads: Map[String, Seq[Thread]],
+                              userIndex: Map[String, User])(implicit userOpt: Option[User]): ShowForumDTO = {
+    val visibleThreads = threads.getOrElse(forum._id, Seq()).filter { _.accessGranted }
     val threadDTOs = visibleThreads.map {
       thread =>
         // TODO: Check if user exists

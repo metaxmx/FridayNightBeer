@@ -1,22 +1,25 @@
 package controllers
 
-import javax.inject.{ Inject, Singleton }
+import javax.inject.{Inject, Singleton}
+
 import scala.concurrent.Future
 import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.mvc.{ Action, Controller }
-import SecuredController.{ fnbSessionHeaderName, parseSessionKey }
+import play.api.mvc.{Action, Controller}
+import SecuredController.{fnbSessionHeaderName, parseSessionKey}
 import models.UserSession
-import services.{ SessionService, Themes, UUIDGenerator }
+import services.{SessionService, Themes, UUIDGenerator}
 import exceptions.ApiException
 import services.PermissionService
 import services.SettingsService
+import util.AppSettings
 
 @Singleton
 class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
-                             sessionService: SessionService,
-                             permissionService: PermissionService,
-                             settingsService: SettingsService) extends Controller with AbstractController {
+                                       sessionService: SessionService,
+                                       permissionService: PermissionService,
+                                       settingsService: SettingsService,
+                                       appSettings: AppSettings) extends Controller with AbstractController {
 
   def appPage = Action.async {
     implicit request =>
@@ -36,11 +39,11 @@ class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
       }
   }
 
-  def showForumPage(id: Int) = appPage
+  def showForumPage(id: String) = appPage
 
-  def showNewTopicPage(id: Int) = appPage
+  def showNewTopicPage(id: String) = appPage
 
-  def showTopicPage(id: Int) = appPage
+  def showTopicPage(id: String) = appPage
 
   def ensureSessionActive(sessionKey: String): Future[UserSession] = for {
     maybeSession <- sessionService.getSession(sessionKey)

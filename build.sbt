@@ -8,14 +8,18 @@ lazy val fnbDatamodel = project in file("modules/datamodel")
 
 lazy val fnbDefaultTheme = (project in file("modules/default-theme")).dependsOn(fnbDatamodel)
 
+lazy val fnbStorageMongo = (project in file("modules/storage-mongo")).dependsOn(fnbDatamodel)
+
 lazy val fnbPlay = (project in file("."))
-	.aggregate(fnbDatamodel, fnbDefaultTheme)
-	.dependsOn(fnbDatamodel, fnbDefaultTheme)
+	.aggregate(fnbDatamodel, fnbStorageMongo, fnbDefaultTheme)
+	.dependsOn(fnbDatamodel, fnbStorageMongo, fnbDefaultTheme)
 	.enablePlugins(PlayScala)
 	.enablePlugins(SbtWeb)
 
-resolvers += "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
-resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
+resolvers ++= Seq(
+  "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
+  "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
+)
 
 libraryDependencies ++= Seq(
   cache,
@@ -26,6 +30,7 @@ libraryDependencies ++= Seq(
   "joda-time" % "joda-time" % "2.8.1",
   "commons-io" % "commons-io" % "2.4",
   "org.reactivemongo" %% "play2-reactivemongo" % "0.11.11",
+  "org.json4s" %% "json4s-native" % "3.3.0",
   "org.webjars" % "bootstrap" % "3.3.4",
   "org.webjars" % "jquery" % "1.11.3",
   "org.webjars" % "angularjs" % "1.3.15",

@@ -12,13 +12,13 @@ import play.api.mvc.Controller
 import services.{ ForumService, PostService, SessionService, ThreadService, UserService }
 
 @Singleton
-class DownloadController @Inject() (implicit val userService: UserService,
+class DownloadController @Inject() (val userService: UserService,
                                     val sessionService: SessionService,
                                     postService: PostService,
                                     threadService: ThreadService,
                                     forumService: ForumService) extends Controller with SecuredController {
 
-  def downloadAvatar(id: Int) = UserApiAction.async {
+  def downloadAvatar(id: String) = UserApiAction.async {
     implicit request =>
       // TODO: Check for permissions
       userService.getUser(id).map {
@@ -34,7 +34,7 @@ class DownloadController @Inject() (implicit val userService: UserService,
       }
   }
 
-  def downloadPostUpload(id: Int, filename: String) = OptionalSessionApiAction.async {
+  def downloadPostUpload(id: String, filename: String) = OptionalSessionApiAction.async {
     implicit request =>
       for {
         post <- postService.getPostForApi(id)
@@ -52,7 +52,7 @@ class DownloadController @Inject() (implicit val userService: UserService,
           NotFound("not found")
         } {
           file =>
-            Ok.sendFile(content = file, fileName = (_ => filename))
+            Ok.sendFile(content = file, fileName = _ => filename)
         }
       }
 

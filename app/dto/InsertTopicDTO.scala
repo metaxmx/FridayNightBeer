@@ -5,7 +5,7 @@ import play.api.libs.json.Json
 import models.Forum
 
 case class InsertTopicRequestDTO(
-  id: Int,
+  id: String,
   title: String)
 
 object InsertTopicRequestDTO {
@@ -27,7 +27,7 @@ object InsertTopicDTO {
 }
 
 case class InsertTopicResultDTO(
-  id: Int)
+  id: String)
 
 object InsertTopicResultDTO {
 

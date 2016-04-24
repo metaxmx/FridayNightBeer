@@ -13,7 +13,7 @@ case class AuthInfoResultDTO(
 
   def this(globalPermissions: Seq[String]) = this(false, null, null, null, globalPermissions)
 
-  def this(user: User, globalPermissions: Seq[String]) = this(true, user._id.toString(), user.displayName, user.username, globalPermissions)
+  def this(user: User, globalPermissions: Seq[String]) = this(true, user._id, user.displayName, user.username, globalPermissions)
 
 }
 

@@ -1,0 +1,80 @@
+package cache
+
+import models.BaseModel
+import play.api.cache.CacheApi
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+import scala.util.Success
+
+/**
+  * Cache for entities of a specific [[BaseModel]].
+  *
+  * @param cache      injected play cache
+  * @param prefix     prefix for the typed cache (must be unique)
+  * @param expiration expiration date for all data put inside the cache
+  * @tparam T base model type
+  */
+class BaseModelCache[T <: BaseModel[T]](cache: CacheApi, prefix: String, expiration: Duration = Duration.Inf) {
+
+  /**
+    * Get key from entity id.
+    *
+    * @param id entity id
+    * @return prefix and id
+    */
+  private[this] def key(id: String) = prefix + "/" + id
+
+  /**
+    * Get entity from the cache.
+    *
+    * @param id id to query for
+    * @return [[Some]] found entity, or [[None]]
+    */
+  def get(id: String): Option[T] = cache.get(key(id))
+
+  /**
+    * Put entity into cache. The key is derived from the entity.
+    *
+    * @param entity entity
+    */
+  def set(entity: T): Unit = {
+    cache.set(key(entity._id), entity, expiration)
+  }
+
+  /**
+    * Remove entity from cache. If entity is not inside cache, nothing happens.
+    *
+    * @param id entity id to delete
+    */
+  def remove(id: String): Unit = cache.remove(key(id))
+
+  /**
+    * Get entity from the cache. If the queried id is not contained in the cache, the given entity provider is used to
+    * get the entity, and the entity is then put inside the cache if successful.
+    *
+    * @param id    query entity id
+    * @param block asynchronous block to fetch the entity by the given id
+    * @return [[Future]] of the entity (with [[None]], if the entity was not found)
+    */
+  def getOrElseAsync(id: String, block: => Future[Option[T]]): Future[Option[T]] = {
+    get(id) match {
+      case Some(v) => Future.successful(Some(v))
+      case None => block andThen {
+        case Success(Some(result)) => set(result)
+      }
+    }
+  }
+
+  /**
+    * Get entity from the cache. If the queried id is not contained in the cache, the given entity provider is used to
+    * get the entity, and the entity is then put inside the cache.
+    *
+    * @param id    query entity id
+    * @param block asynchronous block to fetch the entity by the given id
+    * @return [[Future]] of the entity (with [[None]], if the entity was not found)
+    */
+  def getOrElseAsyncDef(id: String, block: => Future[T]): Future[T] =
+    getOrElseAsync(id, block map { v => Some(v) }) map { opt => opt.get }
+}

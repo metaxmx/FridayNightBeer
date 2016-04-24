@@ -23,9 +23,3 @@ case class PermissionConfiguration(
         defaultForumPermissionMap.get(permission).map(_.allowed).orElse(None)))
 
 }
-
-object PermissionConfiguration {
-
-  implicit val jsonFormat = Json.format[PermissionConfiguration]
-
-}

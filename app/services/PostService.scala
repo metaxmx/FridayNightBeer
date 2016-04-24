@@ -1,26 +1,26 @@
 package services
 
-import javax.inject.{ Inject, Singleton }
-import scala.concurrent.Future
-import dao.PostDAO
-import models.Post
-import models.User
+import javax.inject.{Inject, Singleton}
+
+import exceptions.ApiExceptions.{dbException, notFoundException}
 import exceptions.QueryException
-import exceptions.ApiExceptions.{ dbException, notFoundException }
+import models.{Post, User}
+import storage.PostDAO
+
 import scala.concurrent.ExecutionContext.Implicits.global
-import controllers.UserOptionRequest
+import scala.concurrent.Future
 
 @Singleton
-class PostService @Inject() (postDAO: PostDAO) {
+class PostService @Inject()(postDAO: PostDAO) {
 
-  def getPost(id: Int): Future[Option[Post]] = postDAO ?? id
+  def getPost(id: String): Future[Option[Post]] = postDAO ?? id
 
-  def getPostsByThread: Future[Map[Int, Seq[Post]]] = postDAO >> { _.groupBy { _.thread } }
+  def getPostsByThread: Future[Map[String, Seq[Post]]] = postDAO >> (_.groupBy(_.thread))
 
   def insertPost(post: Post): Future[Post] = postDAO << post
 
-  def getPostForApi(id: Int)(implicit userOpt: Option[User]): Future[Post] = getPost(id) map {
-    case None       => notFoundException
+  def getPostForApi(id: String)(implicit userOpt: Option[User]): Future[Post] = getPost(id) map {
+    case None => notFoundException
     case Some(post) => post
   } recover {
     case e: QueryException => dbException(e)

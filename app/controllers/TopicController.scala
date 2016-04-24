@@ -25,7 +25,7 @@ class TopicController @Inject() (implicit val userService: UserService,
                                  threadService: ThreadService,
                                  postService: PostService) extends Controller with SecuredController {
 
-  def showNewTopic(id: Int) = UserApiAction.async {
+  def showNewTopic(id: String) = UserApiAction.async {
     implicit request =>
       for {
         forum <- forumService.getForumForApi(id)
@@ -33,7 +33,7 @@ class TopicController @Inject() (implicit val userService: UserService,
 
   }
 
-  def newTopic(id: Int) = UserApiAction.async(parse.json) {
+  def newTopic(id: String) = UserApiAction.async(parse.json) {
     implicit request =>
       request.body.validate[InsertTopicDTO].fold(
         error => Future.successful(BadRequest("Bad JSON format")),
@@ -41,13 +41,13 @@ class TopicController @Inject() (implicit val userService: UserService,
           for {
             forum <- forumService.getForumForApi(id)
             insertedThread <- {
-              val threadToInsert = Thread(0, newTopicDTO.title, forum._id,
+              val threadToInsert = Thread("", newTopicDTO.title, forum._id,
                 ThreadPostData(request.user._id, DateTime.now),
                 ThreadPostData(request.user._id, DateTime.now), 1, false, None)
               threadService insertThread threadToInsert
             }
             insertedPost <- {
-              val postToInsert = Post(0, insertedThread._id, newTopicDTO.htmlContent,
+              val postToInsert = Post("", insertedThread._id, newTopicDTO.htmlContent,
                 request.user._id, DateTime.now, None, Seq())
               postService insertPost postToInsert
             }
@@ -59,12 +59,12 @@ class TopicController @Inject() (implicit val userService: UserService,
         })
   }
 
-  def showTopic(id: Int) = OptionalSessionApiAction.async {
+  def showTopic(id: String) = OptionalSessionApiAction.async {
     implicit request =>
       showTopicData(id)
   }
 
-  private def showTopicData(id: Int)(implicit maybeUser: Option[User]) = for {
+  private def showTopicData(id: String)(implicit maybeUser: Option[User]) = for {
     thread <- threadService.getThreadForApi(id)
     forum <- forumService.getForumForApi(thread.forum)
     posts <- postService.getPostsByThreadForApi
@@ -75,7 +75,7 @@ class TopicController @Inject() (implicit val userService: UserService,
     mapping(
       "content" -> nonEmptyText)(InsertPostDTO.apply)(InsertPostDTO.unapply))
 
-  def insertPost(id: Int) = UserApiAction.async(parse.json) {
+  def insertPost(id: String) = UserApiAction.async(parse.json) {
     implicit request =>
       insertPostForm.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(toJson(InsertPostErrorDTO(formWithErrors.errors.map(_.message))))),
@@ -86,7 +86,7 @@ class TopicController @Inject() (implicit val userService: UserService,
             posts <- postService.getPostsByThreadForApi
             userIndex <- userService.getUserIndexForApi
             insertedPost <- {
-              val postToInsert = Post(0, thread._id, insertPostDTO.content,
+              val postToInsert = Post("", thread._id, insertPostDTO.content,
                 request.user._id, DateTime.now, None, Seq())
               postService insertPost postToInsert
             }

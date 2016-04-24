@@ -9,14 +9,14 @@ GET     /randomUUID                   @controllers.ApplicationController.randomU
 
 # Virtual Pages
 GET     /login                        @controllers.ApplicationController.appPage
-GET     /forum/:id                    @controllers.ApplicationController.showForumPage(id: Int)
-GET     /forum/:id/newtopic           @controllers.ApplicationController.showNewTopicPage(id: Int)
-GET     /topic/:id                    @controllers.ApplicationController.showTopicPage(id: Int)
+GET     /forum/:id                    @controllers.ApplicationController.showForumPage(id: String)
+GET     /forum/:id/newtopic           @controllers.ApplicationController.showNewTopicPage(id: String)
+GET     /topic/:id                    @controllers.ApplicationController.showTopicPage(id: String)
 GET     /admin/forum/configure        @controllers.ApplicationController.appPage
 
 # Files
-GET     /avatar/:id                   @controllers.DownloadController.downloadAvatar(id: Int)
-GET     /uploads/:id/:filename        @controllers.DownloadController.downloadPostUpload(id: Int, filename: String)
+GET     /avatar/:id                   @controllers.DownloadController.downloadAvatar(id: String)
+GET     /uploads/:id/:filename        @controllers.DownloadController.downloadPostUpload(id: String, filename: String)
 
 # Authentication
 GET     /api/1/authentication/info    @controllers.AuthenticationController.getAuthInfo
@@ -27,18 +27,18 @@ POST    /api/1/authentication/logout  @controllers.AuthenticationController.logo
 GET     /api/1/forums/list            @controllers.ForumsController.getForums
 
 # Show Forum
-GET     /api/1/forum/:id              @controllers.ForumsController.showForum(id: Int)
+GET     /api/1/forum/:id              @controllers.ForumsController.showForum(id: String)
 
 # Configure Forums
 GET     /api/1/forums/configure       @controllers.ForumsController.getConfigureForums
 
 # Show Topic
-GET     /api/1/topic/:id              @controllers.TopicController.showTopic(id: Int)
-POST    /api/1/topic/:id              @controllers.TopicController.insertPost(id: Int)
+GET     /api/1/topic/:id              @controllers.TopicController.showTopic(id: String)
+POST    /api/1/topic/:id              @controllers.TopicController.insertPost(id: String)
 
 # New Topic
-GET     /api/1/newtopic/:id           @controllers.TopicController.showNewTopic(id: Int)
-POST    /api/1/newtopic/:id           @controllers.TopicController.newTopic(id: Int)
+GET     /api/1/newtopic/:id           @controllers.TopicController.showNewTopic(id: String)
+POST    /api/1/newtopic/:id           @controllers.TopicController.newTopic(id: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                 @controllers.Assets.at(path="/public", file)

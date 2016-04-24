@@ -1,38 +1,23 @@
 package models
 
-import reactivemongo.bson.{BSONDocumentReader, BSONDocumentWriter, BSONHandler, BSONDocument}
-import play.api.libs.json.OFormat
+/**
+  * Base class for all model persisted in the database.
+  * @tparam T type of base model itself
+  */
+abstract class BaseModel[T <: BaseModel[T]] {
+  self: T =>
 
-case class BaseModel[T](collectionName: String)
+  /**
+    * Get storage ID.
+    * @return ID as String
+    */
+  val _id: String
 
-trait BaseModelIdReader[T, K] {
-
-  def getId: T => K
-
-}
-
-trait BaseModelIdWriter[T, K] {
-
-  def withId: (T, K) => T
-
-}
-
-trait BaseModelSpec[T, K] {
-
-  def baseModel: BaseModel[T]
-
-  def baseModelIdReader: BaseModelIdReader[T, K]
-
-  def baseModelIdWriter: BaseModelIdWriter[T, K]
-
-  def bsonHandler: BSONDocumentReader[T] with BSONDocumentWriter[T] with BSONHandler[BSONDocument, T]
-
-  def jsonFormat: OFormat[T]
+  /**
+    * Set storage ID.
+    * @param id new id
+    * @return copy of model with given id
+    */
+  def withId(id: String): T
 
 }
-
-class BaseModelImplicitSpec[T, K](implicit val baseModel: BaseModel[T],
-                                  val baseModelIdReader: BaseModelIdReader[T, K],
-                                  val baseModelIdWriter: BaseModelIdWriter[T, K],
-                                  val bsonHandler: BSONDocumentReader[T] with BSONDocumentWriter[T] with BSONHandler[BSONDocument, T],
-                                  val jsonFormat: OFormat[T]) extends BaseModelSpec[T, K]

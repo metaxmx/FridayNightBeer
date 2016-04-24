@@ -4,7 +4,7 @@ import models.Forum
 import play.api.libs.json.Json
 
 case class ConfigureForumsForum(
-  id: Int,
+  id: String,
   name: String,
   description: Option[String],
   position: Int,
@@ -20,7 +20,7 @@ object ConfigureForumsForum {
 }
 
 case class ConfigureForumsCategory(
-  id: Int,
+  id: String,
   name: String,
   position: Int,
   forums: Seq[ConfigureForumsForum])

@@ -1,35 +1,10 @@
 package models
 
-import play.api.libs.json.Json
+case class UserSession(_id: String,
+                       user: Option[String]) extends BaseModel[UserSession] {
 
-import reactivemongo.bson.Macros
+  def withUser(user_id: Option[String]) = copy(user = user)
 
-case class UserSession(
-    _id: String,
-    user: Option[Int]) {
-
-  def withUser(user_id: Option[Int]) = UserSession(_id, user)
-
-  def withId(_id: String) = UserSession(_id, user)
-
-}
-
-object UserSession {
-
-  implicit val bsonFormat = Macros.handler[UserSession]
-
-  implicit val jsonFormat = Json.format[UserSession]
-
-  implicit val baseModel = BaseModel[UserSession]("sessions")
-
-  implicit val sessionIdReader = new BaseModelIdReader[UserSession, String] {
-    def getId = _._id
-  }
-
-  implicit val sessionIdWriter = new BaseModelIdWriter[UserSession, String] {
-    def withId = _ withId _
-  }
-
-  implicit val spec = new BaseModelImplicitSpec
+  override def withId(_id: String) = copy(_id = _id)
 
 }

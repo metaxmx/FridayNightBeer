@@ -11,8 +11,8 @@ libraryDependencies ++= Seq(
   "com.google.guava" % "guava" % "18.0",
   "javax.inject" % "javax.inject" % "1",
   "joda-time" % "joda-time" % "2.8.1",
-  "com.typesafe.play" %% "play-json" % "2.5.2",
-  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.11")
+  "com.typesafe.play" %% "play-cache" % "2.5.2",
+  "org.json4s" %% "json4s-native" % "3.3.0")
 
 EclipseKeys.createSrc := EclipseCreateSrc.Default
 

@@ -1,14 +1,10 @@
 package models
 
-import play.api.libs.json.Json
-
-import reactivemongo.bson.Macros
-
 case class AccessRule(
     permission: String,
-    forbiddenUsers: Option[Seq[Int]],
+    forbiddenUsers: Option[Seq[String]],
     forbiddenGroups: Option[Seq[String]],
-    allowedUsers: Option[Seq[Int]],
+    allowedUsers: Option[Seq[String]],
     allowedGroups: Option[Seq[String]],
     allowGuest: Boolean) {
 
@@ -32,14 +28,7 @@ case class AccessRule(
       (containsCommonElement(allowedGroups, user.groups))
 
   private def containsCommonElement(seq1: Option[Seq[String]], seq2: Option[Seq[String]]): Boolean =
-    seq1.isDefined && seq2.isDefined && !(seq1.get.intersect(seq2.get).isEmpty)
+    seq1.exists( s1 => seq2.exists( s2 => (s1 intersect s2).nonEmpty ) )
 
-}
-
-object AccessRule {
-
-  implicit val bsonFormat = Macros.handler[AccessRule]
-
-  implicit val jsonFormat = Json.format[AccessRule]
 
 }

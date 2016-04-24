@@ -1,17 +1,17 @@
 package services
 
-import javax.inject.{ Inject, Singleton }
+import javax.inject.{Inject, Singleton}
+
+import exceptions.ApiExceptions.dbException
+import exceptions.QueryException
+import models.{User, UserSession}
+import storage.SessionDAO
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import dao.SessionDAO
-import exceptions.ApiExceptions.{ dbException, invalidSessionException }
-import exceptions.QueryException
-import models.{ User, UserSession }
-
 @Singleton
-class SessionService @Inject() (sessionDAO: SessionDAO) {
+class SessionService @Inject()(sessionDAO: SessionDAO) {
 
   def getSession(id: String): Future[Option[UserSession]] = sessionDAO ?? id
 

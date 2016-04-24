@@ -1,20 +1,18 @@
 package controllers
 
-import scala.annotation.implicitNotFound
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import scala.language.higherKinds
-
+import dto.FormErrorsDTO
+import exceptions.ApiException
 import play.api.data.Form
 import play.api.http.ContentTypes.JSON
 import play.api.http.Status.BAD_REQUEST
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json.toJson
-import play.api.mvc.{ ActionBuilder, Request, Result }
 import play.api.mvc.Results.Status
+import play.api.mvc.{ActionBuilder, Request, Result}
 
-import dto.FormErrorsDTO
-import exceptions.ApiException
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.language.higherKinds
 
 trait AbstractController {
 
@@ -33,7 +31,7 @@ trait AbstractController {
   trait ApiActionRefiner[+R[_]] extends ApiActionBuilder[R] {
 
     final override def invokeInner[A](request: Request[A], block: R[A] => Future[Result]) =
-      refine(request).flatMap(_.fold(Future.successful _, block))
+      refine(request).flatMap(_.fold(Future.successful, block))
 
     protected def refine[A](request: Request[A]): Future[Either[Result, R[A]]]
 

@@ -8,7 +8,7 @@ import models.{ Forum, Thread, User }
 import util.Joda.dateTimeOrdering
 
 case class ShowForumPost(
-  user: Int,
+  user: String,
   userName: String,
   date: DateTime)
 
@@ -19,7 +19,7 @@ object ShowForumPost {
 }
 
 case class ShowForumThread(
-  id: Int,
+  id: String,
   title: String,
   posts: Int,
   sticky: Boolean,
@@ -35,7 +35,7 @@ object ShowForumThread {
 }
 
 case class ShowForumDTO(
-  id: Int,
+  id: String,
   title: String,
   threads: Seq[ShowForumThread],
   permissions: Seq[String])

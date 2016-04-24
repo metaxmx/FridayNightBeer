@@ -1,24 +1,23 @@
 package controllers
 
-import javax.inject.{ Inject, Singleton }
+import javax.inject.{Inject, Singleton}
 
-import scala.concurrent.Future
-
+import dto.{AuthInfoResultDTO, LoginRequestDTO}
+import models.User
 import play.api.data.Form
-import play.api.data.Forms.{ mapping, nonEmptyText }
+import play.api.data.Forms.{mapping, nonEmptyText}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json.toJson
 import play.api.mvc.Controller
-
-import dto.{ AuthInfoResultDTO, LoginRequestDTO }
-import models.User
-import services.{ PermissionService, SessionService, UserService }
+import services.{PermissionService, SessionService, UserService}
 import util.PasswordEncoder
 
+import scala.concurrent.Future
+
 @Singleton
-class AuthenticationController @Inject() (implicit val userService: UserService,
-                                          val sessionService: SessionService,
-                                          permissionService: PermissionService) extends Controller with SecuredController {
+class AuthenticationController @Inject()(implicit val userService: UserService,
+                                         val sessionService: SessionService,
+                                         permissionService: PermissionService) extends Controller with SecuredController {
 
   val loginForm = Form(
     mapping(
@@ -39,12 +38,12 @@ class AuthenticationController @Inject() (implicit val userService: UserService,
             _ filter (_.password == passwordEncoded)
           } flatMap {
             case None => Future.successful(unauthenticated)
-            case Some(user) => {
+            case Some(user) =>
               // Store User in Session
               sessionService.updateSessionUser(request.userSession._id, Some(user)) map {
                 _ => authenticated(user)
               }
-            }
+
           } map {
             authInfoDto => Ok(toJson(authInfoDto))
           }
@@ -64,7 +63,7 @@ class AuthenticationController @Inject() (implicit val userService: UserService,
   private def authenticated(user: User) = new AuthInfoResultDTO(user, permissionService.getAllowedGlobalPermissions(Some(user)).map(_.name))
 
   private def byAuthenticationStatus(implicit userOpt: Option[User]) = userOpt match {
-    case None       => unauthenticated
+    case None => unauthenticated
     case Some(user) => authenticated(user)
   }
 

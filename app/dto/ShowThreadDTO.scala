@@ -20,9 +20,9 @@ object ShowThreadPostUploadDTO {
 }
 
 case class ShowThreadPostDTO(
-  id: Int,
+  id: String,
   date: DateTime,
-  user: Int,
+  user: String,
   userName: String,
   userFullname: Option[String],
   userAvatar: Boolean,
@@ -40,9 +40,9 @@ object ShowThreadPostDTO {
 }
 
 case class ShowThreadDTO(
-  id: Int,
+  id: String,
   title: String,
-  forum: Int,
+  forum: String,
   forumTitle: String,
   posts: Seq[ShowThreadPostDTO])
 
@@ -57,7 +57,7 @@ object ShowThreadDTO {
 
 object ShowThreadAggregation {
 
-  def createShowThread(thread: Thread, forum: Forum, posts: Map[Int, Seq[Post]], userIndex: Map[Int, User])(implicit userOpt: Option[User]): ShowThreadDTO = {
+  def createShowThread(thread: Thread, forum: Forum, posts: Map[String, Seq[Post]], userIndex: Map[String, User])(implicit userOpt: Option[User]): ShowThreadDTO = {
     val postsForThread = posts.get(thread._id).getOrElse(Seq())
     val postDTOs = postsForThread.map {
       post =>

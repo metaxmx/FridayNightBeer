@@ -7,9 +7,9 @@ import play.api.libs.json.Json
 import models.{ Forum, Thread, User }
 
 case class ListForumsLastPost(
-  id: Int,
+  id: String,
   title: String,
-  user: Int,
+  user: String,
   userName: String,
   date: DateTime)
 
@@ -22,7 +22,7 @@ object ListForumsLastPost {
 }
 
 case class ListForumsForum(
-  id: Int,
+  id: String,
   name: String,
   description: Option[String],
   numThreads: Int,
