@@ -13,7 +13,3 @@ resolvers += "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositor
 includeFilter in (Assets, LessKeys.less) := "*.less"
 
 excludeFilter in (Assets, LessKeys.less) := "_*.less"
-
-EclipseKeys.createSrc := EclipseCreateSrc.Default
-
-EclipseKeys.withSource := true

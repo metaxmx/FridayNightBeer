@@ -52,14 +52,14 @@ abstract class MongoGenericDAO[T <: BaseModel[T]](cacheApi: CacheApi, collection
       case Failure(_) => cache.removeAll() // Reload to be on the safe side
     }
 
-  //  def update(id: String, selector: BSONDocument, modifier: BSONDocument): Future[Option[T]] = {
-  //    collection.update(selector, modifier) flatMap {
-  //      writeResult: WriteResult =>
-  //        cache.remove(id)
-  //        getById(id)
-  //    } recover {
-  //      case exc => throw new StorageException(s"Error updating collection $collectionName", exc)
-  //    }
-  //  }
+  def update(id: String, selector: BSONDocument, modifier: BSONDocument): Future[Option[T]] = {
+    collection.update(selector, modifier) flatMap {
+      writeResult: WriteResult =>
+        cache.removeAll()
+        getById(id)
+    } recover {
+      case exc => throw new StorageException(s"Error updating collection $collectionName", exc)
+    }
+  }
 
 }

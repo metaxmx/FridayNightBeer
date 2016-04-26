@@ -5,7 +5,7 @@ import javax.inject.{Inject, Singleton}
 import models.{User, UserSession}
 import play.api.cache.CacheApi
 import play.modules.reactivemongo.{ReactiveMongoApi, ReactiveMongoComponents}
-import reactivemongo.bson.{BSONDocumentReader, BSONDocumentWriter}
+import reactivemongo.bson.{BSONDocument, BSONDocumentReader, BSONDocumentWriter}
 import storage.SessionDAO
 
 import scala.concurrent.Future
@@ -19,6 +19,19 @@ class MongoSessionDAO @Inject()(cacheApi: CacheApi, val reactiveMongoApi: Reacti
   implicit val bsonReader = implicitly[BSONDocumentReader[UserSession]]
 
   // TODO
-  override def updateSessionUser(id: String, userOpt: Option[User]): Future[Option[UserSession]] = ???
+  override def updateSessionUser(id: String, userOpt: Option[User]): Future[Option[UserSession]] = {
+    val selector = BSONDocument("_id" -> id)
+    val modifier = userOpt.fold {
+      BSONDocument(
+        "$unset" -> BSONDocument(
+          "user" -> 1))
+    } {
+      user =>
+        BSONDocument(
+          "$set" -> BSONDocument(
+            "user" -> user._id))
+    }
+    update(id, selector, modifier)
+  }
 
 }

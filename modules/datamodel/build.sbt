@@ -2,7 +2,7 @@ name := """fnb-datamodel"""
 
 scalaVersion := "2.11.8"
 
-lazy val fnbDatamodel = (project in file(".")).settings(scalaVersion := "2.11.7")
+lazy val fnbDatamodel = project in file(".")
 
 resolvers += "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
 
@@ -13,7 +13,3 @@ libraryDependencies ++= Seq(
   "joda-time" % "joda-time" % "2.8.1",
   "com.typesafe.play" %% "play-cache" % "2.5.2",
   "org.json4s" %% "json4s-native" % "3.3.0")
-
-EclipseKeys.createSrc := EclipseCreateSrc.Default
-
-EclipseKeys.withSource := true
