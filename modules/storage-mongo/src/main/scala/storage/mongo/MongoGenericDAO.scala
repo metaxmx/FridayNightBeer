@@ -4,7 +4,6 @@ import cache.BaseModelMapCache
 import models.BaseModel
 import play.api.cache.CacheApi
 import play.modules.reactivemongo.ReactiveMongoComponents
-import reactivemongo.api.CursorProducer
 import reactivemongo.api.ReadPreference.Primary
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.commands.WriteResult
@@ -20,7 +19,7 @@ abstract class MongoGenericDAO[T <: BaseModel[T]](cacheApi: CacheApi, collection
 
   self: ReactiveMongoComponents with BSONContext[T] =>
 
-  protected def cacheDuration: Duration = 1 days
+  protected def cacheDuration: Duration = 1.days
 
   protected def cachePrefix = collectionName
 

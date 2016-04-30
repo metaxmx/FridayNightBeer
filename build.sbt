@@ -53,5 +53,5 @@ EclipseKeys.withSource := true
 
 EclipseKeys.skipParents in ThisBuild := false
 
-scalacOptions += "-feature"
+scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation", "-feature")
 
