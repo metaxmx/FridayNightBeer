@@ -55,17 +55,12 @@ object Exceptions {
       case other => InternalServerException(other.getMessage, other)
     }
 
-    def unapply(arg: Throwable)(implicit req: RequestHeader): Option[RestException] = arg match {
-      case re: RestException => Some(re)
-      case NonFatal(other) => Some(InternalServerException(other.getMessage, other))
-    }
-
     def errorHandler()(implicit req: RequestHeader): PartialFunction[Throwable, Result] = {
-      case RestException(re) => re.toResult
+      case NonFatal(exc) => RestException(exc).toResult
     }
 
     def errorHandlerAsync()(implicit req: RequestHeader): PartialFunction[Throwable, Future[Result]] = {
-      case RestException(re) => Future.successful(re.toResult)
+      case NonFatal(exc) => Future.successful(RestException(exc).toResult)
     }
 
   }
@@ -82,6 +77,12 @@ object Exceptions {
   case class JsonExtractException(cause: MappingException)(implicit req: RequestHeader) extends RestException(
     "Error extracting JSON from request", cause = cause,
     statusCode = Some(BAD_REQUEST), clientMessage = Some("JSON from Request could not be extracted: " + cause.msg))
+
+  case class InvalidSessionException(sessionId: String)(implicit req: RequestHeader) extends RestException("Invalid Session",
+    statusCode = Some(BAD_REQUEST), clientMessage = Some(s"Invalid session id: $sessionId"))
+
+  case class InvalidSessionUserException(sessionId: String)(implicit req: RequestHeader) extends RestException(s"User for session $sessionId not found",
+    statusCode = Some(INTERNAL_SERVER_ERROR), clientMessage = Some(s"Invalid user for session id: $sessionId"), reportError = true)
 
   case class ForbiddenException()(implicit req: RequestHeader) extends RestException("Permission not granted",
     statusCode = Some(FORBIDDEN), clientMessage = Some("You do not have the required permissions for this action"))
