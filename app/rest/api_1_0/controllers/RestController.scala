@@ -1,8 +1,11 @@
 package rest.api_1_0.controllers
 
 import models.{User, UserSession}
+import play.api.http.Writeable
 import play.api.mvc._
 import rest.Exceptions._
+import rest.Implicits._
+import rest.api_1_0.viewmodels.ViewModel
 import services.{SessionService, UserService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -13,7 +16,7 @@ import scala.language.higherKinds
   * Controller trait for REST controllers.
   * Created by Christian Simon on 30.04.2016.
   */
-trait RestController {
+trait RestController extends Controller {
 
   /** Injected User Service */
   implicit val userService: UserService
@@ -22,7 +25,9 @@ trait RestController {
   implicit val sessionService: SessionService
 
   /** Automatic extraction of [[Option]] of [[User]] from request. */
-  implicit def request2maybeUser(implicit request: OptionalSessionRequest) = request.maybeUser
+  implicit def request2maybeUser(implicit request: OptionalSessionRequest[_]) = request.maybeUser
+
+  implicit val viewModelWritable: Writeable[ViewModel] = jsonWritable.map(_.toJson)
 
   /**
     * Play Action builder for REST actions with handling of [[RestException]].
@@ -93,7 +98,7 @@ trait RestController {
       parseRequest(request) map {
         case Left(result) => Left(result)
         case Right(req: SessionRequest[A]) => Right(req)
-        case Right(other) => Left(new ForbiddenException().toResult)
+        case Right(other) => Left(new ForbiddenException()(request).toResult)
       }
 
   }
@@ -107,7 +112,7 @@ trait RestController {
       parseRequest(request) map {
         case Left(result) => Left(result)
         case Right(req: UserRequest[A]) => Right(req)
-        case Right(other) => Left(new ForbiddenException().toResult)
+        case Right(other) => Left(new ForbiddenException()(request).toResult)
       }
 
   }
@@ -129,6 +134,7 @@ trait RestController {
     * @return parse result as future
     */
   protected def parseRequest[A](request: Request[A]): Future[Either[Result, OptionalSessionRequest[A]]] = {
+    implicit val req = request
     parseSessionKey(request) match {
       case None =>
         Future.successful(Right(new OptionalSessionRequest[A](None, None, request)))

@@ -18,7 +18,6 @@ class MongoSessionDAO @Inject()(cacheApi: CacheApi, val reactiveMongoApi: Reacti
 
   implicit val bsonReader = implicitly[BSONDocumentReader[UserSession]]
 
-  // TODO
   override def updateSessionUser(id: String, userOpt: Option[User]): Future[Option[UserSession]] = {
     val selector = BSONDocument("_id" -> id)
     val modifier = userOpt.fold {

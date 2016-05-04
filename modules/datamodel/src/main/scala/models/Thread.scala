@@ -13,9 +13,9 @@ case class Thread(_id: String,
                   lastPost: ThreadPostData,
                   posts: Int,
                   sticky: Boolean,
-                  restriction: Option[AccessRule]) extends BaseModel[Thread] {
+                  threadPermissions: Option[Map[String, AccessRule]]) extends BaseModel[Thread] {
 
-  def accessGranted(implicit userOpt: Option[User]) = restriction forall (_.allowed)
+  lazy val threadPermissionMap = threadPermissions.getOrElse(Map.empty)
 
   def withId(_id: String) = copy(_id = _id)
 
