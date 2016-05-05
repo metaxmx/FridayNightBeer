@@ -1,19 +1,17 @@
 package controllers
 
 import java.io.File
-
-import javax.inject.{ Inject, Singleton }
+import javax.inject.{Inject, Singleton}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-
 import play.api.Logger
 import play.api.mvc.Controller
-
-import services.{ ForumService, PostService, SessionService, ThreadService, UserService }
+import services._
 
 @Singleton
 class DownloadController @Inject() (val userService: UserService,
                                     val sessionService: SessionService,
+                                    val permissionsService: PermissionService,
                                     postService: PostService,
                                     threadService: ThreadService,
                                     forumService: ForumService) extends Controller with SecuredController {

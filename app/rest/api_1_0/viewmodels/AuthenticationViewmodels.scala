@@ -13,7 +13,7 @@ object AuthenticationViewModels {
 
   case class LoginResult(
                           success: Boolean,
-                          sessionId: Option[String] = None,
+                          sessionId: String,
                           userId: Option[String] = None
                         ) extends ViewModel
 

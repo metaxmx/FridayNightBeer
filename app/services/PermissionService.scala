@@ -9,6 +9,7 @@ import permissions.ThreadPermissions.ThreadPermission
 import permissions.{ForumPermissions, GlobalPermissions, ThreadPermissions}
 import storage.PermissionDAO
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
@@ -23,6 +24,20 @@ class PermissionService @Inject()(permissionDAO: PermissionDAO) {
       val globalRule = permissionMap.get(permissionType).flatMap(_.get(permissionName))
       val accessRuleChain = AccessRuleChain(globalRule.toSeq)
       accessRuleChain.allowed
+    }
+  }
+
+  def checkGlobalPermissions(permissions: GlobalPermission*)(implicit userOpt: Option[User]): Future[Boolean] = {
+    val permissionType = GlobalPermissions.name
+    for {
+      permissionMap <- permissionDAO.getPermissionMap
+    } yield {
+      permissions forall { permission =>
+        val permissionName = permission.name
+        val globalRule = permissionMap.get(permissionType).flatMap(_.get(permissionName))
+        val accessRuleChain = AccessRuleChain(globalRule.toSeq)
+        accessRuleChain.allowed
+      }
     }
   }
 

@@ -26,8 +26,8 @@ class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
       val theme = Themes.defaultTheme
       val settings = settingsService.asDto
       parseSessionKey.fold {
-        // No cookie with authkey found - generate one
-        val sessionKey = uuidGenerator.generate.toString
+        // No cookie with auth key found - generate one
+        val sessionKey = uuidGenerator.generateStr
         ensureSessionActive(sessionKey) map { _ =>
           Ok(views.html.app(theme, settings)).withSession(fnbSessionHeaderName -> sessionKey)
         }
@@ -46,7 +46,7 @@ class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
   def showTopicPage(id: String) = appPage
 
   def ensureSessionActive(sessionKey: String): Future[UserSession] = for {
-    maybeSession <- sessionService.getSession(sessionKey)
+    maybeSession <- sessionService.getSession(sessionKey).toFuture
     existingSession <- maybeSession.fold {
       sessionService.insertSession(UserSession(sessionKey, None))
     } {
@@ -55,7 +55,7 @@ class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
   } yield existingSession
 
   def randomUUID = Action {
-    Ok(uuidGenerator.generate.toString)
+    Ok(uuidGenerator.generateStr)
   }
 
 }

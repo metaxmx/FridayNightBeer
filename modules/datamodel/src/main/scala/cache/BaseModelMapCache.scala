@@ -2,6 +2,7 @@ package cache
 
 import models.BaseModel
 import play.api.cache.CacheApi
+import util.FutureOption
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -49,9 +50,8 @@ class BaseModelMapCache[T <: BaseModel[T]](cache: CacheApi,
     * @param entity [[Some]] entity or [[None]]
     * @return true if update was successful
     */
-  private[this] def replaceEntry(id: String, entity: Option[T]): Boolean = getAll match {
-    case None => false
-    case Some(map) =>
+  private[this] def replaceEntry(id: String, entity: Option[T]): Boolean = getAll exists {
+    map =>
       setAll(entity match {
         case None => map - id
         case Some(newEntity) => map + (id -> newEntity)
@@ -111,10 +111,9 @@ class BaseModelMapCache[T <: BaseModel[T]](cache: CacheApi,
     * @param id    query entity id
     * @param block asynchronous block to fetch all entities
     * @tparam A type of returned entity collection
-    * @return [[Future]] of the model map
+    * @return [[FutureOption]] of the model
     */
-  def getOrElseAsync[A <: Iterable[T]](id: String, block: => Future[A]): Future[Option[T]] = getAllOrElseAsync(block) map {
-    _ get id
-  }
+  def getOrElseAsync[A <: Iterable[T]](id: String, block: => Future[A]): FutureOption[T] =
+    FutureOption(getAllOrElseAsync(block) map (_ get id))
 
 }

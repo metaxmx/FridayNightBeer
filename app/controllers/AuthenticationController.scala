@@ -17,16 +17,18 @@ import scala.concurrent.Future
 @Singleton
 class AuthenticationController @Inject()(implicit val userService: UserService,
                                          val sessionService: SessionService,
-                                         permissionService: PermissionService) extends Controller with SecuredController {
+                                         val permissionService: PermissionService) extends Controller with SecuredController {
 
   val loginForm = Form(
     mapping(
       "username" -> nonEmptyText,
       "password" -> nonEmptyText)(LoginRequestDTO.apply)(LoginRequestDTO.unapply))
 
-  def getAuthInfo = OptionalSessionApiAction {
+  def getAuthInfo = OptionalSessionApiAction.async {
     implicit request =>
-      Ok(toJson(byAuthenticationStatus)).as("application/json")
+      byAuthenticationStatus map {
+        status =>  Ok(toJson(status)).as("application/json")
+      }
   }
 
   def login = SessionApiAction.async(parse.json) {
@@ -34,15 +36,14 @@ class AuthenticationController @Inject()(implicit val userService: UserService,
       validateApiForm(loginForm) {
         loginRequest =>
           val passwordEncoded = PasswordEncoder encodePassword loginRequest.password
-          userService.getUserByUsername(loginRequest.username.toLowerCase) map {
-            _ filter (_.password == passwordEncoded)
-          } flatMap {
-            case None => Future.successful(unauthenticated)
-            case Some(user) =>
+          userService.getUserByUsername(loginRequest.username.toLowerCase) filter {
+            _.password == passwordEncoded
+          } flatten unauthenticated flatMap {
+           user =>
               // Store User in Session
-              sessionService.updateSessionUser(request.userSession._id, Some(user)) map {
+              sessionService.updateSessionUser(request.userSession._id, user).flatMap {
                 _ => authenticated(user)
-              }
+              }.toFuture
 
           } map {
             authInfoDto => Ok(toJson(authInfoDto))
@@ -52,15 +53,21 @@ class AuthenticationController @Inject()(implicit val userService: UserService,
 
   def logout = SessionApiAction.async {
     request =>
-      sessionService.updateSessionUser(request.userSession._id, None) map {
+      sessionService.updateSessionUser(request.userSession._id, None).toFuture flatMap {
         // TODO: Create new session ID
-        _ => Ok(toJson(unauthenticated))
+        _ => unauthenticated map {
+          status => Ok(toJson(status))
+        }
       }
   }
 
-  private def unauthenticated = new AuthInfoResultDTO(permissionService.getAllowedGlobalPermissions(None).map(_.name))
+  private def unauthenticated = permissionService.listGlobalPermissions()(None) map {
+    globalPermissions => new AuthInfoResultDTO(globalPermissions)
+  }
 
-  private def authenticated(user: User) = new AuthInfoResultDTO(user, permissionService.getAllowedGlobalPermissions(Some(user)).map(_.name))
+  private def authenticated(user: User) = permissionService.listGlobalPermissions()(Some(user)) map {
+    globalPermissions => new AuthInfoResultDTO(user, globalPermissions)
+  }
 
   private def byAuthenticationStatus(implicit userOpt: Option[User]) = userOpt match {
     case None => unauthenticated

@@ -17,6 +17,7 @@ import dto.{ InsertPostDTO, InsertPostErrorDTO, InsertTopicDTO, InsertTopicReque
 import dto.ShowThreadAggregation.createShowThread
 import models.{ Post, Thread, ThreadPostData, User }
 import services.{ ForumService, PostService, SessionService, ThreadService, UserService }
+import exceptions.ApiExceptions._
 
 @Singleton
 class TopicController @Inject() (implicit val userService: UserService,
@@ -28,7 +29,7 @@ class TopicController @Inject() (implicit val userService: UserService,
   def showNewTopic(id: String) = UserApiAction.async {
     implicit request =>
       for {
-        forum <- forumService.getForumForApi(id)
+        forum <- forumService.getForum(id).flatten(notFoundException)
       } yield Ok(toJson(InsertTopicRequestDTO.fromForum(forum))).as(JSON)
 
   }

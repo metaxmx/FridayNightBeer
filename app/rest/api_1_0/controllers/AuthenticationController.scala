@@ -3,11 +3,12 @@ package rest.api_1_0.controllers
 import javax.inject.{Inject, Singleton}
 
 import models.{User, UserSession}
-import services.{SessionService, UserService}
-import rest.api_1_0.viewmodels.AuthenticationViewModels._
 import rest.Implicits._
+import rest.api_1_0.viewmodels.AuthenticationViewModels._
+import services.{SessionService, UserService}
 import util.PasswordEncoder
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /**
@@ -33,7 +34,7 @@ class AuthenticationController @Inject()(val userService: UserService,
   }
 
   private[this] def tryLoginUser(username: String, password: String): Future[Option[User]] = {
-    userService.getUserByUsername(username) map {
+    userService.getUserByUsername(username).toFuture map {
       _ filter (_.password == (PasswordEncoder encodePassword password))
     }
   }
@@ -41,25 +42,27 @@ class AuthenticationController @Inject()(val userService: UserService,
   private[this] def updateOrCreateSession(sessionOpt: Option[UserSession], userOpt: Option[User]): Future[UserSession] = {
     sessionOpt match {
       case Some(session) =>
-        sessionService.updateSessionUser(session._id, userOpt) flatMap {
+        sessionService.updateSessionUser(session._id, userOpt).toFuture flatMap {
           case Some(updatedSession) =>
             Future.successful(updatedSession)
           case None =>
             sessionService.createSession(userOpt)
         }
       case None =>
-        sessionService.insertSession(UserSession("", userOpt map { _._id }))
+        sessionService.insertSession(UserSession("", userOpt map {
+          _._id
+        }))
     }
   }
 
   def logout = SessionRestAction.async {
     request =>
-    for {
-      _ <- sessionService.removeSession(request.userSession._id)
-      newSession <- sessionService.createSession(None)
-    } yield {
-      Ok(LogoutResult(true)).withSession(fnbSessionHeaderName -> newSession._id)
-    }
+      for {
+        _ <- sessionService.removeSession(request.userSession._id)
+        newSession <- sessionService.createSession(None)
+      } yield {
+        Ok(LogoutResult(true)).withSession(fnbSessionHeaderName -> newSession._id)
+      }
   }
 
 }

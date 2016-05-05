@@ -8,6 +8,7 @@ import play.api.cache.CacheApi
 import play.modules.reactivemongo.{ReactiveMongoApi, ReactiveMongoComponents}
 import reactivemongo.bson.{BSONDocument, BSONDocumentReader, BSONDocumentWriter}
 import storage.ThreadDAO
+import util.FutureOption
 
 import scala.concurrent.Future
 
@@ -19,7 +20,7 @@ class MongoThreadDAO @Inject()(cacheApi: CacheApi, val reactiveMongoApi: Reactiv
 
   implicit val bsonReader = implicitly[BSONDocumentReader[Thread]]
 
-  override def updateLastPost(id: String, user: String, date: DateTime): Future[Option[Thread]] = {
+  override def updateLastPost(id: String, user: String, date: DateTime): FutureOption[Thread] = {
     val selector = BSONDocument("_id" -> id)
     val modifier = BSONDocument(
       "$set" -> BSONDocument(

@@ -1,17 +1,17 @@
 package controllers
 
-import javax.inject.Singleton
+import controllers.ApiResults.{accessDeniedResult, invalidSessionResult}
+import exceptions.{ApiException, ApiExceptions}
+import models._
+import permissions.ForumPermissions.ForumPermission
+import permissions.GlobalPermissions.GlobalPermission
+import permissions.ThreadPermissions.ThreadPermission
+import play.api.mvc.{Request, RequestHeader, Result, WrappedRequest}
+import services.{PermissionService, SessionService, UserService}
 
-import scala.{ Left, Right }
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-
-import play.api.mvc.{ Request, RequestHeader, Result, WrappedRequest }
-
-import ApiResults.{ accessDeniedResult, invalidSessionResult }
-import exceptions.ApiException
-import models.{ User, UserSession }
-import services.{ SessionService, UserService }
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 
 trait SecuredController extends AbstractController {
 
@@ -20,6 +20,8 @@ trait SecuredController extends AbstractController {
   implicit val userService: UserService
 
   implicit val sessionService: SessionService
+
+  implicit val permissionService: PermissionService
 
   implicit def request2maybeUser(implicit request: UserOptionRequest) = request.maybeUser
 
@@ -49,10 +51,8 @@ trait SecuredController extends AbstractController {
 
     override def refine[A](request: Request[A]): Future[Either[Result, SessionRequest[A]]] =
       OptionalSessionApiAction.refine(request) map {
-        _ match {
-          case Left(result)                  => Left(result)
-          case Right(optionalSessionRequest) => optionalSessionRequest.maybeSessionRequest.map(Right(_)).getOrElse(Left(accessDeniedResult))
-        }
+        case Left(result)                  => Left(result)
+        case Right(optionalSessionRequest) => optionalSessionRequest.maybeSessionRequest.map(Right(_)).getOrElse(Left(accessDeniedResult))
       }
 
   }
@@ -61,12 +61,46 @@ trait SecuredController extends AbstractController {
 
     override def refine[A](request: Request[A]): Future[Either[Result, UserRequest[A]]] =
       SessionApiAction.refine(request) map {
-        _ match {
-          case Left(result)          => Left(result)
-          case Right(sessionRequest) => sessionRequest.maybeUserRequest.map(Right(_)).getOrElse(Left(accessDeniedResult))
-        }
+        case Left(result)          => Left(result)
+        case Right(sessionRequest) => sessionRequest.maybeUserRequest.map(Right(_)).getOrElse(Left(accessDeniedResult))
       }
 
+  }
+
+  @deprecated("Blocking - Will be replaced by non-blocking call in new API", "2016-05-05")
+  def requireGlobalPermission(permission: GlobalPermission)(implicit userOpt: Option[User]): Unit = {
+    val checkResult = Await.result(permissionService.checkGlobalPermission(permission), Duration.Inf)
+    if (!checkResult) ApiExceptions.accessDeniedException
+  }
+
+  @deprecated("Blocking - Will be replaced by non-blocking call in new API", "2016-05-05")
+  def requireGlobalPermissions(permissions: GlobalPermission*)(implicit userOpt: Option[User]): Unit = {
+    val checkResult = Await.result(permissionService.checkGlobalPermissions(permissions: _*), Duration.Inf)
+    if (!checkResult) ApiExceptions.accessDeniedException
+  }
+
+  @deprecated("Blocking - Will be replaced by non-blocking call in new API", "2016-05-05")
+  def requireForumPermission(permission: ForumPermission, cat: ForumCategory, forum: Forum)(implicit userOpt: Option[User]): Unit = {
+    val checkResult = Await.result(permissionService.checkForumPermission(permission, cat, forum), Duration.Inf)
+    if (!checkResult) ApiExceptions.accessDeniedException
+  }
+
+  @deprecated("Blocking - Will be replaced by non-blocking call in new API", "2016-05-05")
+  def requireThreadPermission(permission: ThreadPermission, cat: ForumCategory, forum: Forum, thread: Thread)(implicit userOpt: Option[User]): Unit = {
+    val checkResult = Await.result(permissionService.checkThreadPermission(permission, cat, forum, thread), Duration.Inf)
+    if (!checkResult) ApiExceptions.accessDeniedException
+  }
+
+  @deprecated("Blocking - Will be replaced by non-blocking call in new API", "2016-05-05")
+  def hasForumPermission(permission: ForumPermission, cat: ForumCategory, forum: Forum)(implicit userOpt: Option[User]): Boolean = {
+    val checkResult = Await.result(permissionService.checkForumPermission(permission, cat, forum), Duration.Inf)
+    checkResult
+  }
+
+  @deprecated("Blocking - Will be replaced by non-blocking call in new API", "2016-05-05")
+  def hasThreadPermission(permission: ThreadPermission, cat: ForumCategory, forum: Forum, thread: Thread)(implicit userOpt: Option[User]): Boolean = {
+    val checkResult = Await.result(permissionService.checkThreadPermission(permission, cat, forum, thread), Duration.Inf)
+    checkResult
   }
 
 }

@@ -2,6 +2,7 @@ package cache
 
 import models.BaseModel
 import play.api.cache.CacheApi
+import util.FutureOption
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -58,14 +59,12 @@ class BaseModelCache[T <: BaseModel[T]](cache: CacheApi, prefix: String, expirat
     * @param block asynchronous block to fetch the entity by the given id
     * @return [[Future]] of the entity (with [[None]], if the entity was not found)
     */
-  def getOrElseAsync(id: String, block: => Future[Option[T]]): Future[Option[T]] = {
-    get(id) match {
-      case Some(v) => Future.successful(Some(v))
-      case None => block andThen {
+  def getOrElseAsync(id: String, block: => FutureOption[T]): FutureOption[T] =
+    FutureOption fromOption get(id) orElse {
+      block andThen {
         case Success(Some(result)) => set(result)
       }
     }
-  }
 
   /**
     * Get entity from the cache. If the queried id is not contained in the cache, the given entity provider is used to
@@ -76,5 +75,9 @@ class BaseModelCache[T <: BaseModel[T]](cache: CacheApi, prefix: String, expirat
     * @return [[Future]] of the entity (with [[None]], if the entity was not found)
     */
   def getOrElseAsyncDef(id: String, block: => Future[T]): Future[T] =
-    getOrElseAsync(id, block map { v => Some(v) }) map { opt => opt.get }
+    get(id) map { Future.successful } getOrElse {
+      block andThen {
+        case Success(result) => set(result)
+      }
+    }
 }

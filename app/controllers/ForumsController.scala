@@ -1,23 +1,27 @@
 package controllers
 
-import javax.inject.{ Inject, Singleton }
-import scala.concurrent.Future
+import javax.inject.{Inject, Singleton}
+
+import scala.concurrent.{Await, Future}
 import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json.toJson
 import play.api.mvc.Controller
-import dto.{ InsertCategoryDTO, ListForumsCategory, ListForumsForum, ListForumsLastPost }
-import models.{ Forum, ForumCategory, Thread, User }
-import services.{ ForumCategoryService, ForumService, PermissionService, PostService, SessionService, ThreadService, UserService }
+import dto.{InsertCategoryDTO, ListForumsCategory, ListForumsForum, ListForumsLastPost}
+import models.{Forum, ForumCategory, Thread, User}
+import services.{ForumCategoryService, ForumService, PermissionService, PostService, SessionService, ThreadService, UserService}
 import util.Joda.dateTimeOrdering
 import dto.ShowForumDTO
 import dto.ShowForumPost
-import models.ForumPermissions.Access
+import permissions.ForumPermissions.Access
 import dto.ShowForumThread
-import models.GlobalPermissions.Forums
-import models.GlobalPermissions.Admin
+import permissions.GlobalPermissions.Forums
+import permissions.GlobalPermissions.Admin
 import dto.ConfigureForumsForum
 import dto.ConfigureForumsCategory
+import permissions.ThreadPermissions
+
+import scala.concurrent.duration.Duration
 
 @Singleton
 class ForumsController @Inject() (implicit val userService: UserService,
@@ -26,23 +30,23 @@ class ForumsController @Inject() (implicit val userService: UserService,
                                   forumCategoryService: ForumCategoryService,
                                   threadService: ThreadService,
                                   postService: PostService,
-                                  permissionService: PermissionService) extends Controller with SecuredController {
+                                  val permissionService: PermissionService) extends Controller with SecuredController {
 
   def getForums = OptionalSessionApiAction.async {
     implicit request =>
-      permissionService.requireGlobalPermission(Forums)
+      requireGlobalPermission(Forums)
       getForumsData
   }
   
   def getConfigureForums = UserApiAction.async {
     implicit request =>
-      permissionService.requireGlobalPermissions(Admin, Forums)
+      requireGlobalPermissions(Admin, Forums)
       getConfigureForumsData
   }
 
   def showForum(id: String) = OptionalSessionApiAction.async {
     implicit request =>
-      permissionService.requireGlobalPermission(Forums)
+      requireGlobalPermission(Forums)
       for {
         forum <- forumService.getForumForApi(id)
         category <- forumCategoryService.getCategoryForApi(forum.category)
@@ -53,7 +57,7 @@ class ForumsController @Inject() (implicit val userService: UserService,
 
   def insertCategory() = UserApiAction.async(parse.json) {
     implicit request =>
-      permissionService.requireGlobalPermissions(Admin, Forums)
+      requireGlobalPermissions(Admin, Forums)
       request.body.validate[InsertCategoryDTO].fold(
         error => Future.successful(BadRequest("Bad JSON format")),
         newCategoryDTO => {
@@ -63,7 +67,7 @@ class ForumsController @Inject() (implicit val userService: UserService,
             insertedCategory <- {
               // TODO: Concurrent position
               val maxCategorySequence = categories.sortBy(_.position).reverse.headOption.map(_.position).getOrElse(0)
-              val categoryToInsert = ForumCategory("", newCategoryDTO.title, maxCategorySequence + 1, None)
+              val categoryToInsert = ForumCategory("", newCategoryDTO.title, maxCategorySequence + 1, None, None)
               forumCategoryService.insertCategory(categoryToInsert)
             }
             result <- {
@@ -96,11 +100,11 @@ class ForumsController @Inject() (implicit val userService: UserService,
     allCategories sortBy { _.position } map {
       category =>
         val forums = allForumsByCategory.getOrElse(category._id, Seq()) filter {
-          permissionService.hasForumPermission(Access, _, category)
+          hasForumPermission(Access, category, _)
         } sortBy { _.position }
         val forumDtos = forums map {
           forum =>
-            val threadsForForum = allThreadsByForum.getOrElse(forum._id, Seq()) filter { _.accessGranted }
+            val threadsForForum = allThreadsByForum.getOrElse(forum._id, Seq()) filter { hasThreadPermission(ThreadPermissions.Access, category, forum, _) }
             val lastPost = threadsForForum.sortBy { _.lastPost.date }.reverse.headOption
             val numThreads = threadsForForum.size
             val numPosts = threadsForForum.map { _.posts }.sum
@@ -128,11 +132,12 @@ class ForumsController @Inject() (implicit val userService: UserService,
         ConfigureForumsCategory(category._id, category.name, category.position, forumDtos)
     }
 
+  @deprecated("Should be replaced by non-blocking call in new API", "2016-05-05")
   private def createShowForum(forum: Forum,
                               category: ForumCategory,
                               threads: Map[String, Seq[Thread]],
                               userIndex: Map[String, User])(implicit userOpt: Option[User]): ShowForumDTO = {
-    val visibleThreads = threads.getOrElse(forum._id, Seq()).filter { _.accessGranted }
+    val visibleThreads = threads.getOrElse(forum._id, Seq()).filter { hasThreadPermission(ThreadPermissions.Access, category, forum, _) }
     val threadDTOs = visibleThreads.map {
       thread =>
         // TODO: Check if user exists
@@ -143,7 +148,7 @@ class ForumsController @Inject() (implicit val userService: UserService,
         ShowForumThread.fromThread(thread, firstPost, latestPost)
     }
     val threadDTOsSorted = threadDTOs.sortBy { _.latestPost.date }.reverse.sortWith((a, b) => a.sticky && !b.sticky)
-    val permissions = permissionService.getAllowedForumPermissions(forum, category).map(_.name)
+    val permissions = Await.result(permissionService.listForumPermissions(category, forum), Duration.Inf)
     ShowForumDTO.fromForum(forum, threadDTOsSorted, permissions)
   }
 

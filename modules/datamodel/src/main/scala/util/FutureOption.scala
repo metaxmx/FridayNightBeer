@@ -2,6 +2,7 @@ package util
 
 import scala.concurrent._
 import scala.concurrent.duration.Duration
+import scala.util.Try
 
 /**
   * Monad combining a [[Future]] with an [[Option]]
@@ -34,17 +35,6 @@ class FutureOption[+A](wrapped: Future[Option[A]]) extends Awaitable[Option[A]] 
     }
   )
 
-  def flatMap[S](f: A => Option[S])(implicit executor: ExecutionContext): FutureOption[S] = new FutureOption(
-    wrapped map { _ flatMap f }
-  )
-
-  def flatMap[S](f: A => Future[Option[S]])(implicit executor: ExecutionContext): FutureOption[S] = new FutureOption(
-    wrapped flatMap {
-      case None => Future.successful(None)
-      case Some(value) => f(value)
-    }
-  )
-
   def filter(p: A => Boolean)(implicit executor: ExecutionContext): FutureOption[A] = new FutureOption(
     wrapped map { _ filter p }
   )
@@ -57,6 +47,11 @@ class FutureOption[+A](wrapped: Future[Option[A]]) extends Awaitable[Option[A]] 
       case Some(value) => wrapped
     }
   )
+
+  def andThen[B](pf: PartialFunction[Try[Option[A]], B])(implicit executor: ExecutionContext): FutureOption[A]  =
+    new FutureOption(wrapped.andThen(pf))
+
+  def flatten[B >: A](onEmpty: => B)(implicit executor: ExecutionContext): Future[B] = wrapped map { _ getOrElse onEmpty }
 
 }
 
@@ -71,9 +66,7 @@ object FutureOption {
     case Some(future) => new FutureOption(future map (Some(_)))
   }
 
-  def apply[A](option: Option[A])(implicit executor: ExecutionContext): FutureOption[A] = option match {
-    case None => FutureOption()
-    case Some(value) => new FutureOption(Future.successful(option))
-  }
+  def fromOption[A](option: Option[A])(implicit executor: ExecutionContext): FutureOption[A] =
+    new FutureOption(Future.successful(option))
 
 }

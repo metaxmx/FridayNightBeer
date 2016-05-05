@@ -1,6 +1,7 @@
 package storage
 
 import models.BaseModel
+import util.FutureOption
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -15,9 +16,9 @@ trait GenericDAO[T <: BaseModel[T]] {
 
   def getAll: Future[Seq[T]] = getMap map (_.values.toSeq)
 
-  def getById(id: String): Future[Option[T]] = getMap map (_ get id)
+  def getById(id: String): FutureOption[T] = FutureOption(getMap map (_ get id))
 
-  def ??(id: String): Future[Option[T]] = getById(id)
+  def ??(id: String): FutureOption[T] = getById(id)
 
   def map[S](f: Seq[T] => S): Future[S] = getAll map f
 

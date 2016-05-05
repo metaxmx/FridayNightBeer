@@ -23,7 +23,6 @@ resolvers ++= Seq(
 
 libraryDependencies ++= Seq(
   cache,
-  specs2 % Test,
   "com.google.inject" % "guice" % "4.0",
   "com.google.guava" % "guava" % "18.0",
   "javax.inject" % "javax.inject" % "1",
@@ -41,7 +40,11 @@ libraryDependencies ++= Seq(
   "org.webjars" % "smart-table" % "2.0.3",
   "org.webjars" % "textAngular" % "1.4.1",
   "org.webjars" % "font-awesome" % "4.3.0-3",
-  "org.mockito" % "mockito-core" % "1.10.17" % "test")
+
+  specs2 % Test,
+  "org.mockito" % "mockito-core" % "1.10.17" % Test,
+  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0" % Test
+)
 
 includeFilter in (Assets, LessKeys.less) := "*.less"
 

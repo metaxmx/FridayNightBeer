@@ -139,13 +139,13 @@ trait RestController extends Controller {
       case None =>
         Future.successful(Right(new OptionalSessionRequest[A](None, None, request)))
       case Some(sessionId) =>
-        sessionService.getSession(sessionId) flatMap {
+        sessionService.getSession(sessionId).toFuture flatMap {
           case None =>
             Future.successful(Left(new InvalidSessionException(sessionId).toResult))
           case Some(session) if session.user.isEmpty =>
             Future.successful(Right(new SessionRequest[A](session, None, request)))
           case Some(session) =>
-            userService.getUser(session.user.get) map {
+            userService.getUser(session.user.get).toFuture map {
               case None =>
                 Left(new InvalidSessionUserException(sessionId).toResult)
               case Some(user) =>
