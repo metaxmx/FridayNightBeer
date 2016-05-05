@@ -31,6 +31,14 @@ trait GenericDAO[T <: BaseModel[T]] {
 
   def <<!(entity: T): Future[T] = insertWithGivenId(entity)
 
+  def remove(id: String): Future[Boolean]
+
+  def ><(id: String): Future[Boolean] = remove(id)
+
+  def remove(entity: T): Future[Boolean] = remove(entity._id)
+
+  def ><(entity: T): Future[Boolean] = remove(entity._id)
+
   def invalidateCache(): Unit
 
 }

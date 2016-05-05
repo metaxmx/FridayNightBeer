@@ -61,4 +61,17 @@ abstract class MongoGenericDAO[T <: BaseModel[T]](cacheApi: CacheApi, collection
     }
   }
 
+  def remove(id: String): Future[Boolean] = {
+    val selector = BSONDocument("_id" -> id)
+    collection.remove(selector, firstMatchOnly = true) map {
+      case wr: WriteResult if wr.ok =>
+        cache.remove(id)
+        true
+      case _ =>
+        false
+    } recover {
+      case exc => throw new StorageException(s"Error deleting from collection $collectionName", exc)
+    }
+  }
+
 }

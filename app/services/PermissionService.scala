@@ -1,120 +1,113 @@
 package services
 
-import java.io.File
-import java.nio.charset.StandardCharsets.UTF_8
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 
-import org.apache.commons.io.FileUtils.{readFileToString, writeStringToFile}
-import play.api.Logger
-import exceptions.ApiExceptions.accessDeniedException
-import models.{AccessRule, Forum, ForumCategory, ForumPermissions}
-import models.{PermissionConfiguration, User}
-import models.ForumPermissions.{Access, Close, ForumPermission, Sticky}
-import models.GlobalPermissions
-import models.GlobalPermissions.{Admin, Forums, GlobalPermission}
-import org.json4s.{DefaultFormats, Extraction}
-import org.json4s.native._
+import models._
+import permissions.ForumPermissions.ForumPermission
+import permissions.GlobalPermissions.GlobalPermission
+import permissions.ThreadPermissions.ThreadPermission
+import permissions.{ForumPermissions, GlobalPermissions, ThreadPermissions}
+import storage.PermissionDAO
+
+import scala.concurrent.Future
 
 @Singleton
-class PermissionService {
+class PermissionService @Inject()(permissionDAO: PermissionDAO) {
 
-  implicit val formats = DefaultFormats
-
-  // TODO: Move to DB
-  val permissionsFile = new File("appdata/permissions.json")
-
-  val permissions = validateAndAddDefaultPermissions(readPermissions())
-
-  private def readPermissions(): PermissionConfiguration =
-    if (permissionsFile.exists)
-      JsonParser.parse(readFileToString(permissionsFile, UTF_8)).extract[PermissionConfiguration]
-    else
-      PermissionConfiguration(Seq(), Seq())
-
-  def savePermissions() = {
-    Logger.info("Saving permissions to file")
-    writeStringToFile(permissionsFile, Serialization.writePretty(Extraction.decompose(permissions)))
+  def checkGlobalPermission(permission: GlobalPermission)(implicit userOpt: Option[User]): Future[Boolean] = {
+    val permissionType = GlobalPermissions.name
+    val permissionName = permission.name
+    for {
+      permissionMap <- permissionDAO.getPermissionMap
+    } yield {
+      val globalRule = permissionMap.get(permissionType).flatMap(_.get(permissionName))
+      val accessRuleChain = AccessRuleChain(globalRule.toSeq)
+      accessRuleChain.allowed
+    }
   }
 
-  // Save permissions of service initializcation
-  savePermissions()
-
-  private def validateAndAddDefaultPermissions(permissions: PermissionConfiguration): PermissionConfiguration = {
-    val definedGlobalPermissions = permissions.globalPermissions.filter {
-      accessRule =>
-        if (GlobalPermissions.valuesByName.contains(accessRule.permission))
-          true
-        else {
-          Logger.warn(s"Unknown global permission '${accessRule.permission}' will be ignored")
-          false
-        }
-    }.map { accessRule => GlobalPermission(accessRule.permission) -> accessRule }.toMap
-    val undefinedGlobalPermissions = GlobalPermissions.values.filterNot { definedGlobalPermissions contains _ }
-
-    val definedForumPermissions = permissions.defaultForumPermissions.filter {
-      accessRule =>
-        if (ForumPermissions.valuesByName.contains(accessRule.permission))
-          true
-        else {
-          Logger.warn(s"Unknown default forum permission '${accessRule.permission}' will be ignored")
-          false
-        }
-    }.map { accessRule => ForumPermission(accessRule.permission) -> accessRule }.toMap
-    val undefinedForumPermissions = ForumPermissions.values.filterNot { definedForumPermissions contains _ }
-
-    val completeGlobalPermissions = definedGlobalPermissions ++ undefinedGlobalPermissions.map {
-      permission =>
-        permission -> (permission match {
-          case Admin  => makeDefaultAccessRule(permission.name, false, "admin")
-          case Forums => makeDefaultAccessRule(permission.name, true)
-          case _      => makeDefaultAccessRule(permission.name, false)
-        })
-    }.toMap
-
-    val completeForumPermissions = definedForumPermissions ++ undefinedForumPermissions.map {
-      permission =>
-        permission -> (permission match {
-          case Access => makeDefaultAccessRule(permission.name, true)
-          case Sticky => makeDefaultAccessRule(permission.name, false, Seq("admin", "supermod"))
-          case Close  => makeDefaultAccessRule(permission.name, false, Seq("admin", "supermod"))
-          case _      => makeDefaultAccessRule(permission.name, false)
-        })
-    }.toMap
-
-    PermissionConfiguration(
-      GlobalPermissions.values.map { completeGlobalPermissions apply _ },
-      ForumPermissions.values.map { completeForumPermissions apply _ })
-
+  def checkForumPermission(permission: ForumPermission,
+                           forumCategory: ForumCategory,
+                           forum: Forum)(implicit userOpt: Option[User]): Future[Boolean] = {
+    val permissionType = ForumPermissions.name
+    val permissionName = permission.name
+    for {
+      permissionMap <- permissionDAO.getPermissionMap
+    } yield {
+      val globalRule = permissionMap.get(permissionType).flatMap(_.get(permissionName))
+      val categoryRule = forumCategory.forumPermissionMap.get(permissionName)
+      val forumRule = forum.forumPermissionMap.get(permissionName)
+      val accessRuleChain = AccessRuleChain(Seq(globalRule, categoryRule, forumRule).flatten)
+      accessRuleChain.allowed
+    }
   }
 
-  private def makeDefaultAccessRule(permission: String, guestAllowed: Boolean) =
-    AccessRule(permission, None, None, None, None, guestAllowed)
+  def checkThreadPermission(permission: ThreadPermission,
+                            forumCategory: ForumCategory,
+                            forum: Forum,
+                            thread: Thread)(implicit userOpt: Option[User]): Future[Boolean] = {
+    val permissionType = ThreadPermissions.name
+    val permissionName = permission.name
+    for {
+      permissionMap <- permissionDAO.getPermissionMap
+    } yield {
+      val globalRule = permissionMap.get(permissionType).flatMap(_.get(permissionName))
+      val categoryRule = forumCategory.threadPermissionMap.get(permissionName)
+      val forumRule = forum.threadPermissionMap.get(permissionName)
+      val threadRule = thread.threadPermissionMap.get(permissionName)
+      val accessRuleChain = AccessRuleChain(Seq(globalRule, categoryRule, forumRule, threadRule).flatten)
+      accessRuleChain.allowed
+    }
+  }
 
-  private def makeDefaultAccessRule(permission: String, guestAllowed: Boolean, permittedGroup: String) =
-    AccessRule(permission, None, None, None, Some(Seq(permittedGroup)), guestAllowed)
+  def listGlobalPermissions()(implicit userOpt: Option[User]): Future[Seq[String]] = {
+    val permissionType = GlobalPermissions.name
+    for {
+      permissionMap <- permissionDAO.getPermissionMap
+    } yield {
+      GlobalPermissions.values flatMap {
+        globalPermission =>
+          val globalRule = permissionMap.get(permissionType).flatMap(_.get(globalPermission.name))
+          val accessRuleChain = AccessRuleChain(globalRule.toSeq)
+          if (accessRuleChain.allowed) Some(globalPermission.name) else None
+      }
+    }
+  }
 
-  private def makeDefaultAccessRule(permission: String, guestAllowed: Boolean, permittedGroups: Seq[String]) =
-    AccessRule(permission, None, None, None, Some(permittedGroups), guestAllowed)
+  def listForumPermissions(forumCategory: ForumCategory,
+                           forum: Forum)(implicit userOpt: Option[User]): Future[Seq[String]] = {
+    val permissionType = ForumPermissions.name
+    for {
+      permissionMap <- permissionDAO.getPermissionMap
+    } yield {
+      ForumPermissions.values flatMap {
+        forumPermission =>
+          val globalRule = permissionMap.get(permissionType).flatMap(_.get(forumPermission.name))
+          val categoryRule = forumCategory.forumPermissionMap.get(forumPermission.name)
+          val forumRule = forum.forumPermissionMap.get(forumPermission.name)
+          val accessRuleChain = AccessRuleChain(Seq(globalRule, categoryRule, forumRule).flatten)
+          if (accessRuleChain.allowed) Some(forumPermission.name) else None
+      }
+    }
+  }
 
-  def hasGlobalPermission(permission: GlobalPermission)(implicit maybeUser: Option[User]): Boolean =
-    permissions.globalPermissionAllowed(permission).getOrElse(false)
-
-  def getAllowedGlobalPermissions(implicit maybeUser: Option[User]): Seq[GlobalPermission] =
-    GlobalPermissions.values.filter { hasGlobalPermission(_) }
-
-  def requireGlobalPermission(permission: GlobalPermission)(implicit maybeUser: Option[User]): Unit =
-    if (!hasGlobalPermission(permission)) accessDeniedException
-
-  def requireGlobalPermissions(permissions: GlobalPermission*)(implicit maybeUser: Option[User]): Unit =
-    if (!permissions.forall(hasGlobalPermission(_))) accessDeniedException
-
-  def hasForumPermission(permission: ForumPermission, forum: Forum, category: ForumCategory)(implicit maybeUser: Option[User]): Boolean =
-    permissions.forumPermissionAllowed(permission, forum, category).getOrElse(false)
-
-  def getAllowedForumPermissions(forum: Forum, category: ForumCategory)(implicit maybeUser: Option[User]): Seq[ForumPermission] =
-    ForumPermissions.values.filter { hasForumPermission(_, forum, category) }
-
-  def requireForumPermission(permission: ForumPermission, forum: Forum, category: ForumCategory)(implicit maybeUser: Option[User]): Unit =
-    if (!hasForumPermission(permission, forum, category)) accessDeniedException
+  def listThreadPermissions(forumCategory: ForumCategory,
+                            forum: Forum,
+                            thread: Thread)(implicit userOpt: Option[User]): Future[Seq[String]] = {
+    val permissionType = ThreadPermissions.name
+    for {
+      permissionMap <- permissionDAO.getPermissionMap
+    } yield {
+      ThreadPermissions.values flatMap {
+        threadPermission =>
+          val globalRule = permissionMap.get(permissionType).flatMap(_.get(threadPermission.name))
+          val categoryRule = forumCategory.threadPermissionMap.get(threadPermission.name)
+          val forumRule = forum.threadPermissionMap.get(threadPermission.name)
+          val threadRule = thread.threadPermissionMap.get(threadPermission.name)
+          val accessRuleChain = AccessRuleChain(Seq(globalRule, categoryRule, forumRule).flatten)
+          if (accessRuleChain.allowed) Some(threadPermission.name) else None
+      }
+    }
+  }
 
 }

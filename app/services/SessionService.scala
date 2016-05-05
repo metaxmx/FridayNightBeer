@@ -22,6 +22,8 @@ class SessionService @Inject()(uuidGenerator: UUIDGenerator,
 
   def updateSessionUser(id: String, userOpt: Option[User]): Future[Option[UserSession]] = sessionDAO.updateSessionUser(id, userOpt)
 
+  def removeSession(id: String): Future[Boolean] = sessionDAO.remove(id)
+
   def getSessionForApi(id: String): Future[Option[UserSession]] = getSession(id) recover {
     case e: QueryException => dbException(e)
   }

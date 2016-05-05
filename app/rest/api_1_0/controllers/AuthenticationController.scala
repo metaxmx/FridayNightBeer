@@ -11,7 +11,7 @@ import util.PasswordEncoder
 import scala.concurrent.Future
 
 /**
-  * Created by Christian on 04.05.2016.
+  * Created by Christian Simon on 04.05.2016.
   */
 
 @Singleton
@@ -21,23 +21,15 @@ class AuthenticationController @Inject()(val userService: UserService,
   def login = OptionalSessionRestAction.async(jsonREST[LoginRequest]) {
     implicit request =>
       val LoginRequest(username, password) = request.body
-
       for {
         userOpt <- tryLoginUser(username, password)
         session <- updateOrCreateSession(request.maybeSession, userOpt)
+      } yield {
+        userOpt match {
+          case None => Ok(LoginResult(false, session._id)).withSession(fnbSessionHeaderName -> session._id)
+          case Some(user) => Ok(LoginResult(true, session._id, Some(user._id))).withSession(fnbSessionHeaderName -> session._id)
+        }
       }
-
-      val passwordEncoded = PasswordEncoder encodePassword password
-      userService.getUserByUsername(username) map {
-        _ filter (_.password == passwordEncoded)
-      } flatMap {
-        userOpt =>
-          request.maybeSession flatMap {
-            case Some(session) => Session
-          }
-          sessionService.updateSessionUser()
-      }
-      Future.successful(Ok(LoginResult(false)))
   }
 
   private[this] def tryLoginUser(username: String, password: String): Future[Option[User]] = {
@@ -47,11 +39,11 @@ class AuthenticationController @Inject()(val userService: UserService,
   }
 
   private[this] def updateOrCreateSession(sessionOpt: Option[UserSession], userOpt: Option[User]): Future[UserSession] = {
-    userOpt match {
+    sessionOpt match {
       case Some(session) =>
         sessionService.updateSessionUser(session._id, userOpt) flatMap {
-          case Some(existingSession) =>
-            Future.successful(existingSession)
+          case Some(updatedSession) =>
+            Future.successful(updatedSession)
           case None =>
             sessionService.createSession(userOpt)
         }
@@ -60,11 +52,14 @@ class AuthenticationController @Inject()(val userService: UserService,
     }
   }
 
-  private def loadPermissions(userOpt: Option[User]): Future
-
   def logout = SessionRestAction.async {
     request =>
-      request.session.
+    for {
+      _ <- sessionService.removeSession(request.userSession._id)
+      newSession <- sessionService.createSession(None)
+    } yield {
+      Ok(LogoutResult(true)).withSession(fnbSessionHeaderName -> newSession._id)
+    }
   }
 
 }
