@@ -1,12 +1,16 @@
 package rest.api_1_0.controllers
 
-import models.{User, UserSession}
+import models._
+import permissions.ForumPermissions.ForumPermission
+import permissions.GlobalPermissions.GlobalPermission
+import permissions.ThreadPermissions.ThreadPermission
+import permissions.{Authorization, AuthorizationPrincipal}
 import play.api.http.Writeable
 import play.api.mvc._
 import rest.Exceptions._
 import rest.Implicits._
 import rest.api_1_0.viewmodels.ViewModel
-import services.{SessionService, UserService}
+import services.{PermissionService, SessionService, UserService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -24,13 +28,18 @@ trait RestController extends Controller {
   /** Injected Session Service */
   implicit val sessionService: SessionService
 
-  /** Automatic extraction of [[Option]] of [[User]] from request. */
-  implicit def request2maybeUser(implicit request: OptionalSessionRequest[_]) = request.maybeUser
+  /** Injected Permission Service */
+  implicit val permissionService: PermissionService
 
-  implicit val viewModelWritable: Writeable[ViewModel] = jsonWritable.map(_.toJson)
+  /** Automatic extraction of [[Authorization]] and [[AuthorizationPrincipal]] from request. */
+  implicit def request2authorization(implicit request: OptionalSessionRequest[_]): Authorization with AuthorizationPrincipal =
+    new RestAuthorization(request.maybeUser)
+
+  implicit val viewModelWritable: Writeable[ViewModel] = jsonWritable map { (vm: ViewModel) => vm.toJson }
 
   /**
     * Play Action builder for REST actions with handling of [[RestException]].
+    *
     * @tparam R request parameter
     */
   trait RestActionBuilder[+R[_]] extends ActionBuilder[R] {
@@ -42,8 +51,9 @@ trait RestController extends Controller {
 
     /**
       * Inner action invocation.
+      *
       * @param request general request
-      * @param block block to generate result
+      * @param block   block to generate result
       * @tparam A request body type
       * @return result of action as [[Future]]
       */
@@ -53,6 +63,7 @@ trait RestController extends Controller {
 
   /**
     * Play action refiner for REST actions, to refine requests to REST request classes.
+    *
     * @tparam R request parameter
     */
   trait RestActionRefiner[+R[_]] extends RestActionBuilder[R] {
@@ -62,6 +73,7 @@ trait RestController extends Controller {
 
     /**
       * Refine request.
+      *
       * @param request request to refine
       * @tparam A request body type
       * @return either refined request or result with error response
@@ -122,6 +134,7 @@ trait RestController extends Controller {
 
   /**
     * Parse session key from request
+    *
     * @param request target request
     * @return optional parsed session id
     */
@@ -129,6 +142,7 @@ trait RestController extends Controller {
 
   /**
     * Parse request and return either error result or one of [[OptionalSessionRequest]], [[SessionRequest]] or [[UserRequest]].
+    *
     * @param request request to parse
     * @tparam A request body type
     * @return parse result as future
@@ -155,13 +169,26 @@ trait RestController extends Controller {
     }
   }
 
+  class RestAuthorization(val userOpt: Option[User]) extends Authorization with AuthorizationPrincipal {
+
+    override def checkGlobalPermissions(permissions: GlobalPermission*): Future[Boolean] =
+      permissionService.checkGlobalPermissions(permissions: _*)(this)
+
+    override def checkForumPermissions(category: ForumCategory, forum: Forum, permissions: ForumPermission*): Future[Boolean] =
+      permissionService.checkForumPermissions(category, forum, permissions: _*)(this)
+
+    override def checkThreadPermissions(category: ForumCategory, forum: Forum, thread: Thread, permissions: ThreadPermission*): Future[Boolean] =
+      permissionService.checkThreadPermissions(category, forum, thread, permissions: _*)(this)
+  }
+
 }
 
 /**
   * Wrapped Request with optional session and user.
+  *
   * @param maybeSession optional session
-  * @param maybeUser optional user
-  * @param request original request
+  * @param maybeUser    optional user
+  * @param request      original request
   * @tparam A request body type
   */
 class OptionalSessionRequest[A](val maybeSession: Option[UserSession], val maybeUser: Option[User], request: Request[A])
@@ -169,9 +196,10 @@ class OptionalSessionRequest[A](val maybeSession: Option[UserSession], val maybe
 
 /**
   * Wrapped Request with session and optional user.
+  *
   * @param userSession session
-  * @param maybeUser optional user
-  * @param request original request
+  * @param maybeUser   optional user
+  * @param request     original request
   * @tparam A request body type
   */
 class SessionRequest[A](val userSession: UserSession, maybeUser: Option[User], request: Request[A])
@@ -179,9 +207,10 @@ class SessionRequest[A](val userSession: UserSession, maybeUser: Option[User], r
 
 /**
   * Wrapped Request with session and user.
+  *
   * @param userSession session
-  * @param user user
-  * @param request original request
+  * @param user        user
+  * @param request     original request
   * @tparam A request body type
   */
 class UserRequest[A](userSession: UserSession, val user: User, request: Request[A])

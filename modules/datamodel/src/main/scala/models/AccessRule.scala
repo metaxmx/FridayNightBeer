@@ -1,5 +1,7 @@
 package models
 
+import permissions.AuthorizationPrincipal
+
 /**
   * Permissions:
   * ------------
@@ -31,6 +33,14 @@ trait PermissionRule {
     * @return true if permission is granted
     */
   def allowed(implicit userOpt: Option[User]): Boolean
+
+  /**
+    * Check if the permission rule is allowed for the given authorization.
+    *
+    * @param principal authorization principal
+    * @return true if permission is granted
+    */
+  def allowed(implicit principal: AuthorizationPrincipal): Boolean = allowed(principal.userOpt)
 
 }
 

@@ -5,7 +5,7 @@ import javax.inject.{Inject, Singleton}
 import models.{User, UserSession}
 import rest.Implicits._
 import rest.api_1_0.viewmodels.AuthenticationViewModels._
-import services.{SessionService, UserService}
+import services.{PermissionService, SessionService, UserService}
 import util.PasswordEncoder
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -17,7 +17,8 @@ import scala.concurrent.Future
 
 @Singleton
 class AuthenticationController @Inject()(val userService: UserService,
-                                         val sessionService: SessionService) extends RestController {
+                                         val sessionService: SessionService,
+                                         val permissionService: PermissionService) extends RestController {
 
   def login = OptionalSessionRestAction.async(jsonREST[LoginRequest]) {
     implicit request =>
