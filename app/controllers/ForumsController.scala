@@ -80,10 +80,10 @@ class ForumsController @Inject() (implicit val userService: UserService,
 
   private def getForumsData(implicit userOpt: Option[User]) =
     for {
-      categories <- forumCategoryService.getCategoriesForApi
-      forums <- forumService.getForumsByCategoryForApi
-      threads <- threadService.getThreadsByForumForApi
-      userIndex <- userService.getUserIndexForApi
+      categories <- forumCategoryService.getCategories
+      forums <- forumService.getForumsByCategory
+      threads <- threadService.getThreadsByForum
+      userIndex <- userService.getUserIndex
     } yield Ok(toJson(createListForums(categories, forums, threads, userIndex))).as(JSON)
 
   private def getConfigureForumsData(implicit userOpt: Option[User]) =

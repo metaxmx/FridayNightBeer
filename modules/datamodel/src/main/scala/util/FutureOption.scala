@@ -53,6 +53,9 @@ class FutureOption[+A](wrapped: Future[Option[A]]) extends Awaitable[Option[A]] 
 
   def flatten[B >: A](onEmpty: => B)(implicit executor: ExecutionContext): Future[B] = wrapped map { _ getOrElse onEmpty }
 
+  def fold[B](onEmpty: => Future[B])(f: A => Future[B])(implicit executor: ExecutionContext): Future[B] =
+    wrapped flatMap { _.fold(onEmpty)(f) }
+
 }
 
 object FutureOption {

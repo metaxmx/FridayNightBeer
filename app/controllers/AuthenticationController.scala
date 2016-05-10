@@ -3,7 +3,9 @@ package controllers
 import javax.inject.{Inject, Singleton}
 
 import dto.{AuthInfoResultDTO, LoginRequestDTO}
+import exceptions.ApiExceptions
 import models.User
+import permissions.AuthorizationPrincipal
 import play.api.data.Form
 import play.api.data.Forms.{mapping, nonEmptyText}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -36,16 +38,15 @@ class AuthenticationController @Inject()(implicit val userService: UserService,
       validateApiForm(loginForm) {
         loginRequest =>
           val passwordEncoded = PasswordEncoder encodePassword loginRequest.password
-          userService.getUserByUsername(loginRequest.username.toLowerCase) filter {
+          userService.getUserByUsername(loginRequest.username.toLowerCase).filter {
             _.password == passwordEncoded
-          } flatten unauthenticated flatMap {
+          }.fold(unauthenticated) {
            user =>
               // Store User in Session
-              sessionService.updateSessionUser(request.userSession._id, user).flatMap {
+              sessionService.updateSessionUser(request.userSession._id, Some(user)).toFuture.flatMap {
                 _ => authenticated(user)
-              }.toFuture
-
-          } map {
+              }
+          }.map {
             authInfoDto => Ok(toJson(authInfoDto))
           }
       }
@@ -61,11 +62,11 @@ class AuthenticationController @Inject()(implicit val userService: UserService,
       }
   }
 
-  private def unauthenticated = permissionService.listGlobalPermissions()(None) map {
+  private def unauthenticated: Future[AuthInfoResultDTO] = permissionService.listGlobalPermissions()(new UserOptPrincipal()(None)) map {
     globalPermissions => new AuthInfoResultDTO(globalPermissions)
   }
 
-  private def authenticated(user: User) = permissionService.listGlobalPermissions()(Some(user)) map {
+  private def authenticated(user: User): Future[AuthInfoResultDTO] = permissionService.listGlobalPermissions()(new UserOptPrincipal()(Some(user))) map {
     globalPermissions => new AuthInfoResultDTO(user, globalPermissions)
   }
 

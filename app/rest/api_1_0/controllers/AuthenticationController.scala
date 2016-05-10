@@ -27,10 +27,7 @@ class AuthenticationController @Inject()(val userService: UserService,
         userOpt <- tryLoginUser(username, password)
         session <- updateOrCreateSession(request.maybeSession, userOpt)
       } yield {
-        userOpt match {
-          case None => Ok(LoginResult(false, session._id)).withSession(fnbSessionHeaderName -> session._id)
-          case Some(user) => Ok(LoginResult(true, session._id, Some(user._id))).withSession(fnbSessionHeaderName -> session._id)
-        }
+        Ok(LoginResult(userOpt.isDefined, session._id, userOpt map (_._id))).withSession(fnbSessionHeaderName -> session._id)
       }
   }
 
