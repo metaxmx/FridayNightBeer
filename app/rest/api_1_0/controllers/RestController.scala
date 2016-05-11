@@ -1,10 +1,7 @@
 package rest.api_1_0.controllers
 
 import models._
-import permissions.ForumPermissions.ForumPermission
-import permissions.GlobalPermissions.GlobalPermission
-import permissions.ThreadPermissions.ThreadPermission
-import permissions.{Authorization, AuthorizationPrincipal}
+import permissions.Authorization
 import play.api.http.Writeable
 import play.api.mvc._
 import rest.Exceptions._
@@ -31,9 +28,8 @@ trait RestController extends Controller {
   /** Injected Permission Service */
   implicit val permissionService: PermissionService
 
-  /** Automatic extraction of [[Authorization]] and [[AuthorizationPrincipal]] from request. */
-  implicit def request2authorization(implicit request: OptionalSessionRequest[_]): Authorization with AuthorizationPrincipal =
-    new RestAuthorization(request.maybeUser)
+  /** Automatic extraction of [[Authorization]] from request. */
+  implicit def request2authorization(implicit request: OptionalSessionRequest[_]): Authorization = request.authorization
 
   implicit val viewModelWritable: Writeable[ViewModel] = jsonWritable map { (vm: ViewModel) => vm.toJson }
 
@@ -151,67 +147,71 @@ trait RestController extends Controller {
     implicit val req = request
     parseSessionKey(request) match {
       case None =>
-        Future.successful(Right(new OptionalSessionRequest[A](None, None, request)))
+        permissionService.createAuthorization() map {
+          authorization => Right(new OptionalSessionRequest[A](authorization, None, None, request))
+        }
       case Some(sessionId) =>
         sessionService.getSession(sessionId).toFuture flatMap {
           case None =>
             Future.successful(Left(new InvalidSessionException(sessionId).toResult))
           case Some(session) if session.user.isEmpty =>
-            Future.successful(Right(new SessionRequest[A](session, None, request)))
+            permissionService.createAuthorization() map {
+              authorization => Right(new SessionRequest[A](authorization, session, None, request))
+            }
           case Some(session) =>
-            userService.getUser(session.user.get).toFuture map {
+            userService.getUser(session.user.get).toFuture flatMap {
               case None =>
-                Left(new InvalidSessionUserException(sessionId).toResult)
+                Future.successful(Left(new InvalidSessionUserException(sessionId).toResult))
               case Some(user) =>
-                Right(new UserRequest(session, user, request))
+                permissionService.createAuthorization() map {
+                  authorization => Right(new UserRequest(authorization, session, user, request))
+                }
             }
         }
     }
-  }
-
-  class RestAuthorization(val userOpt: Option[User]) extends Authorization with AuthorizationPrincipal {
-
-    override def checkGlobalPermissions(permissions: GlobalPermission*): Future[Boolean] =
-      permissionService.checkGlobalPermissions(permissions: _*)(this)
-
-    override def checkForumPermissions(category: ForumCategory, forum: Forum, permissions: ForumPermission*): Future[Boolean] =
-      permissionService.checkForumPermissions(category, forum, permissions: _*)(this)
-
-    override def checkThreadPermissions(category: ForumCategory, forum: Forum, thread: Thread, permissions: ThreadPermission*): Future[Boolean] =
-      permissionService.checkThreadPermissions(category, forum, thread, permissions: _*)(this)
   }
 
 }
 
 /**
   * Wrapped Request with optional session and user.
-  *
+  * @param authorization request authorization
   * @param maybeSession optional session
   * @param maybeUser    optional user
   * @param request      original request
   * @tparam A request body type
   */
-class OptionalSessionRequest[A](val maybeSession: Option[UserSession], val maybeUser: Option[User], request: Request[A])
+class OptionalSessionRequest[A](val authorization: Authorization,
+                                val maybeSession: Option[UserSession],
+                                val maybeUser: Option[User],
+                                request: Request[A])
   extends WrappedRequest[A](request)
 
 /**
   * Wrapped Request with session and optional user.
-  *
+  * @param authorization request authorization
   * @param userSession session
   * @param maybeUser   optional user
   * @param request     original request
   * @tparam A request body type
   */
-class SessionRequest[A](val userSession: UserSession, maybeUser: Option[User], request: Request[A])
-  extends OptionalSessionRequest(Some(userSession), maybeUser, request)
+class SessionRequest[A](authorization: Authorization,
+                        val userSession: UserSession,
+                        maybeUser: Option[User],
+                        request: Request[A])
+  extends OptionalSessionRequest(authorization, Some(userSession), maybeUser, request)
 
 /**
   * Wrapped Request with session and user.
   *
+  * @param authorization request authorization
   * @param userSession session
   * @param user        user
   * @param request     original request
   * @tparam A request body type
   */
-class UserRequest[A](userSession: UserSession, val user: User, request: Request[A])
-  extends SessionRequest(userSession, Some(user), request)
+class UserRequest[A](authorization: Authorization,
+                     userSession: UserSession,
+                     val user: User,
+                     request: Request[A])
+  extends SessionRequest(authorization, userSession, Some(user), request)

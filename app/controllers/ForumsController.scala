@@ -23,6 +23,7 @@ import permissions.ThreadPermissions
 
 import scala.concurrent.duration.Duration
 
+@deprecated("building of new API", "2016-05-11")
 @Singleton
 class ForumsController @Inject() (implicit val userService: UserService,
                                   val sessionService: SessionService,

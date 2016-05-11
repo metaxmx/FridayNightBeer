@@ -19,6 +19,7 @@ import models.{ Post, Thread, ThreadPostData, User }
 import services.{ ForumService, PostService, SessionService, ThreadService, UserService }
 import exceptions.ApiExceptions._
 
+@deprecated("building of new API", "2016-05-11")
 @Singleton
 class TopicController @Inject() (implicit val userService: UserService,
                                  val sessionService: SessionService,
@@ -40,7 +41,7 @@ class TopicController @Inject() (implicit val userService: UserService,
         error => Future.successful(BadRequest("Bad JSON format")),
         newTopicDTO => {
           for {
-            forum <- forumService.getForumForApi(id)
+            forum <- forumService.getForum(id)
             insertedThread <- {
               val threadToInsert = Thread("", newTopicDTO.title, forum._id,
                 ThreadPostData(request.user._id, DateTime.now),

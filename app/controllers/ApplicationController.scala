@@ -14,6 +14,7 @@ import services.PermissionService
 import services.SettingsService
 import util.AppSettings
 
+@deprecated("building of new API", "2016-05-11")
 @Singleton
 class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
                                        sessionService: SessionService,

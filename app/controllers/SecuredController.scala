@@ -14,6 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 
+@deprecated("building of new API", "2016-05-11")
 trait SecuredController extends AbstractController {
 
   import SecuredController.parseSessionKey

@@ -6,15 +6,18 @@ import play.api.libs.json.Json.{ format, toJson }
 import play.api.mvc.Result
 import play.api.mvc.Results.Status
 
+@deprecated("building of new API", "2016-05-11")
 case class ApiResultErrorMessage(
   error: String)
 
+@deprecated("building of new API", "2016-05-11")
 object ApiResultErrorMessage {
 
   implicit val jsonFormat = format[ApiResultErrorMessage]
 
 }
 
+@deprecated("building of new API", "2016-05-11")
 object ApiResults {
 
   def badRequestResult = apiResult(BAD_REQUEST, "bad request")

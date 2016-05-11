@@ -5,27 +5,31 @@ import permissions.ForumPermissions.ForumPermission
 import permissions.GlobalPermissions.GlobalPermission
 import permissions.ThreadPermissions.ThreadPermission
 
-import scala.concurrent.Future
-
 /**
   * Abstract authorization object.
   * Created by Christian on 10.05.2016.
   */
-trait Authorization {
+trait Authorization extends AuthorizationPrincipal {
 
-  def checkGlobalPermission(permission: GlobalPermission): Future[Boolean] =
+  def checkGlobalPermission(permission: GlobalPermission): Boolean =
     checkGlobalPermissions(permission)
 
-  def checkGlobalPermissions(permissions: GlobalPermission*): Future[Boolean]
+  def checkGlobalPermissions(permissions: GlobalPermission*): Boolean
 
-  def checkForumPermission(category: ForumCategory, forum: Forum, permission: ForumPermission): Future[Boolean] =
+  def checkForumPermission(category: ForumCategory, forum: Forum, permission: ForumPermission): Boolean =
     checkForumPermissions(category, forum, permission)
 
-  def checkForumPermissions(category: ForumCategory, forum: Forum, permissions: ForumPermission*): Future[Boolean]
+  def checkForumPermissions(category: ForumCategory, forum: Forum, permissions: ForumPermission*): Boolean
 
-  def checkThreadPermission(category: ForumCategory, forum: Forum, thread: Thread, permission: ThreadPermission): Future[Boolean] =
+  def checkThreadPermission(category: ForumCategory, forum: Forum, thread: Thread, permission: ThreadPermission): Boolean =
     checkThreadPermissions(category, forum, thread, permission)
 
-  def checkThreadPermissions(category: ForumCategory, forum: Forum, thread: Thread, permissions: ThreadPermission*): Future[Boolean]
+  def checkThreadPermissions(category: ForumCategory, forum: Forum, thread: Thread, permissions: ThreadPermission*): Boolean
+
+  def listGlobalPermissions: Seq[String]
+
+  def listForumPermissions(forumCategory: ForumCategory, forum: Forum): Seq[String]
+
+  def listThreadPermissions(forumCategory: ForumCategory, forum: Forum, thread: Thread): Seq[String]
 
 }

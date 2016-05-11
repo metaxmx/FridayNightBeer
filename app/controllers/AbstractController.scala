@@ -14,6 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.language.higherKinds
 
+@deprecated("building of new API", "2016-05-11")
 trait AbstractController {
 
   trait ApiActionBuilder[+R[_]] extends ActionBuilder[R] {

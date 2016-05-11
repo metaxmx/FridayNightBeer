@@ -3,9 +3,7 @@ package controllers
 import javax.inject.{Inject, Singleton}
 
 import dto.{AuthInfoResultDTO, LoginRequestDTO}
-import exceptions.ApiExceptions
 import models.User
-import permissions.AuthorizationPrincipal
 import play.api.data.Form
 import play.api.data.Forms.{mapping, nonEmptyText}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -16,6 +14,7 @@ import util.PasswordEncoder
 
 import scala.concurrent.Future
 
+@deprecated("building of new API", "2016-05-11")
 @Singleton
 class AuthenticationController @Inject()(implicit val userService: UserService,
                                          val sessionService: SessionService,
@@ -62,12 +61,12 @@ class AuthenticationController @Inject()(implicit val userService: UserService,
       }
   }
 
-  private def unauthenticated: Future[AuthInfoResultDTO] = permissionService.listGlobalPermissions()(new UserOptPrincipal()(None)) map {
-    globalPermissions => new AuthInfoResultDTO(globalPermissions)
+  private def unauthenticated: Future[AuthInfoResultDTO] = permissionService.createAuthorization()(None) map {
+    auth => new AuthInfoResultDTO(auth.listGlobalPermissions)
   }
 
-  private def authenticated(user: User): Future[AuthInfoResultDTO] = permissionService.listGlobalPermissions()(new UserOptPrincipal()(Some(user))) map {
-    globalPermissions => new AuthInfoResultDTO(user, globalPermissions)
+  private def authenticated(user: User): Future[AuthInfoResultDTO] = permissionService.createAuthorization()(Some(user)) map {
+    auth => new AuthInfoResultDTO(user, auth.listGlobalPermissions)
   }
 
   private def byAuthenticationStatus(implicit userOpt: Option[User]) = userOpt match {

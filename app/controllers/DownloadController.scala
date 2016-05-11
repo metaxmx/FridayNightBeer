@@ -11,6 +11,7 @@ import play.api.mvc.Controller
 import services._
 import util.FutureOption
 
+@deprecated("building of new API", "2016-05-11")
 @Singleton
 class DownloadController @Inject() (val userService: UserService,
                                     val sessionService: SessionService,
