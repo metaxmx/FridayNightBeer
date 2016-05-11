@@ -2,6 +2,7 @@ package rest.api_1_0.controllers
 
 import models._
 import permissions.Authorization
+import permissions.GlobalPermissions.GlobalPermission
 import play.api.http.Writeable
 import play.api.mvc._
 import rest.Exceptions._
@@ -32,6 +33,12 @@ trait RestController extends Controller {
   implicit def request2authorization(implicit request: OptionalSessionRequest[_]): Authorization = request.authorization
 
   implicit val viewModelWritable: Writeable[ViewModel] = jsonWritable map { (vm: ViewModel) => vm.toJson }
+
+  def requirePermissions(permissions: GlobalPermission*)(implicit request: OptionalSessionRequest[_]): Future[Unit] =
+    if (request.authorization.checkGlobalPermissions(permissions: _*))
+      Future.successful()
+  else
+      Future.failed(ForbiddenException())
 
   /**
     * Play Action builder for REST actions with handling of [[RestException]].
@@ -147,7 +154,7 @@ trait RestController extends Controller {
     implicit val req = request
     parseSessionKey(request) match {
       case None =>
-        permissionService.createAuthorization() map {
+        permissionService.createAuthorization()(None) map {
           authorization => Right(new OptionalSessionRequest[A](authorization, None, None, request))
         }
       case Some(sessionId) =>
@@ -155,7 +162,7 @@ trait RestController extends Controller {
           case None =>
             Future.successful(Left(new InvalidSessionException(sessionId).toResult))
           case Some(session) if session.user.isEmpty =>
-            permissionService.createAuthorization() map {
+            permissionService.createAuthorization()(None) map {
               authorization => Right(new SessionRequest[A](authorization, session, None, request))
             }
           case Some(session) =>
@@ -163,7 +170,7 @@ trait RestController extends Controller {
               case None =>
                 Future.successful(Left(new InvalidSessionUserException(sessionId).toResult))
               case Some(user) =>
-                permissionService.createAuthorization() map {
+                permissionService.createAuthorization()(Some(user)) map {
                   authorization => Right(new UserRequest(authorization, session, user, request))
                 }
             }

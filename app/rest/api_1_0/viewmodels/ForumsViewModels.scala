@@ -2,9 +2,10 @@ package rest.api_1_0.viewmodels
 
 import models.{Forum, ForumCategory, Thread, User}
 import org.joda.time.DateTime
-import permissions.{Authorization, ForumPermissions}
+import permissions.Authorization
 import permissions.ForumPermissions.{Access => FAccess}
 import permissions.ThreadPermissions.{Access => TAccess}
+import util.Joda._
 
 /**
   * Created by Christian Simon on 11.05.2016.
@@ -32,21 +33,22 @@ object ForumsViewModels {
                              categories: Seq[ForumInfoCategory]) extends ViewModel
 
 
-  def createForumInfo(categories: Seq[ForumCategory], forums: Seq[Forum],
-                      threads: Seq[Thread], users: Map[String, User])(implicit authorization: Authorization): ForumInfoResult = {
+  def createForumInfo(categories: Seq[ForumCategory], forumsByCategory: Map[String, Seq[Forum]],
+                      threadsByForum: Map[String, Seq[Thread]], users: Map[String, User])(implicit authorization: Authorization): ForumInfoResult = {
     ForumInfoResult(success = true, categories.sortBy(_.position) map {
       cat =>
-        val catForums = forums.filter(_.category == cat._id).filter(forum => authorization.checkForumPermission(cat, forum, FAccess)).sortBy(_.position)
+        val catForums = forumsByCategory.getOrElse(cat._id, Seq.empty).filter(forum => authorization.checkForumPermission(cat, forum, FAccess)).sortBy(_.position)
         ForumInfoCategory(cat._id, cat.name, catForums map {
           forum =>
-            val forumThreads = threads.filter(_.forum == forum._id).filter(thread => authorization.checkThreadPermission(cat, forum, thread, TAccess))
-            val lastPostThread = forumThreads.sortBy { _.lastPost.date }.reverse.headOption
+            val forumThreads = threadsByForum.getOrElse(forum._id, Seq.empty).filter(thread => authorization.checkThreadPermission(cat, forum, thread, TAccess))
+            val lastPostThread = forumThreads.sortBy(_.lastPost.date).reverse.headOption
             ForumInfoForum(forum._id, forum.name, forum.description, forumThreads.length, forumThreads.map(_.posts).sum,
               for {
                 thread <- lastPostThread
                 user <- users.get(thread.lastPost.user)
-              } yield ForumInfoLastPost(thread._id, thread.title, thread.lastPost.user, user.displayName, thread.lastPost.date)
-              )
+              } yield {
+                ForumInfoLastPost(thread._id, thread.title, thread.lastPost.user, user.displayName, thread.lastPost.date)
+              })
         })
     } filter {
       _.forums.nonEmpty
