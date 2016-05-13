@@ -17,13 +17,17 @@ import scala.util.control.NonFatal
   */
 object Exceptions {
 
-  case class ApiErrorMessage(error: String)
+  case class ApiErrorMessage(success: Boolean, error: String)
 
   /**
     * Default Rest Exception, indicating any error when calling the requested
     *
-    * @param msg   error message
-    * @param cause cause
+    * @param msg           error message
+    * @param cause         exception cause
+    * @param statusCode    status code for the error response (or None for default Ok code)
+    * @param clientMessage message for the client (if diverting from error message)
+    * @param reportError   flag if message should be reported with Error log level
+    * @param req           request header for logging
     */
   abstract class RestException(msg: String,
                                cause: Throwable = null,
@@ -42,7 +46,7 @@ object Exceptions {
         case _ =>
       }
 
-      val responseEntity = decompose(ApiErrorMessage(clientMessage getOrElse msg))
+      val responseEntity = decompose(ApiErrorMessage(success = false, clientMessage getOrElse msg))
       Status(statusCode getOrElse OK).apply(responseEntity)
     }
 

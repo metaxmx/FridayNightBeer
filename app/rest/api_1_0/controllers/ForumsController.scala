@@ -30,7 +30,7 @@ class ForumsController @Inject()(val userService: UserService,
 
   def showForum(id: String) = OptionalSessionRestAction.async {
     implicit request =>
-      mapOk(getForumContent(id))
+      mapOk(getShowForum(id))
   }
 
   private[this] def getForumOverview(implicit request: OptionalSessionRequest[_]): Future[ForumOverviewResult] =
@@ -61,7 +61,7 @@ class ForumsController @Inject()(val userService: UserService,
       })
     }
 
-  private[this] def getForumContent(forumId: String)(implicit request: OptionalSessionRequest[_]): Future[ShowForumResult] =
+  private[this] def getShowForum(forumId: String)(implicit request: OptionalSessionRequest[_]): Future[ShowForumResult] =
     for {
       _ <- requirePermissions(GlobalPermissions.Forums)
       forum <- forumService.getForum(forumId).flatten(throw NotFoundException(s"Forum not found: $forumId"))
