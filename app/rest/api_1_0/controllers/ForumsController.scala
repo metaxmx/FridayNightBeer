@@ -2,39 +2,90 @@ package rest.api_1_0.controllers
 
 import javax.inject.{Inject, Singleton}
 
-import models.User
-import permissions.{Authorization, GlobalPermissions}
-import permissions.GlobalPermissions.Forums
-import play.api.libs.json.Json._
-import services.{PermissionService, PostService, _}
+import permissions.GlobalPermissions
+import rest.Exceptions._
 import rest.api_1_0.viewmodels.ForumsViewModels._
+import services._
+import util.Joda.dateTimeOrdering
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /**
   * Created by Christian Simon on 11.05.2016.
   */
 @Singleton
-class ForumsController @Inject() (implicit val userService: UserService,
-                                  val sessionService: SessionService,
-                                  forumService: ForumService,
-                                  forumCategoryService: ForumCategoryService,
-                                  threadService: ThreadService,
-                                  postService: PostService,
-                                  val permissionService: PermissionService) extends RestController {
+class ForumsController @Inject()(val userService: UserService,
+                                 val sessionService: SessionService,
+                                 val permissionService: PermissionService,
+                                 forumService: ForumService,
+                                 forumCategoryService: ForumCategoryService,
+                                 threadService: ThreadService,
+                                 postService: PostService) extends RestController {
 
   def getForums = OptionalSessionRestAction.async {
     implicit request =>
-      getForumInfo map { Ok apply _ }
+      mapOk(getForumOverview)
   }
 
-  private def getForumInfo(implicit authorization: Authorization): Future[ForumInfoResult] =
+  def showForum(id: String) = OptionalSessionRestAction.async {
+    implicit request =>
+      mapOk(getForumContent(id))
+  }
+
+  private[this] def getForumOverview(implicit request: OptionalSessionRequest[_]): Future[ForumOverviewResult] =
     for {
       _ <- requirePermissions(GlobalPermissions.Forums)
       categories <- forumCategoryService.getCategories
-      forums <- forumService.getForumsByCategory
-      threads <- threadService.getThreadsByForum
+      forumsByCategory <- forumService.getForumsByCategory
+      threadsByForum <- threadService.getThreadsByForum
       userIndex <- userService.getUserIndex
-    } yield createForumInfo(categories, forums, threads, userIndex)
+    } yield {
+      ForumOverviewResult(success = true, categories.sortBy(_.position) map {
+        implicit cat =>
+          val catForums = forumsByCategory.getOrElse(cat._id, Seq.empty).filter(_.checkAccess).sortBy(_.position)
+          ForumOverviewCategory(cat._id, cat.name, catForums map {
+            implicit forum =>
+              val forumThreads = threadsByForum.getOrElse(forum._id, Seq.empty).filter(_.checkAccess)
+              val lastPostThread = forumThreads.sortBy(_.lastPost.date).reverse.headOption
+              ForumOverviewForum(forum._id, forum.name, forum.description, forumThreads.length, forumThreads.map(_.posts).sum,
+                for {
+                  thread <- lastPostThread
+                  user <- userIndex.get(thread.lastPost.user)
+                } yield {
+                  ForumOverviewLastPost(thread._id, thread.title, thread.lastPost.user, user.displayName, thread.lastPost.date)
+                })
+          })
+      } filter {
+        _.forums.nonEmpty
+      })
+    }
+
+  private[this] def getForumContent(forumId: String)(implicit request: OptionalSessionRequest[_]): Future[ShowForumResult] =
+    for {
+      _ <- requirePermissions(GlobalPermissions.Forums)
+      forum <- forumService.getForum(forumId).flatten(throw NotFoundException(s"Forum not found: $forumId"))
+      category <- forumCategoryService.getCategory(forum.category).flatten(throw NotFoundException(s"Category not found: ${forum.category}"))
+      _ <- requirePermissionCheck(forum.checkAccess(category))
+      threadsForForum <- threadService.getThreadsForForum(forum._id)
+      userIndex <- userService.getUserIndex
+    } yield {
+      val visibleThreads = threadsForForum.filter {
+        _.checkAccess(category, forum)
+      }.filter {
+        thread =>
+          userIndex.contains(thread.threadStart.user) && userIndex.contains(thread.lastPost.user)
+      }.sorted
+      val threadViewModels = visibleThreads map {
+        thread =>
+          val firstPostUser = userIndex(thread.threadStart.user)
+          val firstPost = ShowForumPost(firstPostUser._id, firstPostUser.displayName, thread.threadStart.date)
+          val latestPortUser = userIndex(thread.lastPost.user)
+          val latestPost = ShowForumPost(latestPortUser._id, latestPortUser.displayName, thread.lastPost.date)
+          ShowForumThread(thread._id, thread.title, thread.posts, thread.sticky, firstPost, latestPost)
+      }
+      val forumPermissions = request.authorization.listForumPermissions(category, forum)
+      ShowForumResult(success = true, forum._id, forum.name, threadViewModels, forumPermissions)
+    }
 
 }

@@ -19,6 +19,8 @@ class ThreadService @Inject()(threadDAO: ThreadDAO,
 
   def getThreadsByForum: Future[Map[String, Seq[Thread]]] = threadDAO >> (_.groupBy(_.forum))
 
+  def getThreadsForForum(forumId: String): Future[Seq[Thread]] = getThreadsByForum map (_.getOrElse(forumId, Seq.empty))
+
   def insertThread(thread: Thread): Future[Thread] = threadDAO << thread
 
   def updateLastPost(id: String, user: String, date: DateTime) = threadDAO.updateLastPost(id, user, date)

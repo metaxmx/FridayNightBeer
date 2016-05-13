@@ -35,10 +35,12 @@ trait RestController extends Controller {
   implicit val viewModelWritable: Writeable[ViewModel] = jsonWritable map { (vm: ViewModel) => vm.toJson }
 
   def requirePermissions(permissions: GlobalPermission*)(implicit request: OptionalSessionRequest[_]): Future[Unit] =
-    if (request.authorization.checkGlobalPermissions(permissions: _*))
-      Future.successful()
-  else
-      Future.failed(ForbiddenException())
+    requirePermissionCheck(request.authorization.checkGlobalPermissions(permissions: _*))
+
+  def requirePermissionCheck(checkPermission: => Boolean)(implicit req: Request[_]): Future[Unit] =
+  if (checkPermission) Future.successful((): Unit) else Future.failed(ForbiddenException())
+
+  def mapOk(viewModelFuture: Future[ViewModel]): Future[Result] = viewModelFuture map { vm => Ok(vm) }
 
   /**
     * Play Action builder for REST actions with handling of [[RestException]].
