@@ -1,6 +1,6 @@
 name := """fnb-play"""
 
-version := "0.2"
+version := "0.1_alpha"
 
 scalaVersion := "2.11.8"
 

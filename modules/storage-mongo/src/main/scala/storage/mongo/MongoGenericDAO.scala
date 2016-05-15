@@ -49,7 +49,8 @@ abstract class MongoGenericDAO[T <: BaseModel[T]](cacheApi: CacheApi, collection
       case Failure(_) => cache.removeAll() // Reload to be on the safe side
     }
 
-  def update(id: String, selector: BSONDocument, modifier: BSONDocument): FutureOption[T] = {
+  def update(id: String, modifier: BSONDocument): FutureOption[T] = {
+    val selector = BSONDocument("_id" -> id)
     FutureOption(collection.update(selector, modifier) flatMap {
       writeResult: WriteResult =>
         cache.removeAll()

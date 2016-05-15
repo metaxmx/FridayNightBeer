@@ -2,7 +2,9 @@ package rest.api_1_0.controllers
 
 import models._
 import permissions.Authorization
+import permissions.ForumPermissions.ForumPermission
 import permissions.GlobalPermissions.GlobalPermission
+import permissions.ThreadPermissions.ThreadPermission
 import play.api.http.Writeable
 import play.api.mvc._
 import rest.Exceptions._
@@ -37,10 +39,22 @@ trait RestController extends Controller {
   def requirePermissions(permissions: GlobalPermission*)(implicit request: OptionalSessionRequest[_]): Future[Unit] =
     requirePermissionCheck(request.authorization.checkGlobalPermissions(permissions: _*))
 
+  def requireForumPermissions(category: ForumCategory, forum: Forum, permissions: ForumPermission*)(implicit request: OptionalSessionRequest[_]): Future[Unit] =
+    requirePermissionCheck(request.authorization.checkForumPermissions(category, forum, permissions: _*))
+
+  def requireThreadPermissions(category: ForumCategory, forum: Forum, thread: Thread, permissions: ThreadPermission*)(implicit request: OptionalSessionRequest[_]): Future[Unit] =
+    requirePermissionCheck(request.authorization.checkThreadPermissions(category, forum, thread, permissions: _*))
+
   def requirePermissionCheck(checkPermission: => Boolean)(implicit req: Request[_]): Future[Unit] =
   if (checkPermission) Future.successful((): Unit) else Future.failed(ForbiddenException())
 
   def mapOk(viewModelFuture: Future[ViewModel]): Future[Result] = viewModelFuture map { vm => Ok(vm) }
+
+  /**
+    * Override to define a [[GlobalPermission]] that must be checked for all Rest Actions with authorization.
+    * @return [[None]] for no permission check, or [[Some]] permission to check in front of ever request
+    */
+  def requiredGlobalPermission: Option[GlobalPermission] = None
 
   /**
     * Play Action builder for REST actions with handling of [[RestException]].
@@ -115,7 +129,7 @@ trait RestController extends Controller {
       parseRequest(request) map {
         case Left(result) => Left(result)
         case Right(req: SessionRequest[A]) => Right(req)
-        case Right(other) => Left(new ForbiddenException()(request).toResult)
+        case Right(other) => Left(ForbiddenException()(request).toResult)
       }
 
   }
@@ -129,7 +143,7 @@ trait RestController extends Controller {
       parseRequest(request) map {
         case Left(result) => Left(result)
         case Right(req: UserRequest[A]) => Right(req)
-        case Right(other) => Left(new ForbiddenException()(request).toResult)
+        case Right(other) => Left(ForbiddenException()(request).toResult)
       }
 
   }
@@ -154,26 +168,32 @@ trait RestController extends Controller {
     */
   protected def parseRequest[A](request: Request[A]): Future[Either[Result, OptionalSessionRequest[A]]] = {
     implicit val req = request
+    def checkGlobalPermission[B <: OptionalSessionRequest[A]](r: B): Either[Result, B] = {
+      requiredGlobalPermission.filterNot(p => r.authorization.checkGlobalPermission(p)) match {
+        case None => Right(r) // Either no permission to check or check successful
+        case Some(unmatchedPermission) => Left(ForbiddenException().toResult)
+      }
+    }
     parseSessionKey(request) match {
       case None =>
         permissionService.createAuthorization()(None) map {
-          authorization => Right(new OptionalSessionRequest[A](authorization, None, None, request))
+          authorization => checkGlobalPermission(new OptionalSessionRequest[A](authorization, None, None, request))
         }
       case Some(sessionId) =>
         sessionService.getSession(sessionId).toFuture flatMap {
           case None =>
-            Future.successful(Left(new InvalidSessionException(sessionId).toResult))
+            Future.successful(Left(InvalidSessionException(sessionId).toResult))
           case Some(session) if session.user.isEmpty =>
             permissionService.createAuthorization()(None) map {
-              authorization => Right(new SessionRequest[A](authorization, session, None, request))
+              authorization => checkGlobalPermission(new SessionRequest[A](authorization, session, None, request))
             }
           case Some(session) =>
             userService.getUser(session.user.get).toFuture flatMap {
               case None =>
-                Future.successful(Left(new InvalidSessionUserException(sessionId).toResult))
+                Future.successful(Left(InvalidSessionUserException(sessionId).toResult))
               case Some(user) =>
                 permissionService.createAuthorization()(Some(user)) map {
-                  authorization => Right(new UserRequest(authorization, session, user, request))
+                  authorization => checkGlobalPermission(new UserRequest(authorization, session, user, request))
                 }
             }
         }

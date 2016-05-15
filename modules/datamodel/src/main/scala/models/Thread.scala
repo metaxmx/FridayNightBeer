@@ -15,6 +15,7 @@ case class Thread(_id: String,
                   lastPost: ThreadPostData,
                   posts: Int,
                   sticky: Boolean,
+                  closed: Boolean,
                   threadPermissions: Option[Map[String, AccessRule]]) extends BaseModel[Thread] {
 
   lazy val threadPermissionMap = threadPermissions.getOrElse(Map.empty)

@@ -7,6 +7,10 @@ import org.joda.time.DateTime
   */
 object ThreadsViewModels {
 
+  /*
+   * Show Thread
+   */
+
   case class ShowThreadPostUpload(filename: String,
                                   size: Long,
                                   hits: Int) extends ViewModel
@@ -27,5 +31,28 @@ object ThreadsViewModels {
                               forumTitle: String,
                               posts: Seq[ShowThreadPost]) extends ViewModel
 
+  /*
+   * Create Thread
+   */
+
+  case class CreateThreadRequest(title: String,
+                                 firstPostContent: String,
+                                 sticky: Boolean,
+                                 close: Boolean) extends ViewModel
+
+
+  case class CreateThreadResult(success: Boolean,
+                                id: String) extends ViewModel
+
+  /*
+   * Create Post
+   */
+
+  case class CreatePostRequest(content: String,
+                               makeSticky: Boolean,
+                               close: Boolean) extends ViewModel
+
+
+  case class CreatePostResult(success: Boolean) extends ViewModel
 
 }

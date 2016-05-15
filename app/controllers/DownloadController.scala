@@ -15,7 +15,7 @@ import util.FutureOption
 @Singleton
 class DownloadController @Inject() (val userService: UserService,
                                     val sessionService: SessionService,
-                                    val permissionsService: PermissionService,
+                                    val permissionService: PermissionService,
                                     postService: PostService,
                                     threadService: ThreadService,
                                     forumService: ForumService,
@@ -45,8 +45,8 @@ class DownloadController @Inject() (val userService: UserService,
         thread <- threadService.getThread(post.thread)
         forum <- forumService.getForum(thread.forum)
         category <- catService.getCategory(forum.category)
-        permissionResult <- FutureOption(permissionsService.checkThreadPermissions(category, forum, thread, ThreadPermissions.Access).map(Some.apply))
       } yield {
+        val permissionResult = hasThreadPermission(ThreadPermissions.Access, category, forum, thread)
         if (permissionResult) {
           val postId = post._id
           val uploadOpt = post.uploads.find(_.filename == filename)

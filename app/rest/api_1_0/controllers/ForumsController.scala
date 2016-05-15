@@ -23,6 +23,8 @@ class ForumsController @Inject()(val userService: UserService,
                                  threadService: ThreadService,
                                  postService: PostService) extends RestController {
 
+  override def requiredGlobalPermission = Some(GlobalPermissions.Forums)
+
   def getForums = OptionalSessionRestAction.async {
     implicit request =>
       mapOk(getForumOverview)
@@ -33,9 +35,13 @@ class ForumsController @Inject()(val userService: UserService,
       mapOk(getShowForum(id))
   }
 
+  def showForumHead(id: String) = OptionalSessionRestAction.async {
+    implicit request =>
+      mapOk(getShowForumHead(id))
+  }
+
   private[this] def getForumOverview(implicit request: OptionalSessionRequest[_]): Future[ForumOverviewResult] =
     for {
-      _ <- requirePermissions(GlobalPermissions.Forums)
       categories <- forumCategoryService.getCategories
       forumsByCategory <- forumService.getForumsByCategory
       threadsByForum <- threadService.getThreadsByForum
@@ -63,9 +69,8 @@ class ForumsController @Inject()(val userService: UserService,
 
   private[this] def getShowForum(forumId: String)(implicit request: OptionalSessionRequest[_]): Future[ShowForumResult] =
     for {
-      _ <- requirePermissions(GlobalPermissions.Forums)
-      forum <- forumService.getForum(forumId).flatten(throw NotFoundException(s"Forum not found: $forumId"))
-      category <- forumCategoryService.getCategory(forum.category).flatten(throw NotFoundException(s"Category not found: ${forum.category}"))
+      forum <- forumService.getForumOrElse(forumId, throw NotFoundException(s"Forum not found: $forumId"))
+      category <- forumCategoryService.getCategoryOrElse(forum.category, throw NotFoundException(s"Category not found: ${forum.category}"))
       _ <- requirePermissionCheck(forum.checkAccess(category))
       threadsForForum <- threadService.getThreadsForForum(forum._id)
       userIndex <- userService.getUserIndex
@@ -88,4 +93,13 @@ class ForumsController @Inject()(val userService: UserService,
       ShowForumResult(success = true, forum._id, forum.name, threadViewModels, forumPermissions)
     }
 
+  private[this] def getShowForumHead(forumId: String)(implicit request: OptionalSessionRequest[_]): Future[ShowForumHeadResult] =
+    for {
+      forum <- forumService.getForumOrElse(forumId, throw NotFoundException(s"Forum not found: $forumId"))
+      category <- forumCategoryService.getCategoryOrElse(forum.category, throw NotFoundException(s"Category not found: ${forum.category}"))
+      _ <- requirePermissionCheck(forum.checkAccess(category))
+    } yield {
+      val forumPermissions = request.authorization.listForumPermissions(category, forum)
+      ShowForumHeadResult(success = true, forum._id, forum.name, forumPermissions)
+    }
 }

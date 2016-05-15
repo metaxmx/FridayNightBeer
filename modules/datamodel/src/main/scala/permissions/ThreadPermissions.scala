@@ -9,7 +9,9 @@ object ThreadPermissions extends PermissionType {
 
   case object Access extends ThreadPermission
 
-  val values = Seq(Access)
+  case object Reply extends ThreadPermission
+
+  val values = Seq(Access, Reply)
 
   lazy val valuesByName = values.map { value => value.name -> value }.toMap
 

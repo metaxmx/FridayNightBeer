@@ -14,13 +14,12 @@ import services.PermissionService
 import services.SettingsService
 import util.AppSettings
 
-@deprecated("building of new API", "2016-05-11")
 @Singleton
 class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
                                        sessionService: SessionService,
                                        permissionService: PermissionService,
                                        settingsService: SettingsService,
-                                       appSettings: AppSettings) extends Controller with AbstractController {
+                                       appSettings: AppSettings) extends Controller {
 
   def appPage = Action.async {
     implicit request =>
@@ -54,9 +53,5 @@ class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
       session => Future.successful(session)
     }
   } yield existingSession
-
-  def randomUUID = Action {
-    Ok(uuidGenerator.generateStr)
-  }
 
 }

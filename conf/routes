@@ -3,42 +3,47 @@
 #
 # ~~~~
 
+# ------ Application Entrypoints -------
+
 # Single endpoint for serving AngularJS
-GET     /                             @controllers.ApplicationController.appPage
-GET     /randomUUID                   @controllers.ApplicationController.randomUUID
+GET     /                               @controllers.ApplicationController.appPage
 
 # Virtual Pages
-GET     /login                        @controllers.ApplicationController.appPage
-GET     /forum/:id                    @controllers.ApplicationController.showForumPage(id: String)
-GET     /forum/:id/newtopic           @controllers.ApplicationController.showNewTopicPage(id: String)
-GET     /topic/:id                    @controllers.ApplicationController.showTopicPage(id: String)
-GET     /admin/forum/configure        @controllers.ApplicationController.appPage
+GET     /login                          @controllers.ApplicationController.appPage
+GET     /forum/:id                      @controllers.ApplicationController.showForumPage(id: String)
+GET     /forum/:id/newtopic             @controllers.ApplicationController.showNewTopicPage(id: String)
+GET     /topic/:id                      @controllers.ApplicationController.showTopicPage(id: String)
+GET     /admin/forum/configure          @controllers.ApplicationController.appPage
 
 # Files
-GET     /avatar/:id                   @controllers.DownloadController.downloadAvatar(id: String)
-GET     /uploads/:id/:filename        @controllers.DownloadController.downloadPostUpload(id: String, filename: String)
+GET     /avatar/:id                     @controllers.DownloadController.downloadAvatar(id: String)
+GET     /uploads/:id/:filename          @controllers.DownloadController.downloadPostUpload(id: String, filename: String)
+
+# ------- REST API 1.0 ---------
 
 # Authentication
-GET     /api/1/authentication/info    @controllers.AuthenticationController.getAuthInfo
-POST    /api/1/authentication/login   @controllers.AuthenticationController.login
-POST    /api/1/authentication/logout  @controllers.AuthenticationController.logout
+#GET     /api/1.0/authentication/info    @rest.api_1_0.controllers.AuthenticationController.???
+POST    /api/1.0/authentication/login   @rest.api_1_0.controllers.AuthenticationController.login
+POST    /api/1.0/authentication/logout  @rest.api_1_0.controllers.AuthenticationController.logout
 
 # Index / List Forums
-GET     /api/1/forums/list            @controllers.ForumsController.getForums
+GET     /api/1.0/forums/list            @rest.api_1_0.controllers.ForumsController.getForums
 
 # Show Forum
-GET     /api/1/forum/:id              @controllers.ForumsController.showForum(id: String)
+GET     /api/1.0/forum/:id              @rest.api_1_0.controllers.ForumsController.showForum(id: String)
 
 # Configure Forums
-GET     /api/1/forums/configure       @controllers.ForumsController.getConfigureForums
+#GET     /api/1.0/forums/configure       @rest.api_1_0.controllers.ForumsController.???
 
 # Show Topic
-GET     /api/1/topic/:id              @controllers.TopicController.showTopic(id: String)
-POST    /api/1/topic/:id              @controllers.TopicController.insertPost(id: String)
+GET     /api/1.0/thread/:id             @rest.api_1_0.controllers.ThreadController.showThread(id: String)
+POST    /api/1.0/thread/:id             @rest.api_1_0.controllers.ThreadController.createPost(id: String)
 
 # New Topic
-GET     /api/1/newtopic/:id           @controllers.TopicController.showNewTopic(id: String)
-POST    /api/1/newtopic/:id           @controllers.TopicController.newTopic(id: String)
+GET     /api/1.0/newthread/:id          @rest.api_1_0.controllers.ForumsController.showForumHead(id: String)
+POST    /api/1.0/newthread/:id          @rest.api_1_0.controllers.ThreadController.createThread(id: String)
+
+# ------ Static Resources -------
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file                 @controllers.Assets.at(path="/public", file)
+GET     /assets/*file                   @controllers.Assets.at(path="/public", file)

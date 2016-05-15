@@ -1,17 +1,20 @@
 package rest
 
-import org.scalatestplus.play.PlaySpec
+import play.api.mvc.Results
+import play.api.test._
+import play.api.test.Helpers._
 import rest.Exceptions.RestException
+import org.scalatestplus.play._
+import play.api.libs.json.{JsObject, JsValue}
 
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
-
-import Implicits._
+import scala.concurrent.Future
 
 /**
   * Created by Christian on 05.05.2016.
   */
-class ExceptionsTest extends PlaySpec {
+class ExceptionsTest extends PlaySpec with Results {
+
+  implicit val request = FakeRequest()
 
   "REST Exceptions" must {
 
@@ -20,13 +23,12 @@ class ExceptionsTest extends PlaySpec {
       val runtimeExc = new IllegalStateException(message)
       val restException = RestException(runtimeExc)
 
-      assert (restException.isInstanceOf[RestException])
+      restException mustBe a[RestException]
 
-      val excBody = restException.toResult.body
-      val bodyContent = Await.result(excBody.consumeData, Duration.Inf)
+      val result = Future.successful(restException.toResult)
 
-      assert(codec.decode(bodyContent) contains message)
-
+      status(result) mustBe INTERNAL_SERVER_ERROR
+      contentAsString(result) must contain("unknown exception")
     }
 
   }

@@ -53,4 +53,13 @@ object ForumsViewModels {
                              threads: Seq[ShowForumThread],
                              permissions: Seq[String]) extends ViewModel
 
+  /*
+   * Show Forum Head
+   */
+
+  case class ShowForumHeadResult(success: Boolean,
+                                 id: String,
+                                 title: String,
+                                 permissions: Seq[String]) extends ViewModel
+
 }

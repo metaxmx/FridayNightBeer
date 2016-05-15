@@ -9,15 +9,13 @@ object ForumPermissions extends PermissionType {
 
   case object Access extends ForumPermission
 
-  case object NewTopic extends ForumPermission
-
-  case object Reply extends ForumPermission
+  case object CreateThread extends ForumPermission
 
   case object Sticky extends ForumPermission
 
   case object Close extends ForumPermission
 
-  val values = Seq(Access, NewTopic, Reply, Sticky, Close)
+  val values = Seq(Access, CreateThread, Sticky, Close)
 
   lazy val valuesByName = values.map { value => value.name -> value }.toMap
 

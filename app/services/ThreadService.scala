@@ -17,6 +17,8 @@ class ThreadService @Inject()(threadDAO: ThreadDAO,
 
   def getThread(id: String): FutureOption[Thread] = threadDAO ?? id
 
+  def getThreadOrElse(id: String, onEmpty: => Thread): Future[Thread] = getThread(id) flatten onEmpty
+
   def getThreadsByForum: Future[Map[String, Seq[Thread]]] = threadDAO >> (_.groupBy(_.forum))
 
   def getThreadsForForum(forumId: String): Future[Seq[Thread]] = getThreadsByForum map (_.getOrElse(forumId, Seq.empty))
@@ -24,6 +26,10 @@ class ThreadService @Inject()(threadDAO: ThreadDAO,
   def insertThread(thread: Thread): Future[Thread] = threadDAO << thread
 
   def updateLastPost(id: String, user: String, date: DateTime) = threadDAO.updateLastPost(id, user, date)
+
+  def updateSticky(id: String, sticky: Boolean) = threadDAO.updateSticky(id, sticky)
+
+  def updateClosed(id: String, closed: Boolean) = threadDAO.updateClosed(id, closed)
 
   def getThreadWithForum(id: String): FutureOption[(Thread, Forum, ForumCategory)] = for {
     thread <- getThread(id)
