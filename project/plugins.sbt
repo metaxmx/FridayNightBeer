@@ -11,7 +11,15 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-coffeescript" % "1.0.0")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-less" % "1.0.6")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-less" % "1.0.6")
+// provides server side compilation of typescript to ecmascript 5 or 3
+addSbtPlugin("name.de-vries" % "sbt-typescript" % "0.2.6")
+
+// checks your typescript code for error prone constructions
+addSbtPlugin("name.de-vries" % "sbt-tslint" % "0.9.7")
+
+addSbtPlugin("com.typesafe.sbt" % "sbt-digest" % "1.1.0")
+
+addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.10")
 
 // Use the Eclipse sbt plugin
 addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "4.0.0")

@@ -30,16 +30,16 @@ object Exceptions {
     * @param req           request header for logging
     */
   abstract class RestException(msg: String,
-                               cause: Throwable = null,
+                               cause: Option[Throwable] = None,
                                statusCode: Option[Int] = None,
                                clientMessage: Option[String] = None,
                                reportError: Boolean = false
-                              )(implicit req: RequestHeader) extends Exception(msg, cause) {
+                              )(implicit req: RequestHeader) extends Exception(msg, cause.orNull) {
 
     def toResult: Result = {
       val logFun: (=> String, => Throwable) => Unit = if (reportError) Logger.error else Logger.debug
       val logMsg = s"Request Error ${req.method} to ${req.path}: $msg"
-      logFun(logMsg, cause)
+      logFun(logMsg, cause.orNull)
       req match {
         case request: Request[_] =>
           logFun(s"Request Body: \n${request.body.toString take 100}", None.orNull)
@@ -69,17 +69,17 @@ object Exceptions {
 
   }
 
-  case class InternalServerException(msg: String, cause: Throwable)(implicit req: RequestHeader) extends RestException(msg, cause = cause,
+  case class InternalServerException(msg: String, cause: Throwable)(implicit req: RequestHeader) extends RestException(msg, cause = Some(cause),
     statusCode = Some(INTERNAL_SERVER_ERROR), clientMessage = Some("An unexpected error occurred during this request."), reportError = true)
 
-  case class BadRequestException(cause: Throwable)(implicit req: RequestHeader) extends RestException("Error parsing request", cause = cause,
+  case class BadRequestException(cause: Throwable)(implicit req: RequestHeader) extends RestException("Error parsing request", cause = Some(cause),
     statusCode = Some(BAD_REQUEST), clientMessage = Some("Request could not be parsed"))
 
   case class JsonParseException()(implicit req: RequestHeader) extends RestException("Error parsing JSON from request",
     statusCode = Some(BAD_REQUEST), clientMessage = Some("JSON from Request could not be parsed"))
 
   case class JsonExtractException(cause: MappingException)(implicit req: RequestHeader) extends RestException(
-    "Error extracting JSON from request", cause = cause,
+    "Error extracting JSON from request", cause = Some(cause),
     statusCode = Some(BAD_REQUEST), clientMessage = Some("JSON from Request could not be extracted: " + cause.msg))
 
   case class InvalidSessionException(sessionId: String)(implicit req: RequestHeader) extends RestException("Invalid Session",
