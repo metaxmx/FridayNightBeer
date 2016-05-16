@@ -25,9 +25,9 @@ class ApiService
                   ajaxStatus?.succeed(resultData, status, headers)
                   deferred.resolve(resultData)
                 else
-                  @$log.error("API Request Failed:  #{url} - status #{status} - message #{resultData.message}")
+                  @$log.error("API Request Failed:  #{url} - status #{status} - message #{resultData.error}")
                   ajaxStatus?.fail(resultData, status, headers)
-                  deferred.reject(resultData.message)
+                  deferred.reject(resultData.error)
             )
         .error((error, status, headers) =>
                 @$log.error("API Request Failed:  #{url} - status #{status}")

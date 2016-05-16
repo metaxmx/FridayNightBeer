@@ -68,7 +68,7 @@ class AuthenticationController @Inject()(val userService: UserService,
 
   def getAuthenticationStatus = OptionalSessionRestAction {
     request =>
-      Ok(authenticationStatus(request.maybeSession, request.authorization))
+      Ok(GetAuthenticationStatusResult(success = true, authenticationStatus(request.maybeSession, request.authorization)))
   }
 
   private[this] def authenticationStatus(maybeSession: Option[UserSession], authorization: Authorization): AuthenticationStatus =

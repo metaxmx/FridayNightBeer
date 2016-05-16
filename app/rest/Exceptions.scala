@@ -42,7 +42,7 @@ object Exceptions {
       logFun(logMsg, cause)
       req match {
         case request: Request[_] =>
-          Logger.info(s"Request Body: \n${request.body.toString take 100}")
+          logFun(s"Request Body: \n${request.body.toString take 100}", None.orNull)
         case _ =>
       }
 
