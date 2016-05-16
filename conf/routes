@@ -22,9 +22,9 @@ GET     /uploads/:id/:filename          @controllers.DownloadController.download
 # ------- REST API 1.0 ---------
 
 # Authentication
-#GET     /api/1.0/authentication/info    @rest.api_1_0.controllers.AuthenticationController.???
-POST    /api/1.0/authentication/login   @rest.api_1_0.controllers.AuthenticationController.login
-POST    /api/1.0/authentication/logout  @rest.api_1_0.controllers.AuthenticationController.logout
+GET     /api/1.0/authentication         @rest.api_1_0.controllers.AuthenticationController.getAuthenticationStatus
+POST    /api/1.0/authentication         @rest.api_1_0.controllers.AuthenticationController.login
+DELETE  /api/1.0/authentication         @rest.api_1_0.controllers.AuthenticationController.logout
 
 # Index / List Forums
 GET     /api/1.0/forums/list            @rest.api_1_0.controllers.ForumsController.getForums

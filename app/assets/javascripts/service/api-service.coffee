@@ -3,7 +3,7 @@ class ApiService
 
     @headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
     @defaultConfig = { headers: @headers }
-    @apiBaseUrl = '/api/1'
+    @apiBaseUrl = '/api/1.0'
 
     constructor: (@$log, @$http, @$q) ->
 
@@ -20,9 +20,14 @@ class ApiService
         ajaxStatus?.load()
         @__callMethod(method, apiUrl, data, config)
         .success((resultData, status, headers) =>
-                @$log.info("API Request Successful: #{url} - status #{status}")
-                ajaxStatus?.succeed(resultData, status, headers)
-                deferred.resolve(resultData)
+                if resultData.success
+                  @$log.info("API Request Successful: #{url} - status #{status}")
+                  ajaxStatus?.succeed(resultData, status, headers)
+                  deferred.resolve(resultData)
+                else
+                  @$log.error("API Request Failed:  #{url} - status #{status} - message #{resultData.message}")
+                  ajaxStatus?.fail(resultData, status, headers)
+                  deferred.reject(resultData.message)
             )
         .error((error, status, headers) =>
                 @$log.error("API Request Failed:  #{url} - status #{status}")

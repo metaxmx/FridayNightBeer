@@ -3,10 +3,15 @@ package rest.api_1_0.controllers
 import javax.inject.{Inject, Singleton}
 
 import models.{User, UserSession}
+import permissions.Authorization
+import play.api.http.Status._
+import play.api.mvc.RequestHeader
+import rest.Exceptions.RestException
 import rest.Implicits._
+import rest.api_1_0.controllers.AuthenticationController.LoginFailedException
 import rest.api_1_0.viewmodels.AuthenticationViewModels._
 import services.{PermissionService, SessionService, UserService}
-import util.PasswordEncoder
+import util.{FutureOption, PasswordEncoder}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -24,17 +29,16 @@ class AuthenticationController @Inject()(val userService: UserService,
     implicit request =>
       val LoginRequest(username, password) = request.body
       for {
-        userOpt <- tryLoginUser(username, password)
-        session <- updateOrCreateSession(request.maybeSession, userOpt)
+        userOpt <- tryLoginUser(username, password).flatten(throw LoginFailedException())
+        session <- updateOrCreateSession(request.maybeSession, Some(userOpt))
+        authorization <- permissionService.createAuthorization()(userOpt = Some(userOpt))
       } yield {
-        Ok(LoginResult(userOpt.isDefined, session._id, userOpt map (_._id))).withSession(fnbSessionHeaderName -> session._id)
+        Ok(LoginResult(success = true, authenticationStatus(Some(session), authorization))).withSession(fnbSessionHeaderName -> session._id)
       }
   }
 
-  private[this] def tryLoginUser(username: String, password: String): Future[Option[User]] = {
-    userService.getUserByUsername(username).toFuture map {
-      _ filter (_.password == (PasswordEncoder encodePassword password))
-    }
+  private[this] def tryLoginUser(username: String, password: String): FutureOption[User] = {
+    userService.getUserByUsername(username) filter (_.password == (PasswordEncoder encodePassword password))
   }
 
   private[this] def updateOrCreateSession(sessionOpt: Option[UserSession], userOpt: Option[User]): Future[UserSession] = {
@@ -47,9 +51,7 @@ class AuthenticationController @Inject()(val userService: UserService,
             sessionService.createSession(userOpt)
         }
       case None =>
-        sessionService.insertSession(UserSession("", userOpt map {
-          _._id
-        }))
+        sessionService.insertSession(UserSession("", userOpt map (_._id)))
     }
   }
 
@@ -57,10 +59,29 @@ class AuthenticationController @Inject()(val userService: UserService,
     request =>
       for {
         _ <- sessionService.removeSession(request.userSession._id)
-        newSession <- sessionService.createSession(None)
+        newSession <- sessionService.createSession(userOpt = None)
+        authorization <- permissionService.createAuthorization()(userOpt = None)
       } yield {
-        Ok(LogoutResult(true)).withSession(fnbSessionHeaderName -> newSession._id)
+        Ok(LogoutResult(success = true, authenticationStatus(Some(newSession), authorization))).withSession(fnbSessionHeaderName -> newSession._id)
       }
   }
+
+  def getAuthenticationStatus = OptionalSessionRestAction {
+    request =>
+      Ok(authenticationStatus(request.maybeSession, request.authorization))
+  }
+
+  private[this] def authenticationStatus(maybeSession: Option[UserSession], authorization: Authorization): AuthenticationStatus =
+    AuthenticationStatus(authorization.userOpt.isDefined, maybeSession.map(_._id), authorization.userOpt map {
+      user => AuthenticationStatusUser(user._id, user.username, user.displayName, user.fullName, user.avatar, user.groups)
+    }, authorization.listGlobalPermissions)
+
+
+}
+
+object AuthenticationController {
+
+  case class LoginFailedException()(implicit req: RequestHeader) extends RestException("Login Failed",
+    statusCode = Some(FORBIDDEN), clientMessage = Some("User login failed with the provided credentials"))
 
 }

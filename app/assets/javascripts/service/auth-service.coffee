@@ -6,19 +6,19 @@ class AuthenticationService extends ApiService
         @storeAuthdata(null)
 
     fetchAuthData: ->
-       @apiGet('/authentication/info').then(
+       @apiGet('/authentication').then(
            (data) => @storeAuthdata(data),
            (error) => @storeAuthdata(null)
        )
 
     login: (form) ->
-        @apiPost('/authentication/login', form).then(
+        @apiPost('/authentication', form).then(
             (data) => @storeAuthdata(data),
             (error) => @storeAuthdata(null)
         )
 
     logout: ->
-        @apiPost('/authentication/logout').then(
+        @apiDelete('/authentication').then(
             (data) => @storeAuthdata(data),
             (error) => @storeAuthdata(null)
         )
