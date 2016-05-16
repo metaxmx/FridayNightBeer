@@ -7,6 +7,8 @@ object ForumPermissions extends PermissionType {
 
   sealed abstract class ForumPermission extends PermissionEnum
 
+  override def permissionType = classOf[ForumPermission]
+
   case object Access extends ForumPermission
 
   case object CreateThread extends ForumPermission
@@ -15,7 +17,9 @@ object ForumPermissions extends PermissionType {
 
   case object Close extends ForumPermission
 
-  val values = Seq(Access, CreateThread, Sticky, Close)
+  case object DeleteThread extends ForumPermission
+
+  val values = Seq(Access, CreateThread, Sticky, Close, DeleteThread)
 
   lazy val valuesByName = values.map { value => value.name -> value }.toMap
 

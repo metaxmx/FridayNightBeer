@@ -78,12 +78,24 @@ case class AccessRule(forbiddenUsers: Option[Seq[String]],
 
   override def allowed(implicit userOpt: Option[User]): Boolean = AccessRule.accessRuleAllowed(this)
 
+  def withAllowAllUsers = copy(allowAllUsers = Some(true))
+
+  def withDenyAllUsers = copy(allowAllUsers = Some(false))
+
+  def withAllowAll = copy(allowAll = Some(true))
+
+  def withDenyAll = copy(allowAll = Some(false))
+
+  def withAllowGroups(groupIds: String*) = copy(allowedGroups = Some(groupIds))
+
 }
 
 /**
   * Companion object to [[AccessRule]].
   */
 object AccessRule {
+
+  def apply(): AccessRule = AccessRule(None, None, None, None, None, None)
 
   def accessRuleAllowed(ar: AccessRule)(implicit userOpt: Option[User]): Boolean =
     ar.allowAll.contains(true) || userOpt.forall {

@@ -7,11 +7,19 @@ object ThreadPermissions extends PermissionType {
 
   sealed abstract class ThreadPermission extends PermissionEnum
 
+  override def permissionType = classOf[ThreadPermission]
+
   case object Access extends ThreadPermission
 
   case object Reply extends ThreadPermission
 
-  val values = Seq(Access, Reply)
+  case object EditPost extends ThreadPermission
+
+  case object DeletePost extends ThreadPermission
+
+  case object Attachment extends ThreadPermission
+
+  val values = Seq(Access, Reply, EditPost, DeletePost, Attachment)
 
   lazy val valuesByName = values.map { value => value.name -> value }.toMap
 

@@ -7,6 +7,8 @@ object GlobalPermissions extends PermissionType {
 
   sealed abstract class GlobalPermission extends PermissionEnum
 
+  override def permissionType = classOf[GlobalPermission]
+
   case object Forums extends GlobalPermission
 
   case object Media extends GlobalPermission

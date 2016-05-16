@@ -9,8 +9,10 @@ trait PermissionEnum {
 
 }
 
-trait PermissionType {
+abstract class PermissionType {
 
-  val name = toString
+  def permissionType: Class[_]
+
+  val name = permissionType.getSimpleName
 
 }
