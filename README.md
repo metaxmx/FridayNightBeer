@@ -36,6 +36,21 @@ Installation
   * Activator/sbt will download project dependencies
   * In the interactive shell, execute `run` to start the Play application
 
+IDE Integration
+---------------
+
+The frontend uses Angular2 and is written in TypeScript. The resolution of the required TypeScript definitions
+is done via included WebJar SBT dependencies, which works well with the sbt plugin, but some IDEs (like IntelliJ IDEA)
+are not able to resolve these dependencies and won't provide context information and auto completion.
+
+To fix this, install Node.js (including npm) on your machine, go to the project root and run
+ 
+    npm install angular2@2.0.0-beta.17
+
+The dependencies will be downloaded into a "node-modules" subfolder, which will be used by the TypeScript resolution, but is in the `.gitignore` file.
+
+This procedure is not required to run the code, only to get IDE support!
+
 Software Used
 -------------
 
@@ -43,7 +58,7 @@ Software Used
 * [SBT](http://www.scala-sbt.org/) (Scala Build Tool) Version 0.13.11
 * [Play Framework](https://www.playframework.com/) Version 2.5.2
 * [ReactiveMongo](http://reactivemongo.org/) Version 0.11.11
-* [AngularJS](https://angularjs.org/) Version 1.3.15
+* [AngularJS](https://angular.io/) Version 2.0.0-Beta17
 * [Bootstrap](http://getbootstrap.com/) Version 3.3.4
 * Diverse general libraries and utilities: jQuery, Guice, Guava, Joda-Time, Angular Add-Ons, Polyfills
 * Frontend Assets for the Themes:
