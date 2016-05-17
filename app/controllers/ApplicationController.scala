@@ -34,7 +34,7 @@ class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
       } {
         sessionKey =>
           ensureSessionActive(sessionKey) map { _ =>
-            Ok(views.html.app(theme, settings))
+            Ok(views.html.angular2App(theme, settings))
           }
       }
   }

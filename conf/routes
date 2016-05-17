@@ -46,4 +46,4 @@ POST    /api/1.0/newthread/:id          @rest.api_1_0.controllers.ThreadControll
 # ------ Static Resources -------
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file                   @controllers.Assets.at(path="/public", file)
+GET     /assets/*file                   @controllers.Assets.versioned(path="/public", file: Asset)

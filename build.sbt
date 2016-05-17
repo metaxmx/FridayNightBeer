@@ -93,3 +93,5 @@ resolveFromWebjarsNodeModulesDir := true
 // use the combined tslint and eslint rules plus ng2 lint rules
 (rulesDirectories in tslint) := Some(List(tslintEslintRulesDir.value,ng2LintRulesDir.value))
 
+routesGenerator := InjectedRoutesGenerator
+
