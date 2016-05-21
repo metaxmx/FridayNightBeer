@@ -3,13 +3,11 @@ import {
     AuthenticationResult,
     GetAuthenticationStatusResult,
     LogoutResult,
-    LoginResult, AuthenticationStatus
+    LoginResult
 } from "../viewmodels/AuthenticationViewModels"
 import {Injectable} from "angular2/core"
 import {HttpCommunicationService} from "./http-communication.service"
-import {Observable} from "rxjs/Observable"
 import {BehaviorSubject} from "rxjs/BehaviorSubject"
-import {ArrayObservable} from "rxjs/observable/ArrayObservable"
 import {Subject} from "rxjs/Subject"
 
 class CheckStatusAction {}
@@ -41,7 +39,7 @@ const initialState: AuthenticationState = <AuthenticationState> {
     initialized: false,
     loggedIn: false,
     globalPermissions: [],
-    user: new AuthenticationUserData("", "mustermann", "", "", "")
+    user: emptyAuthenticationUserData
 }
 
 const authApiUrl = "authentication"
@@ -52,7 +50,6 @@ export class AuthenticationService {
     constructor(private httpService: HttpCommunicationService) {
         console.debug("Initialize Service AuthenticationService")
         this.createReactiveChain()
-        console.log("--- Initial Status: ", this.authenticationStatus.getValue())
     }
 
     private dispatcher = new Subject<AuthenticationAction>()
@@ -84,21 +81,17 @@ export class AuthenticationService {
             }
         }).share()
         observable.subscribe(this.authenticationStatus)
-        this.authenticationStatus.subscribe((s: AuthenticationState) => console.log("*=", s))
     }
 
     refreshAuthentication(): void {
-        console.log("*1")
         this.dispatcher.next(new CheckStatusAction)
     }
 
     login(username:string, password:string):void {
-        console.log("*2")
         this.dispatcher.next(new LoginAction(username, password))
     }
 
     logout(): void {
-        console.log("*3")
         this.dispatcher.next(new LogoutAction())
     }
 

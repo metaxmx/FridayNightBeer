@@ -38,35 +38,13 @@ export class AppComponent implements OnInit {
 
     ngOnInit() {
         console.log("Initialized AppComponent")
-        console.log("AuthService:", this.authService)
-        this.authService.authenticationStatus.subscribe((s: AuthenticationState) => console.log(s))
-        // this.perm.subscribe((b: string) => console.log("perm", b))
         this.authStatus = this.authService.authenticationStatus
-        this.perm = this.authService.authenticationStatus.map((s: AuthenticationState) => s.globalPermissions.join(","))
-        this.username = this.authService.authenticationStatus.map((s: AuthenticationState) => s.user.username + "foo")
     }
 
     authStatus: Observable<AuthenticationState>
-    perm: Observable<string>
-    username: Observable<string>
 
-    checkStatus() {
-        console.log("OnClick")
+    refreshAuthentication() {
         this.authService.refreshAuthentication()
     }
-
-    // get authStatus(): Observable<boolean> {
-    //   return this.authService.authenticationStatus.map((s: AuthenticationState) => s.loggedIn)
-    // }
-
-    // get username() {
-    //     console.log("GET USERNAME")
-    //     return this.authService.authenticationStatus.map((s: AuthenticationState) => s.user.username)
-    // }
-
-    // get perm(): Observable<string> {
-    //     console.log("GET Perm")
-    //     return this.authService.authenticationStatus.map((s: AuthenticationState) => s.globalPermissions.join(","))
-    // }
 
 }
