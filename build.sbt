@@ -30,16 +30,10 @@ libraryDependencies ++= Seq(
   "commons-io" % "commons-io" % "2.4",
   "org.reactivemongo" %% "play2-reactivemongo" % "0.11.11",
   "org.json4s" %% "json4s-native" % "3.3.0",
+
   "org.webjars" % "bootstrap" % "3.3.4",
   "org.webjars" % "jquery" % "1.11.3",
-  "org.webjars" % "angularjs" % "1.3.15",
-  "org.webjars" % "angular-ui-bootstrap" % "0.13.0",
-  "org.webjars" % "html5shiv" % "3.7.2",
-  "org.webjars" % "respond" % "1.4.2",
   "org.webjars" % "famfamfam-silk" % "1.3-1",
-  "org.webjars" % "smart-table" % "2.0.3",
-  "org.webjars" % "textAngular" % "1.4.1",
-  "org.webjars" % "font-awesome" % "4.3.0-3",
 
   //angular2 dependencies
   "org.webjars.npm" % "angular2" % "2.0.0-beta.17",

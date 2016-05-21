@@ -8,39 +8,57 @@ export interface ApiResult {
 
 export interface ApiError extends ApiResult {
     error:string
-    statusCode?:number
 }
 
-export function asJson(result:any, onError:Object):Object {
-    if (typeof result === "string" || result instanceof String) {
-        try {
-            return JSON.parse(result)
-        } catch (e) {
-            return onError
+export class ApiException implements ApiError {
+
+    public success = false
+    public error:string
+    public statusCode:number
+
+    constructor(msg:string, statusCode:number) {
+        this.error = msg || "Unknown Error"
+        this.statusCode = statusCode || 0
+    }
+
+    toString():string {
+        let status = ""
+        if (this.statusCode) status = ` (Status Code ${this.statusCode})`
+        return `API Error: ${this.error}${status}`
+    }
+
+}
+
+export class JsonParseApiException extends ApiException {
+
+    constructor(e:Object, statusCode?:number) {
+        let message:string
+        if (e.hasOwnProperty("message")) {
+            message = (<Error> e).message
+        } else {
+            message = "Unknown error"
         }
-    } else if (typeof result === "object") {
+        super(`Error parsing JSON: ${message}`, statusCode)
+    }
+
+}
+
+export class UnsuccessfulApiException extends ApiException {
+
+    constructor(apiError:ApiError, statusCode:number) {
+        super(apiError.error, statusCode)
+    }
+
+}
+
+export function isSuccessfulResult<T extends ApiResult>(result:T | ApiError):result is T {
+    return result.success === true
+}
+
+export function validateSuccessfulResult<T extends ApiResult>(result:T | ApiError, statusCode:number):T {
+    if (isSuccessfulResult(result)) {
         return result
-    }
-    return onError
-}
-
-export function parseApiResult<T extends ApiResult>(result:any):T | ApiError {
-    let resultObj = asJson(result, {success: false, error: "Cannot parse JSON"})
-    if (!resultObj.hasOwnProperty("success")) {
-        return <ApiError> {
-            success: false,
-            error: "Result object is invalid"
-        }
-    }
-    let apiResult = <ApiResult>resultObj
-    if (apiResult.success) {
-        return <T> apiResult
-    }
-    if (apiResult.hasOwnProperty("error")) {
-        return <ApiError> apiResult
-    }
-    return <ApiError> {
-        success: false,
-        error: "Undefined error"
+    } else {
+        throw new UnsuccessfulApiException(result, statusCode)
     }
 }

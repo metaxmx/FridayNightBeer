@@ -3,5 +3,12 @@ import TodoAppComponent from "./app"
 import {LocalStorageTodoStore} from "./services/store"
 import {TodoStore} from "./services/todo.store"
 import {provide} from "angular2/core"
+import {HTTP_PROVIDERS} from "angular2/http"
 
-bootstrap(TodoAppComponent, [ provide(TodoStore, {useClass: LocalStorageTodoStore}) ])
+/**
+ * Bootstrap application.
+ */
+bootstrap(TodoAppComponent, [
+    HTTP_PROVIDERS,
+    provide(TodoStore, {useClass: LocalStorageTodoStore})
+])

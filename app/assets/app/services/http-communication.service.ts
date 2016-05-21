@@ -1,39 +1,87 @@
 
-import {Injectable} from "angular2/core";
-import {Http} from "angular2/http";
-import "rxjs/add/operator/toPromise";
-import {parseApiResult} from "../viewmodels/GeneralViewModels"
+import {Injectable} from "angular2/core"
+import {Http, Response, Headers, RequestOptions} from "angular2/http"
+import {Observable} from "rxjs/Observable"
+import {ApiResult, ApiError, JsonParseApiException, validateSuccessfulResult} from "../viewmodels/GeneralViewModels"
+import "../app-rxjs-operations.ts"
+
+function toJsonString(data: any): string {
+    if (typeof data === "string" || data instanceof String) {
+        return <string>data
+    }
+    return JSON.stringify(data)
+}
+
+function parseApiResult<T extends ApiResult>(resultObj: Object):T | ApiError {
+    if (!resultObj.hasOwnProperty("success")) {
+        return <ApiError> {
+            success: false,
+            error: "Result object is invalid"
+        }
+    }
+    let apiResult = <ApiResult>resultObj
+    if (apiResult.success) {
+        return <T> apiResult
+    }
+    if (apiResult.hasOwnProperty("error")) {
+        return <ApiError> apiResult
+    }
+    return <ApiError> {
+        success: false,
+        error: "Undefined error"
+    }
+}
+
+function parseResponse<T extends ApiResult>(res: Response): T {
+    let json: Object = {}
+    try {
+        json = res.json()
+    } catch (e) {
+        throw new JsonParseApiException(e, res.status)
+    }
+    let apiResult = parseApiResult<T>(json)
+    return validateSuccessfulResult<T>(apiResult, res.status)
+}
 
 @Injectable()
 export class HttpCommunicationService {
 
+    constructor(private http: Http) {}
+
     private apiVersion = "1.0"
+
+    private headers = new Headers({"Content-Type": "application/json"})
+
+    private requestOptions = new RequestOptions({headers: this.headers})
 
     private compileApiUrl(apiUrl: string): string {
         return `/api/${this.apiVersion}/${apiUrl}`
     }
 
-    constructor(private http: Http) {
+    GET<T extends ApiResult>(apiUrl: string): Observable<T> {
+        let url = this.compileApiUrl(apiUrl)
+        let resultObservable = this.http.get(url, this.requestOptions)
+        return resultObservable.map((res: Response) => parseResponse<T>(res))
     }
 
-    getRequest<T>(apiUrl: string): Promise<T> {
+    POST<T extends ApiResult>(apiUrl: string, postBody: any): Observable<T> {
         let url = this.compileApiUrl(apiUrl)
-        return null // TODO: Mock
+        let postJsonStr = toJsonString(postBody)
+        let resultObservable = this.http.post(url, postJsonStr, this.requestOptions)
+        return resultObservable.map((res: Response) => parseResponse<T>(res))
     }
 
-    postRequest<T>(apiUrl: string): Promise<T> {
+    PUT<T extends ApiResult>(apiUrl: string, putBody: any): Observable<T> {
         let url = this.compileApiUrl(apiUrl)
-        return null // TODO: Mock
+        let putJsonStr = toJsonString(putBody)
+        let resultObservable = this.http.put(url, putJsonStr, this.requestOptions)
+        return resultObservable.map((res: Response) => parseResponse<T>(res))
     }
 
-    putRequest<T>(apiUrl: string): Promise<T> {
+    DELETE<T extends ApiResult>(apiUrl: string): Observable<T> {
         let url = this.compileApiUrl(apiUrl)
-        return null // TODO: Mock
-    }
-
-    deleteRequest<T>(apiUrl: string): Promise<T> {
-        let url = this.compileApiUrl(apiUrl)
-        return null // TODO: Mock
+        let resultObservable = this.http.delete(url, this.requestOptions)
+        return resultObservable.map((res: Response) => parseResponse<T>(res))
     }
 
 }
