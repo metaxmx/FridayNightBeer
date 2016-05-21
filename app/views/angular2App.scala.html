@@ -6,17 +6,18 @@
 <html lang="en" data-framework="angular2">
     <head>
         <meta charset="utf-8">
+        <base href="/">
         <title>@settings.siteTitle</title>
 
         <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("lib/bootstrap/css/bootstrap.css")" />
-        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("lib/textAngular/textAngular.css")" />
-        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("lib/font-awesome/css/font-awesome.css")" />
         <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("stylesheets/fnb.css")" />
 
         <script src="@routes.Assets.versioned("lib/angular2/bundles/angular2-polyfills.js")"></script>
         <script src="@routes.Assets.versioned("lib/systemjs/dist/system.js")"></script>
         <script src="@routes.Assets.versioned("lib/rxjs/bundles/Rx.js")"></script>
         <script src="@routes.Assets.versioned("lib/angular2/bundles/angular2.dev.js")"></script>
+        <script src="@routes.Assets.versioned("lib/angular2/bundles/router.dev.js")"></script>
+        <script src="@routes.Assets.versioned("lib/angular2/bundles/http.dev.js")"></script>
 
         <script>
             @* our app is downloaded as individual javascript files by SystemJs after compilation by sbt-typescript*@
@@ -38,6 +39,6 @@
 		</script>
     </head>
     <body>
-        <todo-app></todo-app>
+        <fnb-app></fnb-app>
     </body>
 </html>

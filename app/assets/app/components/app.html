@@ -1,0 +1,15 @@
+<section class="fnb-app">
+    TODO: FNB-APP TEMPLATE
+    <fnb-forum-overview></fnb-forum-overview>
+    <div>
+        <input type="checkbox" id="cb1" [checked]="authStatus | async"> <label for="cb1">Logged In</label>
+        <br>
+        <input type="text" [value]="(authStatus | async).user.username">
+        <br>
+        <button (click)="checkStatus()">Check Status</button>
+        <br>
+        {{(authStatus | async).initialized}}
+        <br>
+        {{perm | async}}
+    </div>
+</section>

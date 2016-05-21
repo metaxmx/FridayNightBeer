@@ -5,6 +5,7 @@ import {Injectable} from "angular2/core"
 export class ForumService {
 
     constructor(private authService:AuthenticationService) {
+        console.debug("Initialize Service ForumService")
     }
 
 }

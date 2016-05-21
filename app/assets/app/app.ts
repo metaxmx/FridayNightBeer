@@ -3,7 +3,7 @@ import {Todo} from "./services/store"
 import {TodoStore} from "./services/todo.store"
 
 @Component({
-    selector: "todo-app",
+    selector: "fnb-todo-app",
     templateUrl: "assets/app/app.html"
 })
 export default class TodoAppComponent {

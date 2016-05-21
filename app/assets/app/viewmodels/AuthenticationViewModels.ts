@@ -4,9 +4,10 @@ import {ApiResult} from "./GeneralViewModels"
  * ViewModels for Authentication
  */
 
-export interface LoginRequest {
-    username:string
-    password:string
+export class LoginRequest {
+    constructor(public username:string,
+                public password:string) {
+    }
 }
 
 export interface AuthenticationStatusUser {
@@ -20,19 +21,20 @@ export interface AuthenticationStatusUser {
 
 export interface AuthenticationStatus {
     authenticated:boolean
-    sessionId?:String
+    sessionId?:string
     user?:AuthenticationStatusUser
     globalPermissions:Array<string>
 }
 
-export interface LoginResult extends ApiResult {
+export interface AuthenticationResult extends ApiResult {
     authenticationStatus:AuthenticationStatus
 }
 
-export interface LogoutResult extends ApiResult {
-    authenticationStatus:AuthenticationStatus
+export interface LoginResult extends AuthenticationResult {
 }
 
-export interface GetAuthenticationStatusResult extends ApiResult {
-    authenticationStatus:AuthenticationStatus
+export interface LogoutResult extends AuthenticationResult {
+}
+
+export interface GetAuthenticationStatusResult extends AuthenticationResult {
 }

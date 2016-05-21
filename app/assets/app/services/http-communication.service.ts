@@ -1,9 +1,8 @@
-
-import {Injectable} from "angular2/core"
+import {Injectable, OnInit} from "angular2/core"
 import {Http, Response, Headers, RequestOptions} from "angular2/http"
 import {Observable} from "rxjs/Observable"
 import {ApiResult, ApiError, JsonParseApiException, validateSuccessfulResult} from "../viewmodels/GeneralViewModels"
-import "../app-rxjs-operations.ts"
+import "../app-rxjs-operations"
 
 function toJsonString(data: any): string {
     if (typeof data === "string" || data instanceof String) {
@@ -46,7 +45,9 @@ function parseResponse<T extends ApiResult>(res: Response): T {
 @Injectable()
 export class HttpCommunicationService {
 
-    constructor(private http: Http) {}
+    constructor(private http: Http) {
+        console.debug("Initialize Service HttpCommunicationService")
+    }
 
     private apiVersion = "1.0"
 
@@ -61,6 +62,12 @@ export class HttpCommunicationService {
     GET<T extends ApiResult>(apiUrl: string): Observable<T> {
         let url = this.compileApiUrl(apiUrl)
         let resultObservable = this.http.get(url, this.requestOptions)
+        return resultObservable.map((res: Response) => parseResponse<T>(res))
+    }
+
+    HEAD<T extends ApiResult>(apiUrl: string): Observable<T> {
+        let url = this.compileApiUrl(apiUrl)
+        let resultObservable = this.http.head(url, this.requestOptions)
         return resultObservable.map((res: Response) => parseResponse<T>(res))
     }
 
