@@ -3,14 +3,16 @@
 @import services.SettingsDTO
 @(theme: Theme, settings: SettingsDTO)
 <!doctype html>
-<html lang="en" data-framework="angular2">
+<html lang="en" data-framework="angular2" class="modern-theme">
     <head>
         <meta charset="utf-8">
         <base href="/">
         <title>@settings.siteTitle</title>
 
-        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("lib/bootstrap/css/bootstrap.css")" />
-        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("stylesheets/fnb.css")" />
+        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("lib/bootstrap/css/bootstrap.css")">
+        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("stylesheets/fnb.css")">
+
+        <link rel="shortcut icon" href="@routes.Assets.versioned("appdata/favicon.ico")">
 
         <script src="@routes.Assets.versioned("lib/angular2/bundles/angular2-polyfills.js")"></script>
         <script src="@routes.Assets.versioned("lib/systemjs/dist/system.js")"></script>

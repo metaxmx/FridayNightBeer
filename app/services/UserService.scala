@@ -14,7 +14,7 @@ class UserService @Inject()(userDAO: UserDAO) {
   def getUser(id: String): FutureOption[User] = userDAO ?? id
 
   def getUserByUsername(username: String): FutureOption[User] = FutureOption(userDAO >> {
-    _ find (_.username equals username)
+    _ find (_.username.toLowerCase equals username.toLowerCase)
   })
 
   def getUsers: Future[Seq[User]] = userDAO.getAll

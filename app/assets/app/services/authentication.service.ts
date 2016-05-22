@@ -9,6 +9,7 @@ import {Injectable} from "angular2/core"
 import {HttpCommunicationService} from "./http-communication.service"
 import {BehaviorSubject} from "rxjs/BehaviorSubject"
 import {Subject} from "rxjs/Subject"
+import {ApiResponse} from "../viewmodels/GeneralViewModels"
 
 class CheckStatusAction {}
 class LoginAction {
@@ -50,11 +51,14 @@ export class AuthenticationService {
     constructor(private httpService: HttpCommunicationService) {
         console.debug("Initialize Service AuthenticationService")
         this.createReactiveChain()
+        this.refreshAuthentication()
     }
 
     private dispatcher = new Subject<AuthenticationAction>()
 
     public authenticationStatus = new BehaviorSubject<AuthenticationState>(initialState)
+
+    public failures = new Subject<string>()
 
     private static mapAuthenticationResult(result: AuthenticationResult): AuthenticationState {
         let userData: AuthenticationUserData = emptyAuthenticationUserData
@@ -67,20 +71,27 @@ export class AuthenticationService {
 
     private createReactiveChain(): void {
         const http = this.httpService
-        const observable = this.dispatcher.flatMap((action: AuthenticationAction) => {
+        const observable = this.dispatcher.switchMap((action: AuthenticationAction) => {
             if (action instanceof LoginAction) {
                 let loginRequest = new LoginRequest(action.loginName, action.password)
                 console.log("--- Send Login Request")
-                return http.POST<LoginResult>(authApiUrl, loginRequest).map(AuthenticationService.mapAuthenticationResult)
+                return http.POST<LoginResult>(authApiUrl, loginRequest)
             } else if (action instanceof LogoutAction) {
                 console.log("--- Send Logout Request")
-                return http.DELETE<LogoutResult>(authApiUrl).map(AuthenticationService.mapAuthenticationResult)
+                return http.DELETE<LogoutResult>(authApiUrl)
             } else {
                 console.log("--- Send Check Auth Status Request")
-                return http.GET<GetAuthenticationStatusResult>(authApiUrl).map(AuthenticationService.mapAuthenticationResult)
+                return http.GET<GetAuthenticationStatusResult>(authApiUrl)
             }
         }).share()
-        observable.subscribe(this.authenticationStatus)
+        observable.subscribe((result: ApiResponse<AuthenticationResult>) => {
+            if (result.success) {
+                this.authenticationStatus.next(AuthenticationService.mapAuthenticationResult(result.getResult()))
+            } else {
+                console.warn("Unsuccessful request: ", result.toString())
+                this.failures.next(result.getError().error)
+            }
+        })
     }
 
     refreshAuthentication(): void {
@@ -88,7 +99,7 @@ export class AuthenticationService {
     }
 
     login(username:string, password:string):void {
-        this.dispatcher.next(new LoginAction(username, password))
+         this.dispatcher.next(new LoginAction(username, password))
     }
 
     logout(): void {

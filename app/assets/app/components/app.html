@@ -1,18 +1,9 @@
-<section class="fnb-app">
-    TODO: FNB-APP TEMPLATE (title: {{settings.siteTitle}})
-    <br>
-    Overview Before
-    <fnb-forum-overview label="Label 2"></fnb-forum-overview>
-    Overview after
-    <div>
-        <input type="checkbox" id="cb1" [checked]="(authStatus | async).initialized"> <label for="cb1">Logged In</label>
-        <br>
-        <input type="text" [value]="(authStatus | async).user.username">
-        <br>
-        <button (click)="refreshAuthentication()">Refresh Status</button>
-        <br>
-        {{(authStatus | async).initialized}}
-        <br>
-        {{(authStatus | async).globalPermissions.join(";")}}
+<div id="content-header-wrapper">
+    <fnb-header></fnb-header>
+    <div id="main-container" class="container">
+        <div id="main-content">
+            <router-outlet></router-outlet>
+        </div>
     </div>
-</section>
+</div>
+<fnb-footer></fnb-footer>

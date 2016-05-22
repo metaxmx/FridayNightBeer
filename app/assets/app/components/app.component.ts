@@ -1,26 +1,40 @@
-import {Component, OnInit, Input, ElementRef, provide} from "angular2/core"
-import {RouteConfig, ROUTER_PROVIDERS} from "angular2/router"
+import {Component, OnInit,  ElementRef} from "angular2/core"
+import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS} from "angular2/router"
+import {HTTP_PROVIDERS} from "angular2/http"
+import {Observable} from "rxjs/Observable"
+
 import {ForumOverviewComponent} from "./forum-overview.component"
 import {ShowForumComponent} from "./show-forum.component"
 import {ShowThreadComponent} from "./show-thread.component"
+import {RegisterComponent} from "./register.component"
+import {LoginComponent} from "./login.component"
+import {SettingsComponent} from "./settings.component"
+import {MediaComponent} from "./media.component"
+import {EventsComponent} from "./events.component"
+import {MembersComponent} from "./members.component"
+import {AdminComponent} from "./admin.component"
+import {HeaderComponent} from "./header.component"
+import {FooterComponent} from "./footer.component"
+
 import {AuthenticationService, AuthenticationState} from "../services/authentication.service"
-import {HTTP_PROVIDERS} from "angular2/http"
 import {FNB_SERVICE_PROVIDERS} from "../services/services"
-import {Observable} from "rxjs/Observable"
+
 import {FnbSettings} from "../util/settings"
 import {FNB_UTILS_PROVIDERS} from "../util/utils"
+
 
 @Component({
     selector: "fnb-app",
     templateUrl: "assets/app/components/app.html",
-    directives: [ForumOverviewComponent, ShowForumComponent, ShowThreadComponent],
+    directives: [HeaderComponent, FooterComponent, ROUTER_DIRECTIVES],
     providers: [HTTP_PROVIDERS, ROUTER_PROVIDERS, FNB_SERVICE_PROVIDERS, FNB_UTILS_PROVIDERS],
 })
 @RouteConfig([
     {
         path: "/",
         name: "Forums",
-        component: ForumOverviewComponent
+        component: ForumOverviewComponent,
+        useAsDefault: true
     },
     {
         path: "/forum/:id",
@@ -31,6 +45,41 @@ import {FNB_UTILS_PROVIDERS} from "../util/utils"
         path: "/thread/:id",
         name: "Thread",
         component: ShowThreadComponent
+    },
+    {
+        path: "/register",
+        name: "Register",
+        component: RegisterComponent
+    },
+    {
+        path: "/login",
+        name: "Login",
+        component: LoginComponent
+    },
+    {
+        path: "/settings",
+        name: "Settings",
+        component: SettingsComponent
+    },
+    {
+        path: "/media",
+        name: "Media",
+        component: MediaComponent
+    },
+    {
+        path: "/events",
+        name: "Events",
+        component: EventsComponent
+    },
+    {
+        path: "/members",
+        name: "Members",
+        component: MembersComponent
+    },
+    {
+        path: "/admin",
+        name: "Admin",
+        component: AdminComponent
     }
 ])
 export class AppComponent implements OnInit {

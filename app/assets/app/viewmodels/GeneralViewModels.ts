@@ -10,55 +10,52 @@ export interface ApiError extends ApiResult {
     error:string
 }
 
-export class ApiException implements ApiError {
-
-    public success = false
-    public error:string
-    public statusCode:number
-
-    constructor(msg:string, statusCode:number) {
-        this.error = msg || "Unknown Error"
-        this.statusCode = statusCode || 0
-    }
-
-    toString():string {
-        let status = ""
-        if (this.statusCode) status = ` (Status Code ${this.statusCode})`
-        return `API Error: ${this.error}${status}`
-    }
-
+class ApiErrorFromMessage implements ApiError {
+    constructor(public error: string) {}
+    success = false
 }
 
-export class JsonParseApiException extends ApiException {
-
-    constructor(e:Object, statusCode?:number) {
-        let message:string
-        if (e.hasOwnProperty("message")) {
-            message = (<Error> e).message
-        } else {
-            message = "Unknown error"
-        }
-        super(`Error parsing JSON: ${message}`, statusCode)
+export function createApiErrorResponse<T extends ApiResult>(statusCode: number, err: any): ApiResponse<T> {
+    let errorMsg: string = "Unknown error"
+    if (err instanceof Error) {
+        errorMsg = err.toString()
+    } else if (typeof err === "string" || err instanceof String) {
+        errorMsg = err
     }
-
+    return new ApiResponseFromError<T>(statusCode, new ApiErrorFromMessage(errorMsg))
 }
 
-export class UnsuccessfulApiException extends ApiException {
+export interface ApiResponse<T extends ApiResult> {
+    success: boolean
+    statusCode:number
+    getResult(): T
+    getError(): ApiError
+}
 
-    constructor(apiError:ApiError, statusCode:number) {
-        super(apiError.error, statusCode)
+export class ApiResponseFromError<T extends ApiResult> implements ApiResponse<T> {
+    constructor(public statusCode: number, private error: ApiError) { }
+    success = false
+    getResult(): T {
+        throw new Error("Called getResult() on Error response")
     }
-
+    getError(): ApiError {
+        return this.error
+    }
+    toString(): string {
+        return `API Error: ${this.error.error} (Status Code ${this.statusCode})`
+    }
 }
 
-export function isSuccessfulResult<T extends ApiResult>(result:T | ApiError):result is T {
-    return result.success === true
-}
-
-export function validateSuccessfulResult<T extends ApiResult>(result:T | ApiError, statusCode:number):T {
-    if (isSuccessfulResult(result)) {
-        return result
-    } else {
-        throw new UnsuccessfulApiException(result, statusCode)
+export class ApiResponseFromResult<T extends ApiResult> implements ApiResponse<T> {
+    constructor(public statusCode: number, private result: T) { }
+    success = true
+    getResult(): T {
+        return this.result
+    }
+    getError(): ApiError {
+        throw new Error("Called getError() on Result response")
+    }
+    toString(): string {
+        return `API Result (Status Code ${this.statusCode})`
     }
 }
