@@ -2,8 +2,9 @@ package services
 
 import javax.inject.{Inject, Singleton}
 
+import org.json4s.DefaultFormats
+import org.json4s.native.Serialization.write
 import play.api.Configuration
-import play.api.libs.json.Json
 
 @Singleton
 class SettingsService @Inject()(config: Configuration) {
@@ -18,19 +19,13 @@ class SettingsService @Inject()(config: Configuration) {
     siteTitle.getOrElse("Untitle Site"),
     registerEnabled.getOrElse(false))
 
-  def asJson: String = Json.toJson[SettingsDTO](asDto)(SettingsDTO.jsonFormat).toString
+  def asJson: String = asDto.toJson
 
 }
 
 case class SettingsDTO(siteTitle: String,
                        registerEnabled: Boolean) {
 
-  def toJson = Json.toJson[SettingsDTO](this).toString
-
-}
-
-object SettingsDTO {
-
-  implicit val jsonFormat = Json.format[SettingsDTO]
+  def toJson: String = write(this)(DefaultFormats)
 
 }

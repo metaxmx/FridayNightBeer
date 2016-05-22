@@ -1,18 +1,20 @@
-import {Component, OnInit} from "angular2/core"
+import {Component, OnInit, Input, ElementRef, provide} from "angular2/core"
 import {RouteConfig, ROUTER_PROVIDERS} from "angular2/router"
 import {ForumOverviewComponent} from "./forum-overview.component"
 import {ShowForumComponent} from "./show-forum.component"
 import {ShowThreadComponent} from "./show-thread.component"
 import {AuthenticationService, AuthenticationState} from "../services/authentication.service"
 import {HTTP_PROVIDERS} from "angular2/http"
-import {FNB_SERVICE_PROVIDES} from "../services/services"
+import {FNB_SERVICE_PROVIDERS} from "../services/services"
 import {Observable} from "rxjs/Observable"
+import {FnbSettings} from "../util/settings"
+import {FNB_UTILS_PROVIDERS} from "../util/utils"
 
 @Component({
     selector: "fnb-app",
     templateUrl: "assets/app/components/app.html",
     directives: [ForumOverviewComponent, ShowForumComponent, ShowThreadComponent],
-    providers: [HTTP_PROVIDERS, ROUTER_PROVIDERS, FNB_SERVICE_PROVIDES]
+    providers: [HTTP_PROVIDERS, ROUTER_PROVIDERS, FNB_SERVICE_PROVIDERS, FNB_UTILS_PROVIDERS],
 })
 @RouteConfig([
     {
@@ -33,7 +35,17 @@ import {Observable} from "rxjs/Observable"
 ])
 export class AppComponent implements OnInit {
 
-    constructor(public authService: AuthenticationService) {
+    constructor(private elRef: ElementRef,
+                private authService: AuthenticationService,
+                private settings: FnbSettings) {
+        this.initSettings()
+    }
+
+    private initSettings() {
+        // Native element access required, as root element parameters
+        // are not supported by Angular2, yet.
+        this.settings.updateLogo(this.elRef.nativeElement.getAttribute("data-logo") || "")
+        this.settings.updateSettings(this.elRef.nativeElement.getAttribute("data-settings") || "{}")
     }
 
     ngOnInit() {

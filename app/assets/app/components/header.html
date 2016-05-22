@@ -1,0 +1,21 @@
+<header>
+    <h1><a ng-href="/#/" site-title>@settings.siteTitle</a></h1>
+    <a id="logo" ng-href="/#/">
+        <img src="@routes.Assets.versioned("appdata/logo.png")" alt="" width="64" height="64">
+    </a>
+    <nav>
+        <ul id="pagemenu">
+            <li ng-if="checkPermission('Forums')" class="selected"><a ng-href="/#/">Forum</a></li>
+            <li ng-if="checkPermission('Media')"><a href="/" onclick="window.notimplemented()">Media</a></li>
+            <li ng-if="checkPermission('Events')"><a href="/" onclick="window.notimplemented()">Events</a></li>
+            <li ng-if="checkPermission('Members')"><a href="/" onclick="window.notimplemented()">Users</a></li>
+            <li ng-if="checkPermission('Admin')"><a href="/" onclick="window.notimplemented()">Administration</a></li>
+        </ul>
+        <ul id="usermenu">
+            <li ng-if="!authenticated"><a ng-href="/#/login">Login</a></li>
+            <li ng-if="!authenticated && settings.registerEnabled"><a ng-href="/#/register">Register</a></li>
+            <li ng-if="authenticated" onclick="window.notimplemented()"><a href="/">Settings</a></li>
+            <li ng-if="authenticated"><a ng-href="/#/login">Logout</a></li>
+        </ul>
+    </nav>
+</header>

@@ -1,6 +1,9 @@
 <section class="fnb-app">
-    TODO: FNB-APP TEMPLATE
-    <fnb-forum-overview></fnb-forum-overview>
+    TODO: FNB-APP TEMPLATE (title: {{settings.siteTitle}})
+    <br>
+    Overview Before
+    <fnb-forum-overview label="Label 2"></fnb-forum-overview>
+    Overview after
     <div>
         <input type="checkbox" id="cb1" [checked]="(authStatus | async).initialized"> <label for="cb1">Logged In</label>
         <br>
