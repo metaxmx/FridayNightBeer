@@ -1,7 +1,60 @@
-<div class="forum-overview" style="color: red">
-    <ul>
-        <li><a [routerLink]="['Forum', {'id': '111'}]">Forum 1</a></li>
-        <li><a [routerLink]="['Forum', {'id': '222'}]">Forum 2</a></li>
-        <li><a [routerLink]="['Forum', {'id': '333'}]">Forum 3</a></li>
-    </ul>
+<div class="view-listforums">
+
+    <div class="view-header" *ngIf="successful && loaded">
+        <div class="breadcrumb-combined">
+            <ol class="breadcrumb">
+                <li><a [routerLink]="['Forums']">Friday Night Beer</a></li>
+                <li class="active">Forum</li>
+            </ol>
+            <ul class="headeroptions">
+                <li>
+                    <span class="glyphicon glyphicon-search"></span>
+                    <a href="/">Suche</a>
+                </li>
+                <li> <!-- TODO: Admin Check -->
+                    <span class="glyphicon glyphicon-wrench"></span>
+                    <a href="#">Foren verwalten</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="main-content" *ngIf="successful && loaded">
+        <div *ngFor="let category of categories" class="listforums-category">
+            <h2>{{category.name}}</h2>
+            <table class="forums">
+                <thead>
+                <tr>
+                    <th class="forum-icon-col"></th>
+                    <th class="forum-title-col">Forum</th>
+                    <th class="forum-content-col">Inhalt</th>
+                    <th class="forum-latestpost-col">Letzter Beitrag</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let forum of category.forums">
+                    <td class="forum-icon-col"><img src="/assets/images/modern/forum_default.png"></td>
+                    <td class="forum-title-col">
+                        <a [routerLink]="['Forum', {'id': forum.id}]">{{forum.name}}</a>
+                        <div>{{forum.description}}</div>
+                    </td>
+                    <td class="forum-content-col">
+                        <div>{{forum.numThreads}} Threads</div>
+                        <div>{{forum.numPosts}} Posts</div>
+                    </td>
+                    <td class="forum-latestpost-col">
+                        <div *ngIf="forum.hasLastPost">
+                            <div><a [routerLink]="['Thread', {'id': forum.lastPostId}]">{{forum.lastPostTitle}}</a></div>
+                            <div>
+                                von <a [routerLink]="['Thread', {'id': forum.lastPostId}]">{{forum.lastPostUserName}}</a>
+                                am {{forum.lastPostDate | fnbLocalizedDate:"dd.MM.yyyy HH:mm" }}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="loading-spinner" *ngIf="!loaded"></div>
+    <alert type="danger" *ngIf="!successful && loaded">{{errorMessage}}</alert>
 </div>

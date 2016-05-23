@@ -9,7 +9,7 @@ export interface ForumOverviewLastPost {
     title:string
     user:string
     userName:string
-    date:Date
+    date:string
 }
 
 export interface ForumOverviewForum {
@@ -34,7 +34,7 @@ export interface ForumOverviewResult extends ApiResult {
 export interface ShowForumPost {
     user:string
     userName:string
-    date:Date
+    date:string
 }
 
 export interface ShowForumThread {

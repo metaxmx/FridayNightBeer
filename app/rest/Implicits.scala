@@ -3,12 +3,13 @@ package rest
 import akka.stream.scaladsl.Sink
 import akka.util.ByteString
 import org.json4s.native.JsonMethods._
-import org.json4s.{DefaultFormats, JValue, MappingException}
+import org.json4s.{JValue, MappingException}
 import play.api.http.ContentTypes.JSON
 import play.api.http.{ContentTypes, Writeable}
 import play.api.libs.streams.Accumulator
 import play.api.mvc.{BodyParser, Codec}
 import rest.Exceptions._
+import util.JsonFormat
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.higherKinds
@@ -20,7 +21,7 @@ import scala.util.{Failure, Success, Try}
   */
 object Implicits {
 
-  implicit val formats = DefaultFormats
+  implicit val formats = JsonFormat.jsonFormat
 
   implicit val codec = Codec.utf_8
 

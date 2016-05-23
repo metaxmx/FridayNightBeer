@@ -27,7 +27,7 @@ POST    /api/1.0/authentication         @rest.api_1_0.controllers.Authentication
 DELETE  /api/1.0/authentication         @rest.api_1_0.controllers.AuthenticationController.logout
 
 # Index / List Forums
-GET     /api/1.0/forums/list            @rest.api_1_0.controllers.ForumsController.getForums
+GET     /api/1.0/forums                 @rest.api_1_0.controllers.ForumsController.getForums
 
 # Show Forum
 GET     /api/1.0/forum/:id              @rest.api_1_0.controllers.ForumsController.showForum(id: String)
