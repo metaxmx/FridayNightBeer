@@ -98,7 +98,7 @@ object AccessRule {
   def apply(): AccessRule = AccessRule(None, None, None, None, None, None)
 
   def accessRuleAllowed(ar: AccessRule)(implicit userOpt: Option[User]): Boolean =
-    ar.allowAll.contains(true) || userOpt.forall {
+    ar.allowAll.contains(true) || userOpt.exists {
       implicit user => !userExcluded(ar) && (ar.allowAllUsers.contains(true) || userIncluded(ar))
     }
 
@@ -119,7 +119,7 @@ object AccessRule {
   }
 
   private[this] def stateAllowed(st: PermissionCheckState)(implicit userOpt: Option[User]): Boolean = {
-    st.allowAll || userOpt.forall {
+    st.allowAll || userOpt.exists {
       implicit user => !userExcluded(st) && (st.allowUsers || userIncluded(st))
     }
   }
