@@ -89,3 +89,7 @@ resolveFromWebjarsNodeModulesDir := true
 
 routesGenerator := InjectedRoutesGenerator
 
+// enable, to compile the typescript files into a single javascript file
+// javaOptions ++= {
+//  Seq("-DtsCompileMode=stage")
+//}

@@ -29,12 +29,12 @@ class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
         // No cookie with auth key found - generate one
         val sessionKey = uuidGenerator.generateStr
         ensureSessionActive(sessionKey) map { _ =>
-          Ok(views.html.app(theme, settings)).withSession(fnbSessionHeaderName -> sessionKey)
+          Ok(views.html.angular2App(theme, settings, typescriptStageMode)).withSession(fnbSessionHeaderName -> sessionKey)
         }
       } {
         sessionKey =>
           ensureSessionActive(sessionKey) map { _ =>
-            Ok(views.html.angular2App(theme, settings))
+            Ok(views.html.angular2App(theme, settings, typescriptStageMode))
           }
       }
   }
@@ -53,5 +53,13 @@ class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
       session => Future.successful(session)
     }
   } yield existingSession
+
+  /**
+    * Flag, if TypeScript files were compiled into a single JS file.
+    */
+  lazy val typescriptStageMode: Boolean = {
+    val resUrl = getClass.getClassLoader.getResource("public/main.js")
+    Option(resUrl).isDefined
+  }
 
 }

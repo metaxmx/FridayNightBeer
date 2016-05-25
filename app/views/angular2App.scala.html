@@ -1,7 +1,7 @@
 @* Angular2 Application Template *@
 @import theme.Theme
 @import services.SettingsDTO
-@(theme: Theme, settings: SettingsDTO)
+@(theme: Theme, settings: SettingsDTO, typescriptStageMode: Boolean)
 <!doctype html>
 <html lang="en" data-framework="angular2" class="modern-theme">
     <head>
@@ -20,8 +20,10 @@
         <script src="@routes.Assets.versioned("lib/angular2/bundles/angular2.dev.js")"></script>
         <script src="@routes.Assets.versioned("lib/angular2/bundles/router.dev.js")"></script>
         <script src="@routes.Assets.versioned("lib/angular2/bundles/http.dev.js")"></script>
+        @if(typescriptStageMode) {<script src="@routes.Assets.versioned("main.js")"></script>}
 
         <script>
+            @if(!typescriptStageMode) {
             @* our app is downloaded as individual javascript files by SystemJs after compilation by sbt-typescript*@
             System.config({
                 packages: {
@@ -36,6 +38,7 @@
                     'app' : 'assets/app' @* play standardly publishes our asset files under /assets *@
                 }
             });
+            }
             @* SystemJs works out which other modules our bootstrap module depends on and will download and load them*@
             System.import('app/bootstrap').catch(console.error.bind(console));
 		</script>
