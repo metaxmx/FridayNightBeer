@@ -6,12 +6,14 @@ import {Observable} from "rxjs/Observable"
 import {ForumOverviewComponent} from "./forum-overview.component"
 import {ShowForumComponent} from "./show-forum.component"
 import {ShowThreadComponent} from "./show-thread.component"
+import {CreateThreadComponent} from "./create-thread.component"
 import {RegisterComponent} from "./register.component"
 import {LoginComponent} from "./login.component"
 import {SettingsComponent} from "./settings.component"
 import {MediaComponent} from "./media.component"
 import {EventsComponent} from "./events.component"
 import {MembersComponent} from "./members.component"
+import {ShowUserComponent} from "./show-user.component"
 import {AdminComponent} from "./admin.component"
 import {HeaderComponent} from "./header.component"
 import {FooterComponent} from "./footer.component"
@@ -47,6 +49,11 @@ import {FNB_UTILS_PROVIDERS} from "../util/utils"
         component: ShowThreadComponent
     },
     {
+        path: "/forum/:id/newthread",
+        name: "CreateThread",
+        component: CreateThreadComponent
+    },
+    {
         path: "/register",
         name: "Register",
         component: RegisterComponent
@@ -75,6 +82,11 @@ import {FNB_UTILS_PROVIDERS} from "../util/utils"
         path: "/members",
         name: "Members",
         component: MembersComponent
+    },
+    {
+        path: "/user/:id",
+        name: "User",
+        component: ShowUserComponent
     },
     {
         path: "/admin",

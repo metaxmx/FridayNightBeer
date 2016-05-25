@@ -1,9 +1,10 @@
 import {AuthenticationService} from "./authentication.service"
 import {Injectable} from "angular2/core"
 import {HttpCommunicationService} from "./http-communication.service"
-import {ForumOverviewCategory, ForumOverviewResult} from "../viewmodels/ForumViewModels"
+import {ForumOverviewCategory, ForumOverviewResult, ShowForumResult} from "../viewmodels/ForumViewModels"
 import {ApiResponse} from "../viewmodels/GeneralViewModels"
 import {BehaviorSubject} from "rxjs/BehaviorSubject"
+import {Observable} from "rxjs/Observable"
 
 export interface OverviewForum {
     id:string
@@ -47,7 +48,7 @@ class OverviewForumCategoryData implements OverviewForumCategory {
     }
 }
 
-function fromViewModel(categoryViewModels: Array<ForumOverviewCategory>): Array<OverviewForumCategory> {
+function fromOverviewViewModel(categoryViewModels: Array<ForumOverviewCategory>): Array<OverviewForumCategory> {
     let result: Array<OverviewForumCategory> = []
     for (let cat of categoryViewModels) {
         let forums: Array<OverviewForum> = []
@@ -71,20 +72,22 @@ function fromViewModel(categoryViewModels: Array<ForumOverviewCategory>): Array<
 
 const forumOverviewApiUrl = "forums"
 
+const showForumApiUrl = "forum/"
+
 @Injectable()
 export class ForumService {
 
     constructor(private authService:AuthenticationService,
                 private httpService: HttpCommunicationService) {
         console.debug("Initialize Service ForumService")
-        this.refresh()
+        this.refreshOverview()
     }
 
-    public refresh(): void {
+    public refreshOverview(): void {
         console.log("--- Send Forum Overview Request")
         this.httpService.GET<ForumOverviewResult>(forumOverviewApiUrl).subscribe((result: ApiResponse<ForumOverviewResult>) => {
             if (result.success) {
-                this.forumData.next(fromViewModel(result.getResult().categories))
+                this.forumOverviewData.next(fromOverviewViewModel(result.getResult().categories))
             } else {
                 console.warn("Unsuccessful request: ", result.toString())
                 // this.failures.next(result.getError().error)
@@ -92,6 +95,11 @@ export class ForumService {
         })
     }
 
-    public forumData = new BehaviorSubject<Array<OverviewForumCategory>>([])
+    public loadForum(id: string): Observable<ApiResponse<ShowForumResult>> {
+        console.log("--- Send Show Forum Request (id = " + id + ")")
+        return this.httpService.GET<ShowForumResult>(showForumApiUrl + id)
+    }
+
+    public forumOverviewData = new BehaviorSubject<Array<OverviewForumCategory>>([])
 
 }

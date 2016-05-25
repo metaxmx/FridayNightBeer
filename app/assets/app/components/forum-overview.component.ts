@@ -14,7 +14,7 @@ export class ForumOverviewComponent {
 
     constructor(public settings: FnbSettings,
                 private forumService: ForumService) {
-        forumService.forumData.subscribe((data: Array<OverviewForumCategory>) => {
+        forumService.forumOverviewData.subscribe((data: Array<OverviewForumCategory>) => {
             this.categories = data
             this.loaded = true
             this.successful = true
@@ -22,7 +22,7 @@ export class ForumOverviewComponent {
     }
 
     refresh() {
-        this.forumService.refresh()
+        this.forumService.refreshOverview()
     }
 
     // TODO: Error Handling

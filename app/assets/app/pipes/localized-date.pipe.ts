@@ -1,6 +1,7 @@
 import {
     isDate,
     isNumber,
+    isString,
     DateWrapper,
     CONST,
     isBlank
@@ -99,6 +100,11 @@ export class DatePipe implements PipeTransform {
     transform(value: any, pattern: string = "mediumDate", locale: string): string {
         if (isBlank(value)) return null
         let _locale = locale || defaultLocale
+
+        if (isString(value)) {
+            // Try to convert to date
+            value = new Date(value)
+        }
 
         if (!this.supports(value)) {
             throw new Error(value)

@@ -1,4 +1,61 @@
-<div class="show-forum">
-    <bold>Show Forum with ID: {{id}}</bold><br>
-    <button [routerLink]="['Forums']">Back to Overview</button>
+<div class="view-showforum">
+
+    <div class="view-header" *ngIf="loaded && successful">
+        <div class="breadcrumb-combined">
+            <ol class="breadcrumb">
+                <li><a [routerLink]="['Forums']">Friday Night Beer</a></li>
+                <li><a [routerLink]="['Forums']">Forum</a></li>
+                <li class="active">{{forum.title}}</li>
+            </ol>
+            <div class="headeroptions">
+				<span *ngIf="permissionCreateThread">
+					<a [routerLink]="['CreateThread', {'id': forum.id}]">Neuer Thread</a> |
+				</span>
+                <a [routerLink]="['Forums']">Suche</a> |
+                <a [routerLink]="['Forums']">Threads verwalten</a>
+            </div>
+        </div>
+    </div>
+    <div class="main-content" *ngIf="loaded && successful">
+        <h2>{{forum.title}}</h2>
+        <table class="forum">
+            <thead>
+            <tr>
+                <th width="2%" class="showforum-icon-col"></th>
+                <th width="48%" class="showforum-title-col">Thema</th>
+                <th width="20%" class="showforum-firstpost-col">Themenstart</th>
+                <th width="10%" class="showforum-posts-col">Antworten</th>
+                <th width="20%" class="showforum-latestpost-col">Letzter Beitrag</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let thread of forum.threads">
+                <td class="showforum-icon-col">
+                    <img src="/assets/images/modern/topic_pinned.png" *ngIf="thread.sticky">
+                    <img src="/assets/images/modern/topic_default.png" *ngIf="!thread.sticky">
+                </td>
+                <td class="showforum-title-col">
+                    <span *ngIf="thread.sticky">[Ankündigung]</span>
+                    <a [routerLink]="['Thread', {'id': thread.id}]">{{thread.title}}</a>
+                </td>
+                <td class="showforum-firstpost-col">
+                    <div>{{thread.firstPost.date | fnbLocalizedDate:"dd.MM.yyyy HH:mm"}}</div>
+                    <div>von <a [routerLink]="['User', {'id': thread.firstPost.user}]"> {{thread.firstPost.userName}}</a></div>
+                </td>
+                <td class="showforum-posts-col">
+                    {{thread.posts}}
+                </td>
+                <td class="forum-latestpost-col">
+                    <div *ngIf="thread.latestPost">
+                        <div><a [routerLink]="['Thread', {'id': thread.id}]">{{thread.latestPost.date | fnbLocalizedDate:"dd.MM.yyyy HH:mm"}}</a></div>
+                        <div>von {{thread.latestPost.userName}}</div>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="loading-spinner" *ngIf="!loaded"></div>
+    <alert type="danger" *ngIf="loaded && !successful">{{errorMessage}}</alert>
+
 </div>

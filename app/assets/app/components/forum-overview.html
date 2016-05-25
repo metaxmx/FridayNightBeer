@@ -45,7 +45,7 @@
                         <div *ngIf="forum.hasLastPost">
                             <div><a [routerLink]="['Thread', {'id': forum.lastPostId}]">{{forum.lastPostTitle}}</a></div>
                             <div>
-                                von <a [routerLink]="['Thread', {'id': forum.lastPostId}]">{{forum.lastPostUserName}}</a>
+                                von <a [routerLink]="['User', {'id': forum.lastPostUser}]">{{forum.lastPostUserName}}</a>
                                 am {{forum.lastPostDate | fnbLocalizedDate:"dd.MM.yyyy HH:mm" }}
                             </div>
                         </div>
