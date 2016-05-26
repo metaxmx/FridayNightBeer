@@ -17,8 +17,14 @@ class UserService @Inject()(userDAO: UserDAO) {
     _ find (_.username.toLowerCase equals username.toLowerCase)
   })
 
+  def getUserByEmail(email: String): FutureOption[User] = FutureOption(userDAO >> {
+    _ find (_.email.toLowerCase equals email.toLowerCase)
+  })
+
   def getUsers: Future[Seq[User]] = userDAO.getAll
 
   def getUserIndex: Future[Map[String, User]] = userDAO.getMap
+
+  def createUser(user: User) = userDAO << user
 
 }

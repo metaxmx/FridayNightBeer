@@ -12,7 +12,7 @@ class LoginParams {
 
 @Component({
     selector: "fnb-login",
-    templateUrl: "assets/app/components/login.html",
+    templateUrl: "assets/app/views/login.html",
     directives: [ROUTER_DIRECTIVES]
 })
 export class LoginComponent {

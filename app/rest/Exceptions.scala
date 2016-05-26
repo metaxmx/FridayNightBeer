@@ -83,7 +83,10 @@ object Exceptions {
     statusCode = Some(BAD_REQUEST), clientMessage = Some("JSON from Request could not be extracted: " + cause.msg))
 
   case class InvalidSessionException(sessionId: String)(implicit req: RequestHeader) extends RestException("Invalid Session",
-    statusCode = Some(BAD_REQUEST), clientMessage = Some(s"Invalid session id: $sessionId"))
+    statusCode = Some(UNPROCESSABLE_ENTITY), clientMessage = Some(s"Invalid session id: $sessionId"))
+
+  case class InvalidEntityException(msg: String)(implicit req: RequestHeader) extends RestException(msg,
+    statusCode = Some(UNPROCESSABLE_ENTITY))
 
   case class InvalidSessionUserException(sessionId: String)(implicit req: RequestHeader) extends RestException(s"User for session $sessionId not found",
     statusCode = Some(INTERNAL_SERVER_ERROR), clientMessage = Some(s"Invalid user for session id: $sessionId"), reportError = true)
@@ -97,5 +100,9 @@ object Exceptions {
   case class UnsupportedMediaTypeException(requiredType: String)(implicit req: RequestHeader) extends RestException(
     "Unsupported Media Type " + req.contentType.getOrElse("(undefined)") + s": type $requiredType required",
     statusCode = Some(UNSUPPORTED_MEDIA_TYPE), clientMessage = Some(s"Media Type $requiredType required"))
+
+  case class EntityAlreadyExistingException(msg: String)(implicit req: RequestHeader) extends RestException(
+    msg, statusCode = Some(CONFLICT))
+
 
 }

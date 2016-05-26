@@ -17,6 +17,7 @@ object AuthenticationViewModels {
 
   case class AuthenticationStatusUser(id: String,
                                       username: String,
+                                      email: String,
                                       displayName: String,
                                       fullName: Option[String],
                                       avatar: Option[String],
@@ -29,5 +30,12 @@ object AuthenticationViewModels {
 
   case class GetAuthenticationStatusResult(success: Boolean,
                                            authenticationStatus: AuthenticationStatus) extends ViewModel
+
+  case class RegisterUserRequest(username: String,
+                                 password: String,
+                                 email: String) extends ViewModel
+
+  case class RegisterUserResult(success: Boolean,
+                                authenticationStatus: AuthenticationStatus) extends ViewModel
 
 }

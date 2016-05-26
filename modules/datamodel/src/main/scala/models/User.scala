@@ -4,6 +4,7 @@ case class User(_id: String,
                 username: String,
                 password: String,
                 displayName: String,
+                email: String,
                 fullName: Option[String],
                 avatar: Option[String],
                 groups: Option[Seq[String]]) extends BaseModel[User] {

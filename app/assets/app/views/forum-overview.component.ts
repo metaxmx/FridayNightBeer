@@ -6,7 +6,7 @@ import {DatePipe} from "../pipes/localized-date.pipe"
 
 @Component({
     selector: "fnb-forum-overview",
-    templateUrl: "assets/app/components/forum-overview.html",
+    templateUrl: "assets/app/views/forum-overview.html",
     directives: [ROUTER_DIRECTIVES],
     pipes: [DatePipe]
 })

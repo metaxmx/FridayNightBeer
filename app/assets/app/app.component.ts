@@ -3,31 +3,31 @@ import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS} from "angular2/router"
 import {HTTP_PROVIDERS} from "angular2/http"
 import {Observable} from "rxjs/Observable"
 
-import {ForumOverviewComponent} from "./forum-overview.component"
-import {ShowForumComponent} from "./show-forum.component"
-import {ShowThreadComponent} from "./show-thread.component"
-import {CreateThreadComponent} from "./create-thread.component"
-import {RegisterComponent} from "./register.component"
-import {LoginComponent} from "./login.component"
-import {SettingsComponent} from "./settings.component"
-import {MediaComponent} from "./media.component"
-import {EventsComponent} from "./events.component"
-import {MembersComponent} from "./members.component"
-import {ShowUserComponent} from "./show-user.component"
-import {AdminComponent} from "./admin.component"
-import {HeaderComponent} from "./header.component"
-import {FooterComponent} from "./footer.component"
+import {ForumOverviewComponent} from "./views/forum-overview.component"
+import {ShowForumComponent} from "./views/show-forum.component"
+import {ShowThreadComponent} from "./views/show-thread.component"
+import {CreateThreadComponent} from "./views/create-thread.component"
+import {RegisterComponent} from "./views/register.component"
+import {LoginComponent} from "./views/login.component"
+import {SettingsComponent} from "./views/settings.component"
+import {MediaComponent} from "./views/media.component"
+import {EventsComponent} from "./views/events.component"
+import {MembersComponent} from "./views/members.component"
+import {ShowUserComponent} from "./views/show-user.component"
+import {AdminComponent} from "./views/admin.component"
+import {HeaderComponent} from "./views/header.component"
+import {FooterComponent} from "./views/footer.component"
 
-import {AuthenticationService, AuthenticationState} from "../services/authentication.service"
-import {FNB_SERVICE_PROVIDERS} from "../services/services"
+import {AuthenticationService, AuthenticationState} from "./services/authentication.service"
+import {FNB_SERVICE_PROVIDERS} from "./services/services"
 
-import {FnbSettings} from "../util/settings"
-import {FNB_UTILS_PROVIDERS} from "../util/utils"
+import {FnbSettings} from "./util/settings"
+import {FNB_UTILS_PROVIDERS} from "./util/utils"
 
 
 @Component({
     selector: "fnb-app",
-    templateUrl: "assets/app/components/app.html",
+    templateUrl: "assets/app/app.html",
     directives: [HeaderComponent, FooterComponent, ROUTER_DIRECTIVES],
     providers: [HTTP_PROVIDERS, ROUTER_PROVIDERS, FNB_SERVICE_PROVIDERS, FNB_UTILS_PROVIDERS],
 })

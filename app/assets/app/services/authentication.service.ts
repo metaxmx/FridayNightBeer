@@ -3,7 +3,7 @@ import {
     AuthenticationResult,
     GetAuthenticationStatusResult,
     LogoutResult,
-    LoginResult
+    LoginResult, RegisterRequest
 } from "../viewmodels/AuthenticationViewModels"
 import {Injectable} from "angular2/core"
 import {HttpCommunicationService} from "./http-communication.service"
@@ -16,11 +16,15 @@ class LoginAction {
     constructor(public loginName: string, public password: string) {}
 }
 class LogoutAction { }
+class RegisterAction {
+    constructor(public loginName: string, public email: string, public password: string) {}
+}
 type AuthenticationAction = CheckStatusAction | LoginAction | LogoutAction
 
 export class AuthenticationUserData {
     constructor(public id: string,
                 public username: string,
+                public email: string,
                 public displayName: string,
                 public fullName: string,
                 public avatar: string) {
@@ -35,7 +39,7 @@ export class AuthenticationState {
     }
 }
 
-const emptyAuthenticationUserData = new AuthenticationUserData("", "", "", "", "")
+const emptyAuthenticationUserData = new AuthenticationUserData("", "", "", "", "", "")
 const initialState: AuthenticationState = <AuthenticationState> {
     initialized: false,
     loggedIn: false,
@@ -44,6 +48,7 @@ const initialState: AuthenticationState = <AuthenticationState> {
 }
 
 const authApiUrl = "authentication"
+const registerApiUrl = "authentication"
 
 @Injectable()
 export class AuthenticationService {
@@ -64,7 +69,7 @@ export class AuthenticationService {
         let userData: AuthenticationUserData = emptyAuthenticationUserData
         if (result.authenticationStatus.authenticated) {
             const user = result.authenticationStatus.user
-            userData = new AuthenticationUserData(user.id, user.username, user.displayName, user.fullName, user.avatar)
+            userData = new AuthenticationUserData(user.id, user.username, user.email, user.displayName, user.fullName, user.avatar)
         }
         return new AuthenticationState(true, result.authenticationStatus.authenticated, result.authenticationStatus.globalPermissions, userData)
     }
@@ -72,8 +77,12 @@ export class AuthenticationService {
     private createReactiveChain(): void {
         const http = this.httpService
         const observable = this.dispatcher.switchMap((action: AuthenticationAction) => {
-            if (action instanceof LoginAction) {
-                let loginRequest = new LoginRequest(action.loginName, action.password)
+            if (action instanceof RegisterAction) {
+                const registerRequest = new RegisterRequest(action.loginName, action.email, action.password)
+                console.log("--- Send Register Request")
+                return http.POST<LoginResult>(registerApiUrl, registerRequest)
+            } else if (action instanceof LoginAction) {
+                const loginRequest = new LoginRequest(action.loginName, action.password)
                 console.log("--- Send Login Request")
                 return http.POST<LoginResult>(authApiUrl, loginRequest)
             } else if (action instanceof LogoutAction) {
@@ -100,6 +109,10 @@ export class AuthenticationService {
 
     login(username:string, password:string):void {
          this.dispatcher.next(new LoginAction(username, password))
+    }
+
+    register(username:string, email:string, password:string):void {
+        this.dispatcher.next(new RegisterAction(username, email, password))
     }
 
     logout(): void {

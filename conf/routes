@@ -26,6 +26,9 @@ GET     /api/1.0/authentication         @rest.api_1_0.controllers.Authentication
 POST    /api/1.0/authentication         @rest.api_1_0.controllers.AuthenticationController.login
 DELETE  /api/1.0/authentication         @rest.api_1_0.controllers.AuthenticationController.logout
 
+# Registration
+POST    /api/1.0/register               @rest.api_1_0.controllers.AuthenticationController.register
+
 # Index / List Forums
 GET     /api/1.0/forums                 @rest.api_1_0.controllers.ForumsController.getForums
 

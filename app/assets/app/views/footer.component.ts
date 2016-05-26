@@ -3,7 +3,7 @@ import {FnbSettings} from "../util/settings"
 
 @Component({
     selector: "fnb-footer",
-    templateUrl: "assets/app/components/footer.html"
+    templateUrl: "assets/app/views/footer.html"
 })
 export class FooterComponent {
 

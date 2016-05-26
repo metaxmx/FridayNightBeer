@@ -6,7 +6,7 @@ import {Observable} from "rxjs/Observable"
 
 @Component({
     selector: "fnb-header",
-    templateUrl: "assets/app/components/header.html",
+    templateUrl: "assets/app/views/header.html",
     directives: [ROUTER_DIRECTIVES]
 })
 export class HeaderComponent {

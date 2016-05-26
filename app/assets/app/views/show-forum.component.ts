@@ -8,7 +8,7 @@ import {ShowForumResult} from "../viewmodels/ForumViewModels"
 
 @Component({
     selector: "fnb-show-forum",
-    templateUrl: "assets/app/components/show-forum.html",
+    templateUrl: "assets/app/views/show-forum.html",
     directives: [ROUTER_DIRECTIVES],
     pipes: [DatePipe]
 })

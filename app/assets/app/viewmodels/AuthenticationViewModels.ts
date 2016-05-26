@@ -13,6 +13,7 @@ export class LoginRequest {
 export interface AuthenticationStatusUser {
     id:string
     username:string
+    email:string
     displayName:string
     fullName?:string
     avatar?:string,
@@ -37,4 +38,14 @@ export interface LogoutResult extends AuthenticationResult {
 }
 
 export interface GetAuthenticationStatusResult extends AuthenticationResult {
+}
+
+export class RegisterRequest {
+    constructor(public username:string,
+                public email:string,
+                public password:string) {
+    }
+}
+
+export interface RegisterResult extends AuthenticationResult {
 }
