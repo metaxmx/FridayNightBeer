@@ -35,13 +35,14 @@ libraryDependencies ++= Seq(
   "org.webjars" % "jquery" % "1.11.3",
   "org.webjars" % "famfamfam-silk" % "1.3-1",
 
+  "org.webjars.npm" % "ng2-bootstrap" % "1.0.16",
+
   //angular2 dependencies
-  "org.webjars.npm" % "angular2" % "2.0.0-beta.17",
+  //"org.webjars.npm" % "angular2" % "2.0.0-beta.17",
   "org.webjars.npm" % "systemjs" % "0.19.26",
-  "org.webjars.npm" % "todomvc-common" % "1.0.2",
   "org.webjars.npm" % "rxjs" % "5.0.0-beta.7",
-  "org.webjars.npm" % "es6-promise" % "3.1.2",
-  "org.webjars.npm" % "es6-shim" % "0.35.0",
+  //"org.webjars.npm" % "es6-promise" % "3.1.2",
+  //"org.webjars.npm" % "es6-shim" % "0.35.0",
   "org.webjars.npm" % "reflect-metadata" % "0.1.3",
   "org.webjars.npm" % "zone.js" % "0.6.12",
   "org.webjars.npm" % "typescript" % "1.9.0-dev.20160516",

@@ -1,5 +1,5 @@
 import {AuthenticationService} from "./authentication.service"
-import {Injectable} from "angular2/core"
+import {Injectable} from "@angular/core"
 import {HttpCommunicationService} from "./http-communication.service"
 import {ForumOverviewCategory, ForumOverviewResult, ShowForumResult} from "../viewmodels/ForumViewModels"
 import {ApiResponse} from "../viewmodels/GeneralViewModels"

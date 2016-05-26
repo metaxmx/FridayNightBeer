@@ -1,6 +1,5 @@
-import {Component} from "angular2/core"
-import {ROUTER_DIRECTIVES, RouteParams} from "angular2/router"
-import {DatePipe} from "../pipes/localized-date.pipe"
+import {Component} from "@angular/core"
+import {ROUTER_DIRECTIVES, RouteSegment} from "@angular/router"
 import {FnbSettings} from "../util/settings"
 import {ForumService} from "../services/forum.service"
 import {ApiResponse} from "../viewmodels/GeneralViewModels"
@@ -9,16 +8,15 @@ import {ShowForumResult} from "../viewmodels/ForumViewModels"
 @Component({
     selector: "fnb-show-forum",
     templateUrl: "assets/app/views/show-forum.html",
-    directives: [ROUTER_DIRECTIVES],
-    pipes: [DatePipe]
+    directives: [ROUTER_DIRECTIVES]
 })
 export class ShowForumComponent {
 
-    constructor(private routeParams: RouteParams,
+    constructor(private routeSegment: RouteSegment,
                 public settings: FnbSettings,
                 private forumService: ForumService) {
-        console.log("-- Create ShowForumComponent with id " + routeParams.get("id"))
-        this.id = routeParams.get("id")
+        console.log("-- Create ShowForumComponent with id " + routeSegment.getParam("id"))
+        this.id = routeSegment.getParam("id")
         this.load()
     }
 

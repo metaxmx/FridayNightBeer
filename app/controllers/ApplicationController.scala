@@ -39,6 +39,10 @@ class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
       }
   }
 
+  def loginPage = appPage
+
+  def registerPage = appPage
+
   def showForumPage(id: String) = appPage
 
   def showNewTopicPage(id: String) = appPage

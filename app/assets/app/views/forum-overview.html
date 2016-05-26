@@ -3,7 +3,7 @@
     <div class="view-header" *ngIf="successful && loaded">
         <div class="breadcrumb-combined">
             <ol class="breadcrumb">
-                <li><a [routerLink]="['Forums']">Friday Night Beer</a></li>
+                <li><a [routerLink]="['/']">Friday Night Beer</a></li>
                 <li class="active">Forum</li>
             </ol>
             <ul class="headeroptions">
@@ -34,7 +34,7 @@
                 <tr *ngFor="let forum of category.forums">
                     <td class="forum-icon-col"><img src="/assets/images/modern/forum_default.png"></td>
                     <td class="forum-title-col">
-                        <a [routerLink]="['Forum', {'id': forum.id}]">{{forum.name}}</a>
+                        <a [routerLink]="['/forum', forum.id]">{{forum.name}}</a>
                         <div>{{forum.description}}</div>
                     </td>
                     <td class="forum-content-col">
@@ -43,10 +43,10 @@
                     </td>
                     <td class="forum-latestpost-col">
                         <div *ngIf="forum.hasLastPost">
-                            <div><a [routerLink]="['Thread', {'id': forum.lastPostId}]">{{forum.lastPostTitle}}</a></div>
+                            <div><a [routerLink]="['/thread', forum.lastPostId]">{{forum.lastPostTitle}}</a></div>
                             <div>
-                                von <a [routerLink]="['User', {'id': forum.lastPostUser}]">{{forum.lastPostUserName}}</a>
-                                am {{forum.lastPostDate | fnbLocalizedDate:"dd.MM.yyyy HH:mm" }}
+                                von <a [routerLink]="['/user', forum.lastPostUser]">{{forum.lastPostUserName}}</a>
+                                am {{forum.lastPostDate | date:"dd.MM.yyyy HH:mm" }}
                             </div>
                         </div>
                     </td>

@@ -9,9 +9,10 @@
 GET     /                               @controllers.ApplicationController.appPage
 
 # Virtual Pages
-GET     /login                          @controllers.ApplicationController.appPage
+GET     /login                          @controllers.ApplicationController.loginPage
+GET     /register                       @controllers.ApplicationController.registerPage
 GET     /forum/:id                      @controllers.ApplicationController.showForumPage(id: String)
-GET     /forum/:id/newtopic             @controllers.ApplicationController.showNewTopicPage(id: String)
+GET     /forum/:id/newthread            @controllers.ApplicationController.showNewTopicPage(id: String)
 GET     /topic/:id                      @controllers.ApplicationController.showTopicPage(id: String)
 GET     /admin/forum/configure          @controllers.ApplicationController.appPage
 

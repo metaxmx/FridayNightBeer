@@ -1,14 +1,12 @@
-import {Component, Input} from "angular2/core"
+import {Component} from "@angular/core"
 import {FnbSettings} from "../util/settings"
-import {ROUTER_DIRECTIVES} from "angular2/router"
+import {ROUTER_DIRECTIVES} from "@angular/router"
 import {ForumService, OverviewForumCategory} from "../services/forum.service"
-import {DatePipe} from "../pipes/localized-date.pipe"
 
 @Component({
     selector: "fnb-forum-overview",
     templateUrl: "assets/app/views/forum-overview.html",
-    directives: [ROUTER_DIRECTIVES],
-    pipes: [DatePipe]
+    directives: [ROUTER_DIRECTIVES]
 })
 export class ForumOverviewComponent {
 

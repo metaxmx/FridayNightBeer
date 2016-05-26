@@ -1,6 +1,6 @@
-import {Component, OnInit,  ElementRef} from "angular2/core"
-import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS} from "angular2/router"
-import {HTTP_PROVIDERS} from "angular2/http"
+import {Component, OnInit,  ElementRef} from "@angular/core"
+import {Routes, ROUTER_DIRECTIVES, ROUTER_PROVIDERS} from "@angular/router"
+import {HTTP_PROVIDERS} from "@angular/http"
 import {Observable} from "rxjs/Observable"
 
 import {ForumOverviewComponent} from "./views/forum-overview.component"
@@ -12,7 +12,7 @@ import {LoginComponent} from "./views/login.component"
 import {SettingsComponent} from "./views/settings.component"
 import {MediaComponent} from "./views/media.component"
 import {EventsComponent} from "./views/events.component"
-import {MembersComponent} from "./views/members.component"
+import {UsersComponent} from "./views/users.component"
 import {ShowUserComponent} from "./views/show-user.component"
 import {AdminComponent} from "./views/admin.component"
 import {HeaderComponent} from "./views/header.component"
@@ -31,68 +31,19 @@ import {FNB_UTILS_PROVIDERS} from "./util/utils"
     directives: [HeaderComponent, FooterComponent, ROUTER_DIRECTIVES],
     providers: [HTTP_PROVIDERS, ROUTER_PROVIDERS, FNB_SERVICE_PROVIDERS, FNB_UTILS_PROVIDERS],
 })
-@RouteConfig([
-    {
-        path: "/",
-        name: "Forums",
-        component: ForumOverviewComponent,
-        useAsDefault: true
-    },
-    {
-        path: "/forum/:id",
-        name: "Forum",
-        component: ShowForumComponent
-    },
-    {
-        path: "/thread/:id",
-        name: "Thread",
-        component: ShowThreadComponent
-    },
-    {
-        path: "/forum/:id/newthread",
-        name: "CreateThread",
-        component: CreateThreadComponent
-    },
-    {
-        path: "/register",
-        name: "Register",
-        component: RegisterComponent
-    },
-    {
-        path: "/login",
-        name: "Login",
-        component: LoginComponent
-    },
-    {
-        path: "/settings",
-        name: "Settings",
-        component: SettingsComponent
-    },
-    {
-        path: "/media",
-        name: "Media",
-        component: MediaComponent
-    },
-    {
-        path: "/events",
-        name: "Events",
-        component: EventsComponent
-    },
-    {
-        path: "/members",
-        name: "Members",
-        component: MembersComponent
-    },
-    {
-        path: "/user/:id",
-        name: "User",
-        component: ShowUserComponent
-    },
-    {
-        path: "/admin",
-        name: "Admin",
-        component: AdminComponent
-    }
+@Routes([
+    {   path: "/",                      component: ForumOverviewComponent   },
+    {   path: "/forum/:id",             component: ShowForumComponent       },
+    {   path: "/thread/:id",            component: ShowThreadComponent      },
+    {   path: "/forum/:id/newthread",   component: CreateThreadComponent    },
+    {   path: "/register",              component: RegisterComponent        },
+    {   path: "/login",                 component: LoginComponent           },
+    {   path: "/settings",              component: SettingsComponent        },
+    {   path: "/media",                 component: MediaComponent           },
+    {   path: "/events",                component: EventsComponent          },
+    {   path: "/users",                 component: UsersComponent           },
+    {   path: "/user/:id",              component: ShowUserComponent        },
+    {   path: "/admin",                 component: AdminComponent           }
 ])
 export class AppComponent implements OnInit {
 

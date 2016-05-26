@@ -5,7 +5,7 @@ import {
     LogoutResult,
     LoginResult, RegisterRequest
 } from "../viewmodels/AuthenticationViewModels"
-import {Injectable} from "angular2/core"
+import {Injectable} from "@angular/core"
 import {HttpCommunicationService} from "./http-communication.service"
 import {BehaviorSubject} from "rxjs/BehaviorSubject"
 import {Subject} from "rxjs/Subject"

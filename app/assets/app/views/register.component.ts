@@ -1,5 +1,5 @@
-import {Component} from "angular2/core"
-import {ROUTER_DIRECTIVES} from "angular2/router"
+import {Component} from "@angular/core"
+import {ROUTER_DIRECTIVES} from "@angular/router"
 import {FnbSettings} from "../util/settings"
 import {AuthenticationService, AuthenticationState} from "../services/authentication.service"
 import {Observable} from "rxjs/Observable"

@@ -3,16 +3,16 @@
     <div class="view-header" *ngIf="loaded && successful">
         <div class="breadcrumb-combined">
             <ol class="breadcrumb">
-                <li><a [routerLink]="['Forums']">Friday Night Beer</a></li>
-                <li><a [routerLink]="['Forums']">Forum</a></li>
+                <li><a [routerLink]="['/']">Friday Night Beer</a></li>
+                <li><a [routerLink]="['/']">Forum</a></li>
                 <li class="active">{{forum.title}}</li>
             </ol>
             <div class="headeroptions">
 				<span *ngIf="permissionCreateThread">
 					<a [routerLink]="['CreateThread', {'id': forum.id}]">Neuer Thread</a> |
 				</span>
-                <a [routerLink]="['Forums']">Suche</a> |
-                <a [routerLink]="['Forums']">Threads verwalten</a>
+                <a [routerLink]="['/']">Suche</a> |
+                <a [routerLink]="['/']">Threads verwalten</a>
             </div>
         </div>
     </div>
@@ -36,18 +36,18 @@
                 </td>
                 <td class="showforum-title-col">
                     <span *ngIf="thread.sticky">[Ankündigung]</span>
-                    <a [routerLink]="['Thread', {'id': thread.id}]">{{thread.title}}</a>
+                    <a [routerLink]="['/thread', thread.id]">{{thread.title}}</a>
                 </td>
                 <td class="showforum-firstpost-col">
-                    <div>{{thread.firstPost.date | fnbLocalizedDate:"dd.MM.yyyy HH:mm"}}</div>
-                    <div>von <a [routerLink]="['User', {'id': thread.firstPost.user}]"> {{thread.firstPost.userName}}</a></div>
+                    <div>{{thread.firstPost.date}}</div>
+                    <div>von <a [routerLink]="['/user', thread.firstPost.user]"> {{thread.firstPost.userName}}</a></div>
                 </td>
                 <td class="showforum-posts-col">
                     {{thread.posts}}
                 </td>
                 <td class="forum-latestpost-col">
                     <div *ngIf="thread.latestPost">
-                        <div><a [routerLink]="['Thread', {'id': thread.id}]">{{thread.latestPost.date | fnbLocalizedDate:"dd.MM.yyyy HH:mm"}}</a></div>
+                        <div><a [routerLink]="['/thread', thread.id]">{{thread.latestPost.date}}</a></div>
                         <div>von {{thread.latestPost.userName}}</div>
                     </div>
                 </td>
