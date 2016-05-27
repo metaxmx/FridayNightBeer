@@ -1,18 +1,21 @@
 <div class="view-showforum">
 
-    <div class="view-header" *ngIf="loaded && successful">
+    <div class="view-header" *ngIf="loaded">
         <div class="breadcrumb-combined">
             <ol class="breadcrumb">
                 <li><a [routerLink]="['/']">Friday Night Beer</a></li>
                 <li><a [routerLink]="['/']">Forum</a></li>
-                <li class="active">{{forum.title}}</li>
+                <li class="active" *ngIf="successful">{{forum.title}}</li>
+                <li class="active" *ngIf="!successful">Fehler</li>
             </ol>
-            <div class="headeroptions">
+            <div class="headeroptions" *ngIf="successful">
 				<span *ngIf="permissionCreateThread">
 					<a [routerLink]="['CreateThread', {'id': forum.id}]">Neuer Thread</a> |
 				</span>
                 <a [routerLink]="['/']">Suche</a> |
                 <a [routerLink]="['/']">Threads verwalten</a>
+            </div>
+            <div class="headeroptions" *ngIf="!successful">
             </div>
         </div>
     </div>

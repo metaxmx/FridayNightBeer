@@ -1,8 +1,12 @@
 import {Component} from "@angular/core"
 import {FnbSettings} from "../util/settings"
-import {ROUTER_DIRECTIVES} from "@angular/router"
-import {AuthenticationService, AuthenticationState} from "../services/authentication.service"
+import {ROUTER_DIRECTIVES, Router} from "@angular/router"
+import {
+    AuthenticationService, AuthenticationState, AuthenticationEvent,
+    LogoutEvent, LoginEvent
+} from "../services/authentication.service"
 import {Observable} from "rxjs/Observable"
+import {AlertComponent} from "ng2-bootstrap/components/alert"
 
 
 class LoginParams {
@@ -13,18 +17,30 @@ class LoginParams {
 @Component({
     selector: "fnb-login",
     templateUrl: "assets/app/views/login.html",
-    directives: [ROUTER_DIRECTIVES]
+    directives: [ROUTER_DIRECTIVES, AlertComponent]
 })
 export class LoginComponent {
 
     constructor(public settings: FnbSettings,
-                private authService: AuthenticationService) {
+                private authService: AuthenticationService,
+                private router: Router) {
         this.authStatus = authService.authenticationStatus
+        authService.failures.subscribe((msg: string) => { this.loginError = msg })
+        authService.events.subscribe((event: AuthenticationEvent) => {
+           if (event instanceof LogoutEvent) {
+               console.log("### Logout successful")
+           } else if (event instanceof LoginEvent) {
+               console.log("### Login successful")
+               this.router.navigate(["/"])
+           }
+        })
     }
 
     authStatus: Observable<AuthenticationState>
 
-    loginParams = new LoginParams()
+    public loginError: string = ""
+
+    public loginParams = new LoginParams()
 
     login() {
         console.log("Trigger Login with " + this.loginParams.username + " : " + this.loginParams.password)
@@ -36,6 +52,10 @@ export class LoginComponent {
     logout() {
         console.log("Trigger Logout")
         this.authService.logout()
+    }
+
+    dismissError() {
+        this.loginError = ""
     }
 
 }

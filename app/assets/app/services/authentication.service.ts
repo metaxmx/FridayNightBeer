@@ -15,11 +15,15 @@ class CheckStatusAction {}
 class LoginAction {
     constructor(public loginName: string, public password: string) {}
 }
-class LogoutAction { }
+class LogoutAction {}
 class RegisterAction {
     constructor(public loginName: string, public email: string, public password: string) {}
 }
 type AuthenticationAction = CheckStatusAction | LoginAction | LogoutAction
+
+export interface AuthenticationEvent {}
+export class LoginEvent implements AuthenticationEvent {}
+export class LogoutEvent implements AuthenticationEvent {}
 
 export class AuthenticationUserData {
     constructor(public id: string,
@@ -48,7 +52,7 @@ const initialState: AuthenticationState = <AuthenticationState> {
 }
 
 const authApiUrl = "authentication"
-const registerApiUrl = "authentication"
+const registerApiUrl = "register"
 
 @Injectable()
 export class AuthenticationService {
@@ -64,6 +68,8 @@ export class AuthenticationService {
     public authenticationStatus = new BehaviorSubject<AuthenticationState>(initialState)
 
     public failures = new Subject<string>()
+
+    public events = new Subject<AuthenticationEvent>()
 
     private static mapAuthenticationResult(result: AuthenticationResult): AuthenticationState {
         let userData: AuthenticationUserData = emptyAuthenticationUserData
@@ -95,7 +101,14 @@ export class AuthenticationService {
         }).share()
         observable.subscribe((result: ApiResponse<AuthenticationResult>) => {
             if (result.success) {
+                let oldState: AuthenticationState = this.authenticationStatus.getValue()
                 this.authenticationStatus.next(AuthenticationService.mapAuthenticationResult(result.getResult()))
+                let newState: AuthenticationState = this.authenticationStatus.getValue()
+                if (oldState.loggedIn && !newState.loggedIn) {
+                    this.events.next(new LogoutEvent())
+                } else if (!oldState.loggedIn && newState.loggedIn) {
+                    this.events.next(new LoginEvent())
+                }
             } else {
                 console.warn("Unsuccessful request: ", result.toString())
                 this.failures.next(result.getError().error)

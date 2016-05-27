@@ -6,7 +6,7 @@
         <div class="form-body">
 
             <alert type="info">Bitte Username und Passwort eingeben:</alert>
-            <alert type="danger" ng-show="message" close="clearMsg()">{{message}}</alert>
+            <alert type="danger" *ngIf="loginError != ''" dismissible="true" (close)="dismissError()">{{loginError}}</alert>
 
             <div class="form-group">
                 <label id="lbl_username" for="username"
@@ -39,7 +39,7 @@
     <form id="LogoutForm" name="LogoutForm" class="form-dialog" role="form" *ngIf="(authStatus|async).loggedIn">
         <h2 class="form-header">Logout</h2>
         <div class="form-body">
-            <alert type="info">Du bist momentan eingeloggt as {{(authStatus|async).user.username}}.</alert>
+            <alert type="info">Du bist momentan eingeloggt als {{(authStatus|async).user.username}}.</alert>
         </div>
         <div class="form-footer clearfix">
             <button type="button" class="btn btn-success" id="btn_login" (click)="logout()">Logout</button>

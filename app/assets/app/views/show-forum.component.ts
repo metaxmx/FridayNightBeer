@@ -4,11 +4,12 @@ import {FnbSettings} from "../util/settings"
 import {ForumService} from "../services/forum.service"
 import {ApiResponse} from "../viewmodels/GeneralViewModels"
 import {ShowForumResult} from "../viewmodels/ForumViewModels"
+import {AlertComponent} from "ng2-bootstrap/components/alert"
 
 @Component({
     selector: "fnb-show-forum",
     templateUrl: "assets/app/views/show-forum.html",
-    directives: [ROUTER_DIRECTIVES]
+    directives: [ROUTER_DIRECTIVES, AlertComponent]
 })
 export class ShowForumComponent {
 
@@ -29,7 +30,7 @@ export class ShowForumComponent {
             } else {
                 console.warn("Unsuccessful request: ", result.toString())
                 this.successful = false
-                this.errorMessage = result.toString()
+                this.errorMessage = result.getError().error
                 // this.failures.next(result.getError().error)
             }
         })

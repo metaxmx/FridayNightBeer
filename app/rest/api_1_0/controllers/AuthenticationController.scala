@@ -5,8 +5,8 @@ import javax.inject.{Inject, Singleton}
 import models.{User, UserSession}
 import permissions.Authorization
 import play.api.http.Status._
-import play.api.mvc.RequestHeader
-import rest.Exceptions.{BadRequestException, InvalidEntityException, RestException}
+import play.api.mvc.{Request, RequestHeader}
+import rest.Exceptions.{BadRequestException, EntityAlreadyExistingException, InvalidEntityException, RestException}
 import rest.Implicits._
 import rest.api_1_0.controllers.AuthenticationController.LoginFailedException
 import rest.api_1_0.viewmodels.AuthenticationViewModels._
@@ -89,13 +89,21 @@ class AuthenticationController @Inject()(val userService: UserService,
       }
   }
 
-  private[this] def validateAndParseRegistrationData(data: RegisterUserRequest): Future[User] = {
-    // TODO: Rules for Password Length
-    // TODO: Validate EMail
+  private[this] val emailRegexp = "[0-9a-zA-Z._+-]+@[0-9a-zA-Z._+-]+\\.[a-zA-z]+".r
+
+  private[this] def validateAndParseRegistrationData(data: RegisterUserRequest)(implicit req: Request[_]): Future[User] = {
+    if (data.password.length < 4) throw InvalidEntityException("Password too short")
+    if (!emailRegexp.pattern.asPredicate().test(data.email)) throw InvalidEntityException("Invalid email address")
     val passwordEncoded = PasswordEncoder.encodePassword(data.password)
     val newUser = new User("", data.username, passwordEncoded, data.username, data.email, None, None, None)
-    // TODO: Checking if user with same username etc. already exists
-    Future.successful(newUser)
+    for {
+      userByUsername <- userService.getUserByUsername(data.username).toFuture
+      userByEmail <- userService.getUserByEmail(data.email).toFuture
+    } yield {
+      if (userByUsername.isDefined) throw EntityAlreadyExistingException("Username already taken")
+      if (userByEmail.isDefined) throw EntityAlreadyExistingException("Email already taken")
+      newUser
+    }
   }
 
 }
