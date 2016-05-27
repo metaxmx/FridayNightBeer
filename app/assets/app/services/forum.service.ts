@@ -1,4 +1,3 @@
-import {AuthenticationService} from "./authentication.service"
 import {Injectable} from "@angular/core"
 import {HttpCommunicationService} from "./http-communication.service"
 import {ForumOverviewCategory, ForumOverviewResult, ShowForumResult} from "../viewmodels/ForumViewModels"
@@ -77,8 +76,7 @@ const showForumApiUrl = "forum/"
 @Injectable()
 export class ForumService {
 
-    constructor(private authService:AuthenticationService,
-                private httpService: HttpCommunicationService) {
+    constructor(private httpService: HttpCommunicationService) {
         console.debug("Initialize Service ForumService")
         this.refreshOverview()
     }

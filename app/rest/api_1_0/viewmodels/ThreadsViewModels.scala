@@ -20,7 +20,7 @@ object ThreadsViewModels {
                             user: String,
                             userName: String,
                             userFullname: Option[String],
-                            userAvatar: Boolean,
+                            userAvatar: Option[String],
                             content: String,
                             uploads: Option[Seq[ShowThreadPostUpload]]) extends ViewModel
 

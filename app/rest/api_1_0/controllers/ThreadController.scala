@@ -59,7 +59,7 @@ class ThreadController @Inject()(val userService: UserService,
             upload =>
               ShowThreadPostUpload(upload.filename, upload.size, upload.hits)
           }
-          ShowThreadPost(post._id, post.dateCreated, user._id, user.displayName, user.fullName, user.avatar.isDefined, post.text,
+          ShowThreadPost(post._id, post.dateCreated, user._id, user.displayName, user.fullName, user.avatar, post.text,
             Some(uploads).filter(_.nonEmpty))
       }
       ShowThreadResult(success = true, thread._id, thread.title, forum._id, forum.name, postViewModels)

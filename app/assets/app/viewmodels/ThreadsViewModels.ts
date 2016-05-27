@@ -12,11 +12,11 @@ export interface ShowThreadPostUpload {
 
 export interface ShowThreadPost {
     id:string
-    date:Date
+    date:string
     user:string
     userName:string
     userFullname?:string
-    userAvatar:boolean
+    userAvatar?:string
     content:string
     uploads?:Array<ShowThreadPostUpload>
 }

@@ -36,20 +36,16 @@ Installation
   * Activator/sbt will download project dependencies
   * In the interactive shell, execute `run` to start the Play application
 
-IDE Integration
----------------
+Typescript Compiler Integration
+-------------------------------
 
-The frontend uses Angular2 and is written in TypeScript. The resolution of the required TypeScript definitions
-is done via included WebJar SBT dependencies, which works well with the sbt plugin, but some IDEs (like IntelliJ IDEA)
-are not able to resolve these dependencies and won't provide context information and auto completion.
-
-To fix this, install Node.js (including npm) on your machine, go to the project root and run
+The frontend uses Angular2 and is written in TypeScript.
+To compile the project typescript files against Angular2, the packages from Angular2 (`@angular/core` etc.) are required.
+Install Node.js (including npm) on your machine, go to the project root and run
  
-    npm install angular2@2.0.0-beta.17
+    npm install
 
-The dependencies will be downloaded into a "node-modules" subfolder, which will be used by the TypeScript resolution, but is in the `.gitignore` file.
-
-This procedure is not required to run the code, only to get IDE support!
+The dependencies will be downloaded into a `node-modules` subfolder, which will be used by the TypeScript resolution, but is in the `.gitignore` file.
 
 Software Used
 -------------
@@ -58,7 +54,7 @@ Software Used
 * [SBT](http://www.scala-sbt.org/) (Scala Build Tool) Version 0.13.11
 * [Play Framework](https://www.playframework.com/) Version 2.5.2
 * [ReactiveMongo](http://reactivemongo.org/) Version 0.11.11
-* [AngularJS](https://angular.io/) Version 2.0.0-Beta17
+* [AngularJS](https://angular.io/) Version 2.0.0-RC1
 * [Bootstrap](http://getbootstrap.com/) Version 3.3.4
 * Diverse general libraries and utilities: jQuery, Guice, Guava, Joda-Time, Angular Add-Ons, Polyfills
 * Frontend Assets for the Themes:
@@ -75,11 +71,10 @@ Planned Milestones
   * [x] List Forums
   * [x] Show Topics in Forum
   * [x] Show Posts in Forum
-  * [x] Reply
-  * [ ] Create / Edit / Delete / Reorder Forums
-  * [x] Start new Threads
-  * [ ] Register new users
-  * [x] Basic Post formatting, e.g. bold, italic, lists
+  * [ ] Reply
+  * [ ] Start new Threads
+  * [x] Register new users
+  * [ ] Basic Post formatting, e.g. bold, italic, lists
 * [ ] Version 0.2 Alpha: Advanced Forum Features:
   * [ ] Pin / Unpin Topics
   * [ ] Close Topics
@@ -88,6 +83,7 @@ Planned Milestones
   * [ ] List Users
   * [ ] Change User Profile and Login Data
   * [ ] View User Profile
+  * [ ] Create / Edit / Delete / Reorder Forums
 * [ ] Version 0.3 Alpha: Configure Permissions:
   * [ ] Include Concept of User Groups
   * [ ] Add / Edit / Delete Groups
