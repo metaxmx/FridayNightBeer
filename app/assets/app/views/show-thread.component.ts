@@ -30,8 +30,8 @@ class ShowThreadPostData {
         this.hasAvatar = this.userAvatar.length > 0
         this.userAvatarUrl = (this.hasAvatar ? "/avatar/" + this.userId : "")
         this.content = post.content
-        let att = post.uploads || []
-        this.attachments = att.map((attachment: ShowThreadPostUpload) => new ShowThreadAttachmentData(attachment))
+        let att: Array<ShowThreadPostUpload> = post.uploads || []
+        this.attachments = att.map((attachment: ShowThreadPostUpload) => new ShowThreadAttachmentData(post.id, attachment))
         this.hasAttachments = this.attachments.length > 0
     }
     id:string

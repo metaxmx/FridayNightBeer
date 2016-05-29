@@ -41,11 +41,11 @@ libraryDependencies ++= Seq(
   //"org.webjars.npm" % "angular2" % "2.0.0-beta.17",
   "org.webjars.npm" % "systemjs" % "0.19.26",
   "org.webjars.npm" % "rxjs" % "5.0.0-beta.7",
-  "org.webjars.npm" % "es6-promise" % "3.1.2",
-  "org.webjars.npm" % "es6-shim" % "0.35.0",
+  //"org.webjars.npm" % "es6-promise" % "3.1.2",
+  //"org.webjars.npm" % "es6-shim" % "0.35.0",
   "org.webjars.npm" % "reflect-metadata" % "0.1.3",
   "org.webjars.npm" % "zone.js" % "0.6.12",
-  "org.webjars.npm" % "typescript" % "1.9.0-dev.20160516",
+  "org.webjars.npm" % "typescript" % "1.9.0-dev.20160516", // 20160529
 
   //tslint dependency
   "org.webjars.npm" % "tslint-eslint-rules" % "1.2.0",
@@ -83,7 +83,7 @@ updateOptions := updateOptions.value.withCachedResolution(cachedResoluton = true
 typingsFile := Some(baseDirectory.value / "typings" / "index.d.ts")
 
 // use the webjars npm directory (target/web/node_modules ) for resolution of module imports of angular2/core etc
-resolveFromWebjarsNodeModulesDir := true
+resolveFromWebjarsNodeModulesDir := false
 
 // use the combined tslint and eslint rules plus ng2 lint rules
 (rulesDirectories in tslint) := Some(List(tslintEslintRulesDir.value,ng2LintRulesDir.value))

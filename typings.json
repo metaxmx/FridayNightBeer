@@ -1,7 +1,19 @@
 {
-  "dependencies": {
+  "globalDependencies": {
+    "es6-shim": "registry:dt/es6-shim#0.31.2+20160317120654",
+    "jasmine": "registry:dt/jasmine#2.2.0+20160412134438",
+    "zone.js": "npm:zone.js"
   },
-  "ambientDependencies": {
-    "jasmine": "github:DefinitelyTyped/DefinitelyTyped/jasmine/jasmine.d.ts#5c182b9af717f73146399c2485f70f1e2ac0ff2b"
+  "dependencies": {
+    "@angular/common": "npm:@angular/common",
+    "@angular/compiler": "npm:@angular/compiler",
+    "@angular/core": "npm:@angular/core",
+    "@angular/http": "npm:@angular/http",
+    "@angular/platform-browser": "npm:@angular/platform-browser",
+    "@angular/platform-browser-dynamic": "npm:@angular/platform-browser-dynamic",
+    "@angular/router": "npm:@angular/router",
+    "ng2-bootstrap": "npm:ng2-bootstrap",
+    "reflect-metadata": "npm:reflect-metadata",
+    "rxjs": "npm:rxjs"
   }
 }

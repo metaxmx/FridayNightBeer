@@ -21,9 +21,7 @@
   "exclude": [
     "node_modules",
     "project/target",
-    "typings/main",
-    "typings/main.d.ts",
-    "typings/browser",
+    "typings",
     "target/web"
   ]
 }
