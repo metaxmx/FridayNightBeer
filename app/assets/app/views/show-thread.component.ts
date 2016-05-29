@@ -4,6 +4,7 @@ import {FnbSettings} from "../util/settings"
 import {AlertComponent} from "ng2-bootstrap/components/alert"
 import {ThreadService, ShowThreadData} from "../services/thread.service"
 import {ApiModelLoader, ApiModelData} from "../util/ApiLoader"
+import {BehaviorSubject} from "rxjs/Rx";
 
 @Component({
     selector: "fnb-show-thread",
@@ -23,7 +24,6 @@ export class ShowThreadComponent {
     }
 
     private showThreadStatus: ApiModelLoader<ShowThreadData>
-
     public model: ApiModelData<ShowThreadData>
 
     load() {
