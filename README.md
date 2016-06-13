@@ -52,7 +52,7 @@ Software Used
 
 * [Scala](http://www.scala-lang.org/) Version 2.11.8
 * [SBT](http://www.scala-sbt.org/) (Scala Build Tool) Version 0.13.11
-* [Play Framework](https://www.playframework.com/) Version 2.5.2
+* [Play Framework](https://www.playframework.com/) Version 2.5.4
 * [ReactiveMongo](http://reactivemongo.org/) Version 0.11.11
 * [AngularJS](https://angular.io/) Version 2.0.0-RC1
 * [Bootstrap](http://getbootstrap.com/) Version 3.3.4
