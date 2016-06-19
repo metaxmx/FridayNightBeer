@@ -21,6 +21,8 @@ resolvers ++= Seq(
   "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 )
 
+val angularVersion = "2.0.0-rc.2"
+
 libraryDependencies ++= Seq(
   cache,
   "com.google.inject" % "guice" % "4.0",
@@ -38,7 +40,12 @@ libraryDependencies ++= Seq(
   "org.webjars.npm" % "ng2-bootstrap" % "1.0.16",
 
   //angular2 dependencies
-  //"org.webjars.npm" % "angular2" % "2.0.0-beta.17",
+  //"org.webjars.npm" % "angular__core" % angularVersion,
+  //"org.webjars.npm" % "angular__common" % angularVersion,
+  //"org.webjars.npm" % "angular__compiler" % angularVersion,
+  //"org.webjars.npm" % "angular__http" % angularVersion,
+  //"org.webjars.npm" % "angular__platform-browser" % angularVersion,
+  //"org.webjars.npm" % "angular__router" % angularVersion,
   "org.webjars.npm" % "systemjs" % "0.19.26",
   "org.webjars.npm" % "rxjs" % "5.0.0-beta.7",
   //"org.webjars.npm" % "es6-promise" % "3.1.2",
