@@ -10,6 +10,6 @@ lazy val fnbDefaultTheme = (project in file("."))
 
 resolvers += "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
 
-includeFilter in (Assets, LessKeys.less) := "*.less"
+//includeFilter in (Assets, LessKeys.less) := "*.less"
 
-excludeFilter in (Assets, LessKeys.less) := "_*.less"
+//excludeFilter in (Assets, LessKeys.less) := "_*.less"

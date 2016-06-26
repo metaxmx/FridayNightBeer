@@ -6,7 +6,6 @@ import {
     LogoutEvent, LoginEvent
 } from "../services/authentication.service"
 import {Observable} from "rxjs/Observable"
-import {AlertComponent} from "ng2-bootstrap/components/alert"
 
 
 class LoginParams {
@@ -17,7 +16,7 @@ class LoginParams {
 @Component({
     selector: "fnb-login",
     templateUrl: "assets/app/views/login.html",
-    directives: [ROUTER_DIRECTIVES, AlertComponent]
+    directives: [ROUTER_DIRECTIVES]
 })
 export class LoginComponent {
 

@@ -3,7 +3,6 @@ import {ROUTER_DIRECTIVES} from "@angular/router"
 import {FnbSettings} from "../util/settings"
 import {AuthenticationService, AuthenticationState} from "../services/authentication.service"
 import {Observable} from "rxjs/Observable"
-import {AlertComponent} from "ng2-bootstrap/components/alert"
 
 class RegisterParams {
     public username: string = ""
@@ -14,7 +13,7 @@ class RegisterParams {
 @Component({
     selector: "fnb-register",
     templateUrl: "assets/app/views/register.html",
-    directives: [ROUTER_DIRECTIVES, AlertComponent]
+    directives: [ROUTER_DIRECTIVES]
 })
 export class RegisterComponent {
 

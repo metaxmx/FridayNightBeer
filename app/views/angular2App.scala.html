@@ -9,26 +9,31 @@
         <base href="/">
         <title>@settings.siteTitle</title>
 
-        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("lib/bootstrap/css/bootstrap.css")">
-        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("stylesheets/fnb.css")">
+        <!--<link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("lib/bootstrap/css/bootstrap.css")">
+        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("stylesheets/fnb.css")"> -->
+        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("dist/vendor-style.css")">
+        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("dist/app-style.css")">
 
         <link rel="shortcut icon" href="@routes.Assets.versioned("appdata/favicon.ico")">
 
-        <script src="@routes.Assets.versioned("lib/zone.js/dist/zone.js")"></script>
-        <script src="@routes.Assets.versioned("lib/reflect-metadata/temp/Reflect.js")"></script>
+        <script src="@routes.Assets.versioned("dist/polyfills.bundle.js")"></script>
+        <script src="@routes.Assets.versioned("dist/vendor.bundle.js")"></script>
+        <script src="@routes.Assets.versioned("dist/app.bundle.js")"></script>
+
+        @*<script src="@routes.Assets.versioned("lib/zone.js/dist/zone.js")"></script>*@
+        @*<script src="@routes.Assets.versioned("lib/reflect-metadata/temp/Reflect.js")"></script>*@
         @*<script src="@routes.Assets.versioned("lib/angular2/bundles/angular2-polyfills.js")"></script>*@
-        <script src="@routes.Assets.versioned("lib/systemjs/dist/system.js")"></script>
-        <script src="@routes.Assets.versioned("lib/rxjs/bundles/Rx.js")"></script>
+        @*<script src="@routes.Assets.versioned("lib/systemjs/dist/system.js")"></script>*@
+        @*<script src="@routes.Assets.versioned("lib/rxjs/bundles/Rx.js")"></script>*@
 
         @*<script src="@routes.Assets.versioned("lib/angular2/bundles/angular2.dev.js")"></script>
-        <script src="@routes.Assets.versioned("lib/angular2/bundles/router.dev.js")"></script>
-        <script src="@routes.Assets.versioned("lib/angular2/bundles/http.dev.js")"></script>*@
-        <script src="@routes.Assets.versioned("lib/ng2-bootstrap/bundles/ng2-bootstrap.js")"></script>
-        @if(typescriptStageMode) {<script src="@routes.Assets.versioned("main.js")"></script>}
+        @*<script src="@routes.Assets.versioned("lib/angular2/bundles/router.dev.js")"></script>
+        @*<script src="@routes.Assets.versioned("lib/angular2/bundles/http.dev.js")"></script>*@
+        @*<script src="@routes.Assets.versioned("lib/ng2-bootstrap/bundles/ng2-bootstrap.js")"></script>*@
+        @*\@if(typescriptStageMode) {<script src="@routes.Assets.versioned("main.js")"></script>}
 
         <script>
             @if(!typescriptStageMode) {
-            @* our app is downloaded as individual javascript files by SystemJs after compilation by sbt-typescript*@
             System.config({
                 packages: {
                     'assets/app': {
@@ -67,14 +72,13 @@
                     }
                 },
                 map: {
-                    'app' : 'assets/app', @* play standardly publishes our asset files under /assets *@
+                    'app' : 'assets/app',
                     '@@angular': 'assets/lib_unmanaged/@@angular'
                 }
             });
             }
-            @* SystemJs works out which other modules our bootstrap module depends on and will download and load them*@
             System.import('app/bootstrap').catch(console.error.bind(console));
-		</script>
+		</script>*@
     </head>
     <body>
         <fnb-app data-settings="@settings.toJson" data-logo="@routes.Assets.versioned("appdata/logo.png")"></fnb-app>

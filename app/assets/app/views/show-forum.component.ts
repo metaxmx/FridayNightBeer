@@ -1,24 +1,34 @@
-import {Component} from "@angular/core"
-import {ROUTER_DIRECTIVES, RouteSegment} from "@angular/router"
+import {Component, OnInit, OnDestroy} from "@angular/core"
+import {ROUTER_DIRECTIVES, ActivatedRoute} from "@angular/router"
 import {FnbSettings} from "../util/settings"
 import {ForumService} from "../services/forum.service"
 import {ApiResponse} from "../viewmodels/GeneralViewModels"
 import {ShowForumResult} from "../viewmodels/ForumViewModels"
-import {AlertComponent} from "ng2-bootstrap/components/alert"
+import {Subscription} from "rxjs/Rx";
 
 @Component({
     selector: "fnb-show-forum",
     templateUrl: "assets/app/views/show-forum.html",
-    directives: [ROUTER_DIRECTIVES, AlertComponent]
+    directives: [ROUTER_DIRECTIVES]
 })
-export class ShowForumComponent {
+export class ShowForumComponent implements OnInit, OnDestroy {
 
-    constructor(private routeSegment: RouteSegment,
+    constructor(private activatedRoute: ActivatedRoute,
                 public settings: FnbSettings,
                 private forumService: ForumService) {
-        console.log("-- Create ShowForumComponent with id " + routeSegment.getParam("id"))
-        this.id = routeSegment.getParam("id")
-        this.load()
+    }
+    
+    ngOnInit() {
+        this.idSubscription = this.activatedRoute.params.subscribe(params => {
+            this.id = params['id']
+            console.log("-- Create ShowForumComponent with id " + this.id)
+            this.load()
+        })
+    }
+
+    ngOnDestroy() {
+        this.idSubscription.unsubscribe()
+        console.log("-- Destroy ShowForumComponent with id " + this.id)
     }
 
     load() {
@@ -37,6 +47,7 @@ export class ShowForumComponent {
     }
 
     private id: string
+    private idSubscription: Subscription
 
     // TODO: Error Handling
     public loaded: boolean = false

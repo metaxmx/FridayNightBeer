@@ -1,31 +1,41 @@
-import {Component} from "@angular/core"
-import {ROUTER_DIRECTIVES, RouteSegment} from "@angular/router"
+import {Component, OnInit, OnDestroy} from "@angular/core"
+import {ROUTER_DIRECTIVES, ActivatedRoute} from "@angular/router"
 import {FnbSettings} from "../util/settings"
-import {AlertComponent} from "ng2-bootstrap/components/alert"
 import {ThreadService, ShowThreadData} from "../services/thread.service"
 import {ApiModelLoader, ApiModelData} from "../util/ApiLoader"
+import {Subscription} from "rxjs/Rx";
 
 @Component({
     selector: "fnb-show-thread",
     templateUrl: "assets/app/views/show-thread.html",
-    directives: [ROUTER_DIRECTIVES, AlertComponent]
+    directives: [ROUTER_DIRECTIVES]
 })
-export class ShowThreadComponent {
+export class ShowThreadComponent implements  OnInit, OnDestroy {
 
-    constructor(private routeSegment: RouteSegment,
+    constructor(private activatedRoute: ActivatedRoute,
                 public settings: FnbSettings,
                 private threadService: ThreadService) {
-        console.log("-- Create ShowThreadComponent with id " + routeSegment.getParam("id"))
-        this.id = routeSegment.getParam("id")
-        this.showThreadStatus = threadService.createShowThreadStatus(this.id)
-        this.model = this.showThreadStatus.getApiModel()
-        this.load()
+    }
+
+    ngOnInit() {
+        this.idSubscription = this.activatedRoute.params.subscribe(params => {
+            this.id = params['id']
+            console.log("-- Create ShowThreadComponent with id " + this.id)
+            this.load()
+        })
+    }
+
+    ngOnDestroy() {
+        this.idSubscription.unsubscribe()
+        console.log("-- Destroy ShowThreadComponent with id " + this.id)
     }
 
     private showThreadStatus: ApiModelLoader<ShowThreadData>
     public model: ApiModelData<ShowThreadData>
 
     load() {
+        this.showThreadStatus = this.threadService.createShowThreadStatus(this.id)
+        this.model = this.showThreadStatus.getApiModel()
         this.showThreadStatus.load()
     }
 
@@ -34,6 +44,7 @@ export class ShowThreadComponent {
     }
 
     public id: string
+    private idSubscription: Subscription
 
     // TODO: Permissions
     public permissionReply: boolean = true

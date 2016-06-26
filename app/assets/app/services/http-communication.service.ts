@@ -58,27 +58,27 @@ export class HttpCommunicationService {
 
     GET<T extends ApiResult>(apiUrl: string): Observable<ApiResponse<T>> {
         let responseObservable = this.http.get(this.getUrl(apiUrl), this.requestOptions)
-        return HttpCommunicationService.handleResponse(responseObservable)
+        return HttpCommunicationService.handleResponse<T>(responseObservable)
     }
 
     HEAD<T extends ApiResult>(apiUrl: string): Observable<ApiResponse<T>> {
         let responseObservable = this.http.head(this.getUrl(apiUrl), this.requestOptions)
-        return HttpCommunicationService.handleResponse(responseObservable)
+        return HttpCommunicationService.handleResponse<T>(responseObservable)
     }
 
     POST<T extends ApiResult>(apiUrl: string, postBody: any): Observable<ApiResponse<T>> {
         let responseObservable = this.http.post(this.getUrl(apiUrl), toJsonString(postBody), this.requestOptions)
-        return HttpCommunicationService.handleResponse(responseObservable)
+        return HttpCommunicationService.handleResponse<T>(responseObservable)
     }
 
     PUT<T extends ApiResult>(apiUrl: string, putBody: any): Observable<ApiResponse<T>> {
         let responseObservable = this.http.put(this.getUrl(apiUrl), toJsonString(putBody), this.requestOptions)
-        return HttpCommunicationService.handleResponse(responseObservable)
+        return HttpCommunicationService.handleResponse<T>(responseObservable)
     }
 
     DELETE<T extends ApiResult>(apiUrl: string): Observable<ApiResponse<T>> {
         let responseObservable = this.http.delete(this.getUrl(apiUrl), this.requestOptions)
-        return HttpCommunicationService.handleResponse(responseObservable)
+        return HttpCommunicationService.handleResponse<T>(responseObservable)
     }
 
 }
