@@ -1,0 +1,72 @@
+<div class="show-thread" [ngSwitch]="model.status">
+
+    <div *ngSwitchCase="'success'">
+        <div class="view-header" >
+            <div class="breadcrumb-combined">
+                <ol class="breadcrumb">
+                    <li><a [routerLink]="['/']">Friday Night Beer</a></li>
+                    <li><a [routerLink]="['/']">Forum</a></li>
+                    <li><a [routerLink]="['/forum', model.value.forumId || '']">{{model.value.forumTitle}}</a></li>
+                    <li class="active">{{model.value.title}}</li>
+                </ol>
+                <div class="headeroptions">
+				<span *ngIf="permissionReply">
+					<a (click)="showReply()">Antworten</a>
+				</span>
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <h2>{{model.value.title}}</h2>
+            <table class="topic">
+                <tbody>
+                <tr *ngFor="let post of model.value.posts">
+                    <td class="showtopic-user-col">
+                        <div><a [routerLink]="['/user', post.userId]">{{post.userName}}</a></div>
+                        <div *ngIf="post.userFullname">
+                            {{post.userFullname}}
+                        </div>
+                        <div *ngIf="post.hasAvatar && permissionAvatar">
+                            <img [src]="userAvatarUrl" alt="[Avatar]" />
+                        </div>
+                        <div>{{post.date | date:'dd.MM.yyyy HH:mm'}}</div>
+                    </td>
+                    <td class="showtopic-content-col">
+                        <div class="post-content" [innerHTML]="post.content"></div>
+                        <div class="post-uploads" *ngIf="post.hasAttachments">
+                            <span class="post-uploads-title">Attachments:</span>
+                            <ul>
+                                <li *ngFor="let attachment of post.attachments">
+                                    <a [href]="attachment.url" target="_self">{{attachment.filename}}</a>
+                                    ({{attachment.size}} bytes, {{attachment.hits}} Hits)
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                <tr *ngIf="permissionReply">
+                    <td></td>
+                    <td>
+                        <button type="button" class="btn btn-success" id="btn_showinsertpost"
+                                (click)="showReply()">Antworten</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div *ngSwitchCase="'loading'" class="loading-spinner"></div>
+
+    <div *ngSwitchCase="'failure'">
+        <div class="view-header" >
+            <ol class="breadcrumb">
+                <li><a [routerLink]="['/']">Friday Night Beer</a></li>
+                <li><a [routerLink]="['/']">Forum</a></li>
+                <li class="active" >Fehler</li>
+            </ol>
+        </div>
+        <alert type="danger">{{model.failure}}</alert>
+    </div>
+
+</div>

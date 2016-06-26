@@ -21,7 +21,15 @@ server.pid
 *.eml
 activator-*.sbt
 /bin/
+
 /public/appdata/
+/public/dist/
 /appdata/
 
 /node_modules/
+/typings/
+
+/frontend/**/*.js
+/frontend/**/*.map
+
+/conf/instance.conf
