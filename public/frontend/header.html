@@ -1,21 +1,21 @@
 <header>
-    <h1><a [routerLink]="['/']">{{settings.siteTitle}}</a></h1>
-    <a id="logo" [routerLink]="['/']">
+    <h1><a routerLink="/">{{settings.siteTitle}}</a></h1>
+    <a id="logo" routerLink="/">
         <img [src]="settings.logo" alt="" width="64" height="64">
     </a>
     <nav>
         <ul id="pagemenu">
-            <li *ngIf="(headerAuthState|async).permissionForum" class="selected"><a [routerLink]="['/']">Forum</a></li>
-            <li *ngIf="(headerAuthState|async).permissionMedia"><a [routerLink]="['/media']">Media</a></li>
-            <li *ngIf="(headerAuthState|async).permissionEvents"><a [routerLink]="['/events']">Events</a></li>
-            <li *ngIf="(headerAuthState|async).permissionMembers"><a [routerLink]="['/users']">Users</a></li>
-            <li *ngIf="(headerAuthState|async).permissionAdmin"><a [routerLink]="['/admin']">Administration</a></li>
+            <li *ngIf="(headerAuthState|async).permissionForum" class="selected"><a routerLink="/">Forum</a></li>
+            <li *ngIf="(headerAuthState|async).permissionMedia"><a routerLink="/media">Media</a></li>
+            <li *ngIf="(headerAuthState|async).permissionEvents"><a routerLink="/events">Events</a></li>
+            <li *ngIf="(headerAuthState|async).permissionMembers"><a routerLink="/users">Users</a></li>
+            <li *ngIf="(headerAuthState|async).permissionAdmin"><a routerLink="/admin">Administration</a></li>
         </ul>
         <ul id="usermenu">
-            <li *ngIf="!(headerAuthState|async).loggedIn"><a [routerLink]="['/login']">Login</a></li>
-            <li *ngIf="!(headerAuthState|async).loggedIn && settings.registerEnabled"><a [routerLink]="['/register']">Register</a></li>
-            <li *ngIf="(headerAuthState|async).loggedIn"><a [routerLink]="['/settings']">Settings</a></li>
-            <li *ngIf="(headerAuthState|async).loggedIn"><a [routerLink]="['/login']">Logout</a></li>
+            <li *ngIf="!(headerAuthState|async).loggedIn"><a routerLink="/login">Login</a></li>
+            <li *ngIf="!(headerAuthState|async).loggedIn && settings.registerEnabled"><a routerLink="/register">Register</a></li>
+            <li *ngIf="(headerAuthState|async).loggedIn"><a routerLink="/settings">Settings</a></li>
+            <li *ngIf="(headerAuthState|async).loggedIn"><a routerLink="/login">Logout</a></li>
         </ul>
     </nav>
 </header>

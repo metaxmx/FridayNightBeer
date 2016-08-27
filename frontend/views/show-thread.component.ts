@@ -1,5 +1,5 @@
 import {Component, OnInit, OnDestroy} from "@angular/core"
-import {ROUTER_DIRECTIVES, ActivatedRoute} from "@angular/router"
+import {ActivatedRoute} from "@angular/router"
 import {FnbSettings} from "../util/settings"
 import {ThreadService, ShowThreadData} from "../services/thread.service"
 import {ApiModelLoader, ApiModelData} from "../util/ApiLoader"
@@ -7,8 +7,7 @@ import {Subscription} from "rxjs/Rx";
 
 @Component({
     selector: "fnb-show-thread",
-    templateUrl: "assets/frontend/show-thread.html",
-    directives: [ROUTER_DIRECTIVES]
+    templateUrl: "assets/frontend/show-thread.html"
 })
 export class ShowThreadComponent implements  OnInit, OnDestroy {
 

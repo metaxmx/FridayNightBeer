@@ -1,36 +1,39 @@
 import {Component} from "@angular/core"
 import {FnbSettings} from "../util/settings"
-import {ROUTER_DIRECTIVES, Router} from "@angular/router"
+import {Router} from "@angular/router"
 import {
     AuthenticationService, AuthenticationState, AuthenticationEvent,
     LogoutEvent, LoginEvent
 } from "../services/authentication.service"
 import {Observable} from "rxjs/Observable"
+import {ForumService} from "../services/forum.service";
 
 
 class LoginParams {
-    public username: string = "Please enter username"
+    public username: string = ""
     public password: string = ""
 }
 
 @Component({
     selector: "fnb-login",
-    templateUrl: "assets/frontend/login.html",
-    directives: [ROUTER_DIRECTIVES]
+    templateUrl: "assets/frontend/login.html"
 })
 export class LoginComponent {
 
     constructor(public settings: FnbSettings,
                 private authService: AuthenticationService,
+                private forumService: ForumService,
                 private router: Router) {
-        this.authStatus = authService.authenticationStatus
-        authService.failures.subscribe((msg: string) => { this.loginError = msg })
+        this.authStatus = authService.authenticationStatus;
+        authService.failures.subscribe((msg: string) => { this.loginError = msg });
         authService.events.subscribe((event: AuthenticationEvent) => {
            if (event instanceof LogoutEvent) {
-               console.log("### Logout successful")
+               console.log("### Logout successful");
+               this.forumService.refreshOverview();
            } else if (event instanceof LoginEvent) {
-               console.log("### Login successful")
-               this.router.navigate(["/"])
+               console.log("### Login successful");
+               this.forumService.refreshOverview();
+               this.router.navigate(["/"]);
            }
         })
     }

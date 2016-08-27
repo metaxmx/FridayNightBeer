@@ -1,4 +1,4 @@
-import { provideRouter, RouterConfig } from '@angular/router'
+import {Routes} from '@angular/router'
 
 import {ForumOverviewComponent} from "./views/forum-overview.component"
 import {ShowForumComponent} from "./views/show-forum.component"
@@ -13,7 +13,7 @@ import {UsersComponent} from "./views/users.component"
 import {ShowUserComponent} from "./views/show-user.component"
 import {AdminComponent} from "./views/admin.component"
 
-export const routes: RouterConfig = [
+export const APP_ROUTES: Routes = [
     {   path: "",                      component: ForumOverviewComponent   },
     {   path: "forum/:id",             component: ShowForumComponent       },
     {   path: "thread/:id",            component: ShowThreadComponent      },
@@ -26,8 +26,4 @@ export const routes: RouterConfig = [
     {   path: "users",                 component: UsersComponent           },
     {   path: "user/:id",              component: ShowUserComponent        },
     {   path: "admin",                 component: AdminComponent           }
-];
-
-export const APP_ROUTER_PROVIDERS = [
-    provideRouter(routes)
 ];

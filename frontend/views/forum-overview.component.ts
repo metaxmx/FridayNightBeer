@@ -1,12 +1,10 @@
 import {Component} from "@angular/core"
 import {FnbSettings} from "../util/settings"
-import {ROUTER_DIRECTIVES} from "@angular/router"
 import {ForumService, OverviewForumCategory} from "../services/forum.service"
 
 @Component({
     selector: "fnb-forum-overview",
-    templateUrl: "assets/frontend/forum-overview.html",
-    directives: [ROUTER_DIRECTIVES]
+    templateUrl: "assets/frontend/forum-overview.html"
 })
 export class ForumOverviewComponent {
 

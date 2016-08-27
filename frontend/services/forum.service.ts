@@ -48,13 +48,13 @@ class OverviewForumCategoryData implements OverviewForumCategory {
 }
 
 function fromOverviewViewModel(categoryViewModels: Array<ForumOverviewCategory>): Array<OverviewForumCategory> {
-    let result: Array<OverviewForumCategory> = []
+    let result: Array<OverviewForumCategory> = [];
     for (let cat of categoryViewModels) {
-        let forums: Array<OverviewForum> = []
+        let forums: Array<OverviewForum> = [];
         for (let f of cat.forums) {
-            let forum: OverviewForumData
+            let forum: OverviewForumData;
             if (f.lastPost) {
-                let lp = f.lastPost
+                let lp = f.lastPost;
                 forum = new OverviewForumData(f.id, f.name, f.description || "", f.numThreads, f.numPosts, true,
                     lp.id, lp.title, lp.user, lp.userName, new Date(lp.date))
             } else {
@@ -63,38 +63,38 @@ function fromOverviewViewModel(categoryViewModels: Array<ForumOverviewCategory>)
             }
             forums.push(forum)
         }
-        let category = new OverviewForumCategoryData(cat.id, cat.name, forums)
+        let category = new OverviewForumCategoryData(cat.id, cat.name, forums);
         result.push(category)
     }
     return result
 }
 
-const forumOverviewApiUrl = "forums"
+const forumOverviewApiUrl = "forums";
 
-const showForumApiUrl = "forum/"
+const showForumApiUrl = "forum/";
 
 @Injectable()
 export class ForumService {
 
     constructor(private httpService: HttpCommunicationService) {
-        console.debug("Initialize Service ForumService")
+        console.debug("Initialize Service ForumService");
         this.refreshOverview()
     }
 
     public refreshOverview(): void {
-        console.log("--- Send Forum Overview Request")
+        console.log("--- Send Forum Overview Request");
         this.httpService.GET<ForumOverviewResult>(forumOverviewApiUrl).subscribe((result: ApiResponse<ForumOverviewResult>) => {
             if (result.success) {
                 this.forumOverviewData.next(fromOverviewViewModel(result.getResult().categories))
             } else {
-                console.warn("Unsuccessful request: ", result.toString())
+                console.warn("Unsuccessful request: ", result.toString());
                 // this.failures.next(result.getError().error)
             }
         })
     }
 
     public loadForum(id: string): Observable<ApiResponse<ShowForumResult>> {
-        console.log("--- Send Show Forum Request (id = " + id + ")")
+        console.log("--- Send Show Forum Request (id = " + id + ")");
         return this.httpService.GET<ShowForumResult>(showForumApiUrl + id)
     }
 

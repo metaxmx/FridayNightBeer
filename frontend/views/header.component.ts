@@ -1,13 +1,11 @@
 import {Component} from "@angular/core"
 import {FnbSettings} from "../util/settings"
-import {ROUTER_DIRECTIVES} from "@angular/router"
 import {AuthenticationService, AuthenticationState} from "../services/authentication.service"
 import {Observable} from "rxjs/Observable"
 
 @Component({
     selector: "fnb-header",
-    templateUrl: "assets/frontend/header.html",
-    directives: [ROUTER_DIRECTIVES]
+    templateUrl: "assets/frontend/header.html"
 })
 export class HeaderComponent {
 

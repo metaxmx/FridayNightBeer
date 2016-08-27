@@ -21,7 +21,6 @@ resolvers ++= Seq(
   "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 )
 
-
 libraryDependencies ++= Seq(
   cache,
   ws,

@@ -1,5 +1,5 @@
 import {Component, OnInit, OnDestroy} from "@angular/core"
-import {ROUTER_DIRECTIVES, ActivatedRoute} from "@angular/router"
+import {ActivatedRoute} from "@angular/router"
 import {FnbSettings} from "../util/settings"
 import {ForumService} from "../services/forum.service"
 import {ApiResponse} from "../viewmodels/GeneralViewModels"
@@ -8,8 +8,7 @@ import {Subscription} from "rxjs/Rx";
 
 @Component({
     selector: "fnb-show-forum",
-    templateUrl: "assets/frontend/show-forum.html",
-    directives: [ROUTER_DIRECTIVES]
+    templateUrl: "assets/frontend/show-forum.html"
 })
 export class ShowForumComponent implements OnInit, OnDestroy {
 
@@ -17,7 +16,7 @@ export class ShowForumComponent implements OnInit, OnDestroy {
                 public settings: FnbSettings,
                 private forumService: ForumService) {
     }
-    
+
     ngOnInit() {
         this.idSubscription = this.activatedRoute.params.subscribe(params => {
             this.id = params['id']

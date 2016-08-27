@@ -1,5 +1,4 @@
 import {Component} from "@angular/core"
-import {ROUTER_DIRECTIVES} from "@angular/router"
 import {FnbSettings} from "../util/settings"
 import {AuthenticationService, AuthenticationState} from "../services/authentication.service"
 import {Observable} from "rxjs/Observable"
@@ -12,8 +11,7 @@ class RegisterParams {
 
 @Component({
     selector: "fnb-register",
-    templateUrl: "assets/frontend/register.html",
-    directives: [ROUTER_DIRECTIVES]
+    templateUrl: "assets/frontend/register.html"
 })
 export class RegisterComponent {
 

@@ -1,23 +1,13 @@
-import {Component, OnInit,  ElementRef} from "@angular/core"
-import {ROUTER_DIRECTIVES} from "@angular/router"
-import {HTTP_PROVIDERS} from "@angular/http"
+import {Component, OnInit, ElementRef} from "@angular/core"
 import {Observable} from "rxjs/Observable"
 
-import {HeaderComponent} from "./views/header.component"
-import {FooterComponent} from "./views/footer.component"
-
 import {AuthenticationService, AuthenticationState} from "./services/authentication.service"
-import {FNB_SERVICE_PROVIDERS} from "./services/services"
 
 import {FnbSettings} from "./util/settings"
-import {FNB_UTILS_PROVIDERS} from "./util/utils"
-
 
 @Component({
     selector: "fnb-app",
     templateUrl: "assets/frontend/app.html",
-    directives: [HeaderComponent, FooterComponent, ROUTER_DIRECTIVES],
-    providers: [HTTP_PROVIDERS, FNB_SERVICE_PROVIDERS, FNB_UTILS_PROVIDERS],
 })
 export class AppComponent implements OnInit {
 
