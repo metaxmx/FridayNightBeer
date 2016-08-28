@@ -8,5 +8,6 @@ import "@angular/forms";
 import "@angular/router";
 import "@angular/platform-browser";
 import "@angular/platform-browser-dynamic";
+import "ng2-translate"
 
 import 'rxjs/Rx';

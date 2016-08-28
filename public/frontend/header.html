@@ -5,17 +5,21 @@
     </a>
     <nav>
         <ul id="pagemenu">
-            <li *ngIf="(headerAuthState|async).permissionForum" class="selected"><a routerLink="/">Forum</a></li>
-            <li *ngIf="(headerAuthState|async).permissionMedia"><a routerLink="/media">Media</a></li>
-            <li *ngIf="(headerAuthState|async).permissionEvents"><a routerLink="/events">Events</a></li>
-            <li *ngIf="(headerAuthState|async).permissionMembers"><a routerLink="/users">Users</a></li>
-            <li *ngIf="(headerAuthState|async).permissionAdmin"><a routerLink="/admin">Administration</a></li>
+            <li *ngIf="(headerAuthState|async).permissionForum" class="selected"><a routerLink="/">{{"Section.Forum"|translate}}</a></li>
+            <li *ngIf="(headerAuthState|async).permissionMedia"><a routerLink="/media">{{"Section.Media"|translate}}</a></li>
+            <li *ngIf="(headerAuthState|async).permissionEvents"><a routerLink="/events">{{"Section.Events"|translate}}</a></li>
+            <li *ngIf="(headerAuthState|async).permissionMembers"><a routerLink="/users">{{"Section.Users"|translate}}</a></li>
+            <li *ngIf="(headerAuthState|async).permissionAdmin"><a routerLink="/admin">{{"Section.Admin"|translate}}</a></li>
         </ul>
         <ul id="usermenu">
-            <li *ngIf="!(headerAuthState|async).loggedIn"><a routerLink="/login">Login</a></li>
-            <li *ngIf="!(headerAuthState|async).loggedIn && settings.registerEnabled"><a routerLink="/register">Register</a></li>
-            <li *ngIf="(headerAuthState|async).loggedIn"><a routerLink="/settings">Settings</a></li>
-            <li *ngIf="(headerAuthState|async).loggedIn"><a routerLink="/login">Logout</a></li>
+            <li *ngIf="!(headerAuthState|async).loggedIn"><a routerLink="/login">{{"User.Login"|translate}}</a></li>
+            <li *ngIf="!(headerAuthState|async).loggedIn && settings.registerEnabled"><a routerLink="/register">{{"User.Register"|translate}}</a></li>
+            <li *ngIf="(headerAuthState|async).loggedIn"><a routerLink="/settings">{{"User.Settings"|translate}}</a></li>
+            <li *ngIf="(headerAuthState|async).loggedIn"><a routerLink="/login">{{"User.Logout"|translate}}</a></li>
         </ul>
     </nav>
+    <div id="languagemenu">
+        <a (click)="switchLanguage('de')">De</a>
+        <a (click)="switchLanguage('en')">En</a>
+    </div>
 </header>

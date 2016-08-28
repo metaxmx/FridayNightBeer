@@ -1,0 +1,38 @@
+{
+  "Section": {
+    "Forum": "Forum",
+    "Media": "Medien",
+    "Events": "Events",
+    "Users": "Benutzer",
+    "Admin": "Administration"
+  },
+  "User": {
+    "Login": "Login",
+    "Logout": "Logout",
+    "Register": "Registrieren",
+    "Settings": "Einstellungen"
+  },
+  "Common": {
+    "Search": "Suche",
+    "Date": {
+      "Today": "Heute",
+      "Yesterday": "Gestern"
+    }
+  },
+  "ForumOverview": {
+    "Configure": "Forums konfigurieren",
+    "Cols": {
+      "Forum": "Forum",
+      "Content": "Inhalt",
+      "LastEntry": "Letzter Beitrag"
+    },
+    "CellLabel": {
+      "Threads": "{{threads}} Threads",
+      "Posts": "{{posts}} Posts",
+      "PostMeta": {
+        "by": "von",
+        "on": "am"
+      }
+    }
+  }
+}

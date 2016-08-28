@@ -9,8 +9,6 @@
         <base href="/">
         <title>@settings.siteTitle</title>
 
-        <!--<link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("lib/bootstrap/css/bootstrap.css")">
-        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("stylesheets/fnb.css")"> -->
         <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("dist/vendor-style.css")">
         <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("dist/app-style.css")">
 
@@ -20,65 +18,6 @@
         <script src="@routes.Assets.versioned("dist/vendor.bundle.js")"></script>
         <script src="@routes.Assets.versioned("dist/app.bundle.js")"></script>
 
-        @*<script src="@routes.Assets.versioned("lib/zone.js/dist/zone.js")"></script>*@
-        @*<script src="@routes.Assets.versioned("lib/reflect-metadata/temp/Reflect.js")"></script>*@
-        @*<script src="@routes.Assets.versioned("lib/angular2/bundles/angular2-polyfills.js")"></script>*@
-        @*<script src="@routes.Assets.versioned("lib/systemjs/dist/system.js")"></script>*@
-        @*<script src="@routes.Assets.versioned("lib/rxjs/bundles/Rx.js")"></script>*@
-
-        @*<script src="@routes.Assets.versioned("lib/angular2/bundles/angular2.dev.js")"></script>
-        @*<script src="@routes.Assets.versioned("lib/angular2/bundles/router.dev.js")"></script>
-        @*<script src="@routes.Assets.versioned("lib/angular2/bundles/http.dev.js")"></script>*@
-        @*<script src="@routes.Assets.versioned("lib/ng2-bootstrap/bundles/ng2-bootstrap.js")"></script>*@
-        @*\@if(typescriptStageMode) {<script src="@routes.Assets.versioned("main.js")"></script>}
-
-        <script>
-            @if(!typescriptStageMode) {
-            System.config({
-                packages: {
-                    'assets/app': {
-                        defaultExtension: 'js'
-                    },
-                    'assets/lib': {
-                        defaultExtension: 'js'
-                    },
-                    '@@angular/core': {
-                      main: 'core.umd.js',
-                      defaultExtension: 'js'
-                    },
-                    '@@angular/compiler': {
-                      main: 'compiler.umd.js',
-                      defaultExtension: 'js'
-                    },
-                    '@@angular/common': {
-                      main: 'common.umd.js',
-                      defaultExtension: 'js'
-                    },
-                    '@@angular/http': {
-                      main: 'http.umd.js',
-                      defaultExtension: 'js'
-                    },
-                    '@@angular/router': {
-                      main: 'router.umd.js',
-                      defaultExtension: 'js'
-                    },
-                    '@@angular/platform-browser-dynamic': {
-                      main: 'platform-browser-dynamic.umd.js',
-                      defaultExtension: 'js'
-                    },
-                    '@@angular/platform-browser': {
-                      main: 'platform-browser.umd.js',
-                      defaultExtension: 'js'
-                    }
-                },
-                map: {
-                    'app' : 'assets/app',
-                    '@@angular': 'assets/lib_unmanaged/@@angular'
-                }
-            });
-            }
-            System.import('app/bootstrap').catch(console.error.bind(console));
-		</script>*@
     </head>
     <body>
         <fnb-app data-settings="@settings.toJson" data-logo="@routes.Assets.versioned("appdata/logo.png")"></fnb-app>

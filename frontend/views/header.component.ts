@@ -2,6 +2,7 @@ import {Component} from "@angular/core"
 import {FnbSettings} from "../util/settings"
 import {AuthenticationService, AuthenticationState} from "../services/authentication.service"
 import {Observable} from "rxjs/Observable"
+import {LanguageService} from "../services/language.service";
 
 @Component({
     selector: "fnb-header",
@@ -10,7 +11,8 @@ import {Observable} from "rxjs/Observable"
 export class HeaderComponent {
 
     constructor(public settings: FnbSettings,
-                private authService: AuthenticationService) {
+                private authService: AuthenticationService,
+                private languageService: LanguageService) {
         this.headerAuthState = authService.authenticationStatus.map(HeaderComponent.mapToHeaderPermissions)
     }
 
@@ -18,6 +20,10 @@ export class HeaderComponent {
 
     private static mapToHeaderPermissions(authState: AuthenticationState): HeaderAuthState {
         return new HeaderAuthState(authState.loggedIn, authState.globalPermissions)
+    }
+
+    public switchLanguage(lang: string) {
+        this.languageService.switchLanguage(lang);
     }
 
 }
@@ -30,8 +36,8 @@ class HeaderAuthState {
         this.permissionEvents = false
         this.permissionMembers = false
         this.permissionAdmin = false
-        for(let permission of permissions) {
-            switch(permission) {
+        for (let permission of permissions) {
+            switch (permission) {
                 case "Forums":
                     this.permissionForum = true
                     break
@@ -52,6 +58,7 @@ class HeaderAuthState {
             }
         }
     }
+
     public permissionForum: boolean
     public permissionMedia: boolean
     public permissionEvents: boolean

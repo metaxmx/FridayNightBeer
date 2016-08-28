@@ -7,22 +7,35 @@ import {AppComponent}  from './app.component'
 import {FNB_COMPONENTS} from "./views/components"
 import {FNB_SERVICE_PROVIDERS} from "./services/services"
 import {FNB_UTILS_PROVIDERS} from "./util/utils"
-import {HttpModule} from "@angular/http"
+import {FNB_PIPES} from "./pipes/pipes"
+
+import {HttpModule, Http} from "@angular/http"
 import {FormsModule} from '@angular/forms'
+import {TranslateModule, TranslateLoader, TranslateStaticLoader} from "ng2-translate"
+
+
+const FNB_TRANSLATE_CONFIG = {
+    provide: TranslateLoader,
+    useFactory: (http: Http) => new TranslateStaticLoader(http, '/assets/i18n', '.json'),
+    deps: [Http]
+};
 
 @NgModule({
     imports: [
         BrowserModule,
         RouterModule.forRoot(APP_ROUTES),
         HttpModule,
-        FormsModule
+        FormsModule,
+        TranslateModule.forRoot(FNB_TRANSLATE_CONFIG)
     ],
     declarations: [
         AppComponent,
-        FNB_COMPONENTS
+        FNB_COMPONENTS,
+        FNB_PIPES
     ],
     providers: [
-        FNB_SERVICE_PROVIDERS, FNB_UTILS_PROVIDERS
+        FNB_SERVICE_PROVIDERS,
+        FNB_UTILS_PROVIDERS
     ],
     bootstrap: [AppComponent]
 })

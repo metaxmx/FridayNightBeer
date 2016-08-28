@@ -135,6 +135,29 @@ html.modern-theme {
 				}
 			}
 		}
+
+		#languagemenu {
+			position: absolute;
+			top: 8px;
+			right: 8px;
+
+			a {
+				color: #ffffff;
+				font-weight: bold;
+				display: inline-block;
+				padding: 4px 8px;
+				font-variant: small-caps;
+				cursor: pointer;
+				.text-shadow(1px 1px 1px, @modern-color-shadow);
+
+				&:hover, &:active {
+					background-color: #ffffff;
+					color: #333333;
+					text-decoration: none;
+					.no-text-shadow
+				}
+			}
+		}
 		
 		&:after {
 			content: "";

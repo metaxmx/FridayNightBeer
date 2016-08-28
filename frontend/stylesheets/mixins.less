@@ -18,6 +18,12 @@
 	box-shadow: none; // Standard
 }
 
+.no-text-shadow() {
+	-moz-text-shadow: none;
+	-webkit-text-shadow: none;
+	text-shadow: none;
+}
+
 // Box shadow
 .box-shadow(@style, @c) when (iscolor(@c)) {
 	-moz-box-shadow: @style @c; // FF 3.6+
