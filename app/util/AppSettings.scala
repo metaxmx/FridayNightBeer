@@ -25,8 +25,8 @@ class AppSettings @Inject() (implicit config: Configuration) {
   val registerEnabled: Boolean = fnbConfig flatMap (_ getBoolean  "registerenabled") getOrElse false
 
   private[this] def validateDataDir(): Unit = {
-    if (!dataDir.isDirectory) throw config.reportError("fnb.datadir", "Datadir does not exist or is no directory")
-    if (!dataDir.canWrite) throw config.reportError("fnb.datadir", "Datadir is not writable")
+    if (!dataDir.isDirectory) throw config.reportError("fnb.datadir", "Datadir '" + dataDir.getPath + "' does not exist or is no directory")
+    if (!dataDir.canWrite) throw config.reportError("fnb.datadir", "Datadir '\" + dataDir.getPath + \"' is not writable")
   }
 
   validateDataDir()

@@ -8,5 +8,5 @@ npm install
 echo "[info]"
 echo "[info] ---- Configure Application"
 echo "[info]"
-cp -v conf/travis.conf con/instance.conf
+cp -v conf/travis.conf conf/instance.conf
 mkdir -pv travisdata
