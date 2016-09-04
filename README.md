@@ -1,8 +1,10 @@
 Friday Night Beer
 =================
 
+[![Build Status](https://travis-ci.org/metaxmx/FridayNightBeer.svg?branch=master)](https://travis-ci.org/metaxmx/FridayNightBeer)
 [![dependency Status](https://david-dm.org/metaxmx/FridayNightBeer/status.svg?branch=master)](https://david-dm.org/metaxmx/FridayNightBeer)
 [![devDependency Status](https://david-dm.org/metaxmx/FridayNightBeer/dev-status.svg?branch=master)](https://david-dm.org/metaxmx/FridayNightBeer?type=dev)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/426e7fe5908642c286eb3b5ef21c6afa)](https://www.codacy.com/app/metax/FridayNightBeer?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=metaxmx/FridayNightBeer&amp;utm_campaign=Badge_Grade)
 
 
 Author: Christian Simon (<simon@illucit.com>)  

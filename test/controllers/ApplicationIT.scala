@@ -16,7 +16,8 @@ class ApplicationIT extends Specification {
     "send 404 on a bad request" in {
       val app = FakeApplication()
       running(app) {
-        route(app, FakeRequest(GET, "/boum")) must beNone
+        val invalid = route(app, FakeRequest(GET, "/boum")).get
+        status(invalid) must equalTo(NOT_FOUND)
       }
     }
 
