@@ -1,12 +1,12 @@
 #! /bin/bash
 
 
-source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/build"
+source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/build.sh"
 
 echo "[info]"
 echo "[info] ---- BUILDING FNB"
 echo "[info]"
-build "$@" quickPublish "publishLocal"
+build "$@" "compile"
 
 echo "[info]"
 echo "[info] ---- RUNNING TESTS"
