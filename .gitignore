@@ -21,7 +21,6 @@ server.pid
 *.iml
 *.eml
 activator-*.sbt
-/bin/
 
 /public/appdata/
 /public/dist/
