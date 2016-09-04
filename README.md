@@ -1,6 +1,10 @@
 Friday Night Beer
 =================
 
+[![dependency Status](https://david-dm.org/metaxmx/FridayNightBeer/status.svg?branch=master)](https://david-dm.org/metaxmx/FridayNightBeer)
+[![devDependency Status](https://david-dm.org/metaxmx/FridayNightBeer/dev-status.svg?branch=master)](https://david-dm.org/metaxmx/FridayNightBeer?type=dev)
+
+
 Author: Christian Simon (<simon@illucit.com>)  
 Copyright: [illucIT Software GmbH](https://www.illucit.com)  
 Version 0.1 Alpha (In Progress)
