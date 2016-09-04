@@ -23,5 +23,7 @@ before_install:
   - npm i -g npm@^2.0.0
 before_script:
   - npm prune
+  - sleep 3
+  - mongo fnb --eval 'show dbs;'
 notifications:
   email: false
