@@ -5,3 +5,5 @@ jdk:
   - oraclejdk8
 services:
   - mongodb
+script:
+- bin/travis.sh

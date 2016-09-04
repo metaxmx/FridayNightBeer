@@ -50,9 +50,8 @@ routesGenerator := InjectedRoutesGenerator
 
 lazy val npmBuildTask = taskKey[Unit]("Execute the npm build command to build the ui")
 
-val operatingSystem = sys.props.getOrElse("os.name", "unknown")
-
 npmBuildTask := {
+  val operatingSystem = sys.props.getOrElse("os.name", "unknown")
   val cmd = if(operatingSystem contains "Windows")
     "cmd /c npm install"
   else
