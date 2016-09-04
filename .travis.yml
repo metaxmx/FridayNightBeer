@@ -16,7 +16,7 @@ before_cache:
   # Delete all ivydata files since ivy touches them on each build
   - find $HOME/.ivy2/cache -name "ivydata-*.properties" -print0 | xargs -n10 -0 rm
   # Delete any SBT lock files
-- find $HOME/.sbt -name "*.lock" -delete
+  - find $HOME/.sbt -name "*.lock" -delete
 node_js:
   - '4'
 before_install:
