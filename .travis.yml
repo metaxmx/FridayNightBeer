@@ -24,6 +24,6 @@ before_install:
 before_script:
   - npm prune
   - sleep 3
-  - mongo fnb --eval 'show dbs;'
+  - mongo fnb --eval 'db.collection.find().forEach(printjson)'
 notifications:
   email: false
