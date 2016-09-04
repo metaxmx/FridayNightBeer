@@ -39,7 +39,6 @@ export class ShowForumComponent implements OnInit, OnDestroy {
             } else {
                 console.warn("Unsuccessful request: ", result.toString())
                 this.successful = false
-                if
                 this.errorMessage = result.getError().error
                 // this.failures.next(result.getError().error)
             }
