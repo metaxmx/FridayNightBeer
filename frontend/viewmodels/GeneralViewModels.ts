@@ -8,21 +8,41 @@ export interface ApiResult {
 
 export interface ApiError extends ApiResult {
     error:string
+    errorLocalized?:boolean
+    errorParams?:Object
 }
 
-class ApiErrorFromMessage implements ApiError {
+export class LocalizedError {
+    constructor(public errorKey: string, public errorParams?:Object) {
+    }
+    toApiError(): ApiError {
+        return new ApiErrorFromLocalizedMessage(this.errorKey, this.errorParams)
+    }
+}
+
+export class ApiErrorFromMessage implements ApiError {
     constructor(public error: string) {}
     success = false
 }
 
+export class ApiErrorFromLocalizedMessage implements ApiError {
+    constructor(public error: string, public errorParams?: Object) {}
+    success = false
+    errorLocalized = true
+}
+
 export function createApiErrorResponse<T extends ApiResult>(statusCode: number, err: any): ApiResponse<T> {
-    let errorMsg: string = "Unknown error"
-    if (err instanceof Error) {
-        errorMsg = err.toString()
+    let apiError: ApiError
+    if (err instanceof LocalizedError) {
+        apiError = err.toApiError()
+    } else if (err instanceof Error) {
+        apiError = new ApiErrorFromMessage(err.toString())
     } else if (typeof err === "string" || err instanceof String) {
-        errorMsg = err
+        apiError = new ApiErrorFromMessage(err)
+    } else {
+        apiError = new ApiErrorFromLocalizedMessage("CommonErrors.Unknown")
     }
-    return new ApiResponseFromError<T>(statusCode, new ApiErrorFromMessage(errorMsg))
+    return new ApiResponseFromError<T>(statusCode, apiError)
 }
 
 export interface ApiResponse<T extends ApiResult> {

@@ -3,7 +3,7 @@ import {Http, Response, Headers, RequestOptions} from "@angular/http"
 import {Observable} from "rxjs/Observable"
 import {
     ApiResult, ApiError, createApiErrorResponse, ApiResponse,
-    ApiResponseFromError, ApiResponseFromResult
+    ApiResponseFromError, ApiResponseFromResult, LocalizedError
 } from "../viewmodels/GeneralViewModels"
 import "../app-rxjs-operations"
 
@@ -18,12 +18,12 @@ function parseResponse<T extends ApiResult>(res: Response): ApiResponse<T> {
     try {
         let json = res.json();
         if (!json.hasOwnProperty("success"))
-            return createApiErrorResponse<T>(res.status, "Invalid json");
+            return createApiErrorResponse<T>(res.status, new LocalizedError("CommonErrors.InvalidJson"));
         let apiResult = <ApiResult> json;
         if (!apiResult.success) {
             if (apiResult.hasOwnProperty("error"))
                 return new ApiResponseFromError<T>(res.status, <ApiError> apiResult);
-            return createApiErrorResponse<T>(res.status, "Invalid json")
+            return createApiErrorResponse<T>(res.status, new LocalizedError("CommonErrors.InvalidJson"))
         }
         return new ApiResponseFromResult<T>(res.status, <T> apiResult)
     } catch (e) {

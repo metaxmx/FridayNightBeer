@@ -3,20 +3,19 @@
     <div class="view-header" *ngIf="loaded">
         <div class="breadcrumb-combined">
             <ol class="breadcrumb">
-                <li><a routerLink="/">Friday Night Beer</a></li>
-                <li><a routerLink="/">Forum</a></li>
+                <li><a routerLink="/">{{settings.siteTitle}}</a></li>
+                <li><a routerLink="/">{{"Section.Forum"|translate}}</a></li>
                 <li class="active" *ngIf="successful">{{forum.title}}</li>
-                <li class="active" *ngIf="!successful">Fehler</li>
+                <li class="active" *ngIf="!successful">{{"Common.Error"|translate}}</li>
             </ol>
             <div class="headeroptions" *ngIf="successful">
 				<span *ngIf="permissionCreateThread">
-					<a [routerLink]="['CreateThread', {'id': forum.id}]">Neuer Thread</a> |
+					<a [routerLink]="['CreateThread', {'id': forum.id}]">{{"ShowForum.CreateThread"|translate}}</a> |
 				</span>
-                <a routerLink="/">Suche</a> |
-                <a routerLink="/">Threads verwalten</a>
+                <a routerLink="/">{{"Common.Search"|translate}}</a> |
+                <a routerLink="/">{{"ShowForum.ManageThreads"|translate}}</a>
             </div>
-            <div class="headeroptions" *ngIf="!successful">
-            </div>
+            <div class="headeroptions" *ngIf="!successful"></div>
         </div>
     </div>
     <div class="main-content" *ngIf="loaded && successful">

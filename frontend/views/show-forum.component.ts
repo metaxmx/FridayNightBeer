@@ -39,6 +39,7 @@ export class ShowForumComponent implements OnInit, OnDestroy {
             } else {
                 console.warn("Unsuccessful request: ", result.toString())
                 this.successful = false
+                if
                 this.errorMessage = result.getError().error
                 // this.failures.next(result.getError().error)
             }
@@ -51,7 +52,10 @@ export class ShowForumComponent implements OnInit, OnDestroy {
     // TODO: Error Handling
     public loaded: boolean = false
     public successful: boolean = true
+
     public errorMessage: string = ""
+    public errorMessageLocalized: boolean = false
+    public errorMessageParams: Object = {}
 
     public forum: ShowForumResult = null
 

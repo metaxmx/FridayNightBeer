@@ -14,10 +14,15 @@
   },
   "Common": {
     "Search": "Suche",
+    "Error": "Fehler",
     "Date": {
       "Today": "Heute",
       "Yesterday": "Gestern"
     }
+  },
+  "CommonErrors": {
+    "Unknown": "Unbekannter Fehler",
+    "InvalidJson": "Ungültiges JSON"
   },
   "ForumOverview": {
     "Configure": "Forums konfigurieren",
@@ -34,5 +39,9 @@
         "on": "am"
       }
     }
+  },
+  "ShowForum": {
+    "CreateThread": "Thread erstellen",
+    "ManageThreads": "Threads verwalten"
   }
 }
