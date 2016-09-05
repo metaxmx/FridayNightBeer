@@ -60,8 +60,8 @@ Software Used
 * [SBT](http://www.scala-sbt.org/) (Scala Build Tool) Version 0.13.11
 * [Play Framework](https://www.playframework.com/) Version 2.5.4
 * [ReactiveMongo](http://reactivemongo.org/) Version 0.11.11
-* [AngularJS](https://angular.io/) Version 2.0.0-RC1
-* [Bootstrap](http://getbootstrap.com/) Version 3.3.4
+* [AngularJS](https://angular.io/) Version 2.0.0-RC6
+* [Bootstrap](http://getbootstrap.com/) Version 3.3.7
 * Diverse general libraries and utilities: jQuery, Guice, Guava, Joda-Time, Angular Add-Ons, Polyfills
 * Frontend Assets for the Themes:
   * [Font Awesome](http://fortawesome.github.io/Font-Awesome/)
