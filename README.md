@@ -47,11 +47,11 @@ Typescript Compiler Integration
 
 The frontend uses Angular2 and is written in TypeScript.
 To compile the project typescript files against Angular2, the packages from Angular2 (`@angular/core` etc.) are required.
-Install Node.js (including npm) on your machine, go to the project root and run
+Install Node.js (including `npm`) on your machine, go to the project root and run
  
     npm install
 
-The dependencies will be downloaded into a `node-modules` subfolder, which will be used by the TypeScript resolution, but is in the `.gitignore` file.
+The dependencies will be downloaded into a `node_modules` subfolder, which will be used by the TypeScript resolution, but is in the `.gitignore` file.
 
 Software Used
 -------------

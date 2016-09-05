@@ -14,15 +14,9 @@ class AppSettings @Inject() (implicit config: Configuration) {
 
   private[this] val fnbConfig = config.getConfig("fnb")
 
-  val siteTitle: String = fnbConfig flatMap (_ getString "sitetitle") getOrElse "Untitled Site"
-
   val dataPath: String = fnbConfig flatMap (_ getString "datadir") getOrElse "appdata"
 
   val dataDir: File = new File(dataPath)
-
-  val defaultTheme: String = fnbConfig flatMap (_ getString "defaulttheme") getOrElse "default"
-
-  val registerEnabled: Boolean = fnbConfig flatMap (_ getBoolean  "registerenabled") getOrElse false
 
   private[this] def validateDataDir(): Unit = {
     if (!dataDir.isDirectory) throw config.reportError("fnb.datadir", "Datadir '" + dataDir.getPath + "' does not exist or is no directory")

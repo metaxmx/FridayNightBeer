@@ -5,7 +5,7 @@ import java.security.MessageDigest
 
 object PasswordEncoder {
 
-  def encodePassword(passwd: String) = hex(md5(passwd getBytes UTF_8))
+  def encodePassword(password: String) = hex(md5(password getBytes UTF_8))
 
   def md5(data: Array[Byte]) = MessageDigest getInstance "MD5" digest data
 

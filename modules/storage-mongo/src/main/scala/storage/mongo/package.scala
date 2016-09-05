@@ -55,4 +55,6 @@ package object mongo {
 
   implicit val bsonFormatPermission = Macros.handler[Permission]
 
+  implicit val bsonFormatSystemSetting = Macros.handler[SystemSetting]
+
 }

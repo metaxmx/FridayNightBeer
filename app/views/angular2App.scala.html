@@ -1,7 +1,6 @@
 @* Angular2 Application Template *@
-@import theme.Theme
 @import services.SettingsDTO
-@(theme: Theme, settings: SettingsDTO, typescriptStageMode: Boolean)
+@(settings: SettingsDTO)
 <!doctype html>
 <html lang="en" data-framework="angular2" class="modern-theme">
     <head>
@@ -13,13 +12,13 @@
         <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("dist/app-style.css")">
 
         <link rel="shortcut icon" href="@routes.Assets.versioned("appdata/favicon.ico")">
+    </head>
+    <body>
+        <fnb-app data-logo="@routes.Assets.versioned("appdata/logo.png")"></fnb-app>
 
+        <script src="@routes.ApplicationController.config"></script>
         <script src="@routes.Assets.versioned("dist/polyfills.bundle.js")"></script>
         <script src="@routes.Assets.versioned("dist/vendor.bundle.js")"></script>
         <script src="@routes.Assets.versioned("dist/app.bundle.js")"></script>
-
-    </head>
-    <body>
-        <fnb-app data-settings="@settings.toJson" data-logo="@routes.Assets.versioned("appdata/logo.png")"></fnb-app>
     </body>
 </html>

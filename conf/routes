@@ -7,6 +7,7 @@
 
 # Single endpoint for serving AngularJS
 GET     /                               @controllers.ApplicationController.appPage
+GET     /settings.js                    @controllers.ApplicationController.config
 
 # Virtual Pages
 GET     /login                          @controllers.ApplicationController.loginPage

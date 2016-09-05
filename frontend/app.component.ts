@@ -12,19 +12,9 @@ import {LanguageService} from "./services/language.service";
 })
 export class AppComponent implements OnInit {
 
-    constructor(private elRef: ElementRef,
-                private authService: AuthenticationService,
+    constructor(private authService: AuthenticationService,
                 private languageService: LanguageService,
-                private settings: FnbSettings,
                 private zone: NgZone) {
-        this.initSettings()
-    }
-
-    private initSettings() {
-        // Native element access required, as root element parameters
-        // are not supported by Angular2, yet.
-        this.settings.updateLogo(this.elRef.nativeElement.getAttribute("data-logo") || "");
-        this.settings.updateSettings(this.elRef.nativeElement.getAttribute("data-settings") || "{}");
     }
 
     ngOnInit() {

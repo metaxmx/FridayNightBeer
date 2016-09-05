@@ -2,41 +2,37 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import scala.concurrent.Future
-import play.api.Logger
+import controllers.SecuredController.{fnbSessionHeaderName, parseSessionKey}
+import models.UserSession
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.{Action, Controller}
-import SecuredController.{fnbSessionHeaderName, parseSessionKey}
-import models.UserSession
-import services.{SessionService, Themes, UUIDGenerator}
-import exceptions.ApiException
-import services.PermissionService
-import services.SettingsService
-import util.AppSettings
+import services.{PermissionService, SessionService, SettingsService, UUIDGenerator}
+
+import scala.concurrent.Future
 
 @Singleton
 class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
                                        sessionService: SessionService,
                                        permissionService: PermissionService,
-                                       settingsService: SettingsService,
-                                       appSettings: AppSettings) extends Controller {
+                                       settingsService: SettingsService) extends Controller {
 
   def appPage = Action.async {
     implicit request =>
-      val theme = Themes.defaultTheme
-      val settings = settingsService.asDto
-      parseSessionKey.fold {
-        // No cookie with auth key found - generate one
-        val sessionKey = uuidGenerator.generateStr
-        ensureSessionActive(sessionKey) map { _ =>
-          Ok(views.html.angular2App(theme, settings, typescriptStageMode)).withSession(fnbSessionHeaderName -> sessionKey)
-        }
-      } {
-        sessionKey =>
-          ensureSessionActive(sessionKey) map { _ =>
-            Ok(views.html.angular2App(theme, settings, typescriptStageMode))
-          }
+      val sessionKey = parseSessionKey.getOrElse(uuidGenerator.generateStr)
+      for {
+        _ <- ensureSessionActive(sessionKey)
+        settings <- settingsService.asDto
+      } yield {
+        Ok(views.html.angular2App(settings)).withSession(fnbSessionHeaderName -> sessionKey)
       }
+  }
+
+  def config = Action.async {
+    for {
+      settings <- settingsService.asDto
+    } yield {
+      Ok(views.js.config(settings))
+    }
   }
 
   def loginPage = appPage
@@ -57,13 +53,5 @@ class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
       session => Future.successful(session)
     }
   } yield existingSession
-
-  /**
-    * Flag, if TypeScript files were compiled into a single JS file.
-    */
-  lazy val typescriptStageMode: Boolean = {
-    val resUrl = getClass.getClassLoader.getResource("public/main.js")
-    Option(resUrl).isDefined
-  }
 
 }
