@@ -22,7 +22,8 @@
   },
   "CommonErrors": {
     "Unknown": "Unbekannter Fehler",
-    "InvalidJson": "Ungültiges JSON"
+    "InvalidJson": "Ungültiges JSON",
+    "MissingImplementation": "Diese Funktion befindet sich noch in Entwicklung und steht leider noch nicht zur Verfügung!"
   },
   "ForumOverview": {
     "Configure": "Forums konfigurieren",

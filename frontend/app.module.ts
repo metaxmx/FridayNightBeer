@@ -4,7 +4,8 @@ import {RouterModule} from '@angular/router'
 import {APP_ROUTES} from "./app.routes"
 
 import {AppComponent}  from './app.component'
-import {FNB_COMPONENTS} from "./views/components"
+import {FNB_VIEWS} from "./views/views"
+import {FNB_WIDGETS} from "./widgets/widgets"
 import {FNB_SERVICE_PROVIDERS} from "./services/services"
 import {FNB_UTILS_PROVIDERS} from "./util/utils"
 import {FNB_PIPES} from "./pipes/pipes"
@@ -32,7 +33,8 @@ const FNB_TRANSLATE_CONFIG = {
     ],
     declarations: [
         AppComponent,
-        FNB_COMPONENTS,
+        FNB_VIEWS,
+        FNB_WIDGETS,
         FNB_PIPES
     ],
     providers: [

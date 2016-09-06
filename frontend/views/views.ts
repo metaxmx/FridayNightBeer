@@ -13,7 +13,7 @@ import {ShowThreadComponent} from "./show-thread.component";
 import {ShowUserComponent} from "./show-user.component";
 import {UsersComponent} from "./users.component";
 
-export const FNB_COMPONENTS: any[] = [
+export const FNB_VIEWS: any[] = [
     AdminComponent,
     CreateThreadComponent,
     EventsComponent,
