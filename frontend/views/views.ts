@@ -12,6 +12,7 @@ import {ShowForumComponent} from "./show-forum.component";
 import {ShowThreadComponent} from "./show-thread.component";
 import {ShowUserComponent} from "./show-user.component";
 import {UsersComponent} from "./users.component";
+import {SearchForumComponent} from "./search-forum.component";
 
 export const FNB_VIEWS: any[] = [
     AdminComponent,
@@ -27,5 +28,6 @@ export const FNB_VIEWS: any[] = [
     ShowForumComponent,
     ShowThreadComponent,
     ShowUserComponent,
-    UsersComponent
+    UsersComponent,
+    SearchForumComponent
 ];

@@ -8,13 +8,20 @@
                 <li class="active" *ngIf="successful">{{forum.title}}</li>
                 <li class="active" *ngIf="!successful">{{"Common.Error"|translate}}</li>
             </ol>
-            <div class="headeroptions" *ngIf="successful">
-				<span *ngIf="permissionCreateThread">
-					<a [routerLink]="['CreateThread', {'id': forum.id}]">{{"ShowForum.CreateThread"|translate}}</a> |
-				</span>
-                <a routerLink="/">{{"Common.Search"|translate}}</a> |
-                <a routerLink="/">{{"ShowForum.ManageThreads"|translate}}</a>
-            </div>
+            <ul class="headeroptions" *ngIf="successful">
+				<li *ngIf="permissionCreateThread">
+                    <span class="glyphicon glyphicon-plus-sign"></span>
+					<a [routerLink]="['CreateThread', {'id': forum.id}]">{{"ShowForum.CreateThread"|translate}}</a>
+				</li>
+                <li>
+                    <span class="glyphicon glyphicon-search"></span>
+                    <a routerLink="/search/forum">{{"Common.Search"|translate}}</a>
+                </li>
+                <li>
+                    <span class="glyphicon glyphicon-wrench"></span>
+                    <a routerLink="/">{{"ShowForum.ManageThreads"|translate}}</a>
+                </li>
+            </ul>
             <div class="headeroptions" *ngIf="!successful"></div>
         </div>
     </div>
