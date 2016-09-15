@@ -5,6 +5,7 @@ Friday Night Beer
 [![dependency Status](https://david-dm.org/metaxmx/FridayNightBeer/status.svg?branch=master)](https://david-dm.org/metaxmx/FridayNightBeer)
 [![devDependency Status](https://david-dm.org/metaxmx/FridayNightBeer/dev-status.svg?branch=master)](https://david-dm.org/metaxmx/FridayNightBeer?type=dev)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/426e7fe5908642c286eb3b5ef21c6afa)](https://www.codacy.com/app/metax/FridayNightBeer?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=metaxmx/FridayNightBeer&amp;utm_campaign=Badge_Grade)
+[![Dependency Status](https://www.versioneye.com/user/projects/569baf14db9e9f003a000edf/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/569baf14db9e9f003a000edf)
 
 
 Author: Christian Simon (<simon@illucit.com>)  
@@ -24,7 +25,7 @@ Requirements
 * Java 1.8
 * Lightbend Activator or SBT
 * MongoDB
-* Apache HTTPD (Optional as Proxy)
+* Apache HTTPD or NGINX (Optional as Frontend Proxy)
 
 Installation
 ------------
@@ -60,7 +61,7 @@ Software Used
 * [SBT](http://www.scala-sbt.org/) (Scala Build Tool) Version 0.13.11
 * [Play Framework](https://www.playframework.com/) Version 2.5.4
 * [ReactiveMongo](http://reactivemongo.org/) Version 0.11.11
-* [AngularJS](https://angular.io/) Version 2.0.0-RC6
+* [AngularJS](https://angular.io/) Version 2.0.0
 * [Bootstrap](http://getbootstrap.com/) Version 3.3.7
 * Diverse general libraries and utilities: jQuery, Guice, Guava, Joda-Time, Angular Add-Ons, Polyfills
 * Frontend Assets for the Themes:

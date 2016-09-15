@@ -7,4 +7,4 @@ lazy val fnbDatamodel = project in file("../datamodel")
 lazy val fnbStorageMongo = (project in file("."))
 	.dependsOn(fnbDatamodel)
 
-libraryDependencies += "org.reactivemongo" %% "play2-reactivemongo" % "0.11.11"
+libraryDependencies += "org.reactivemongo" %% "play2-reactivemongo" % "0.11.14"

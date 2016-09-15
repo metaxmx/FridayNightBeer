@@ -24,18 +24,18 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   cache,
   ws,
-  "com.google.inject" % "guice" % "4.0",
-  "com.google.guava" % "guava" % "18.0",
+  "com.google.inject" % "guice" % "4.1.0",
+  "com.google.guava" % "guava" % "19.0",
   "javax.inject" % "javax.inject" % "1",
-  "joda-time" % "joda-time" % "2.8.1",
-  "commons-io" % "commons-io" % "2.4",
-  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.11",
-  "org.json4s" %% "json4s-native" % "3.3.0",
+  "joda-time" % "joda-time" % "2.9.4",
+  "commons-io" % "commons-io" % "2.5",
+  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.14",
+  "org.json4s" %% "json4s-native" % "3.4.0",
 
   // Test
   specs2 % Test,
-  "org.mockito" % "mockito-core" % "1.10.17" % Test,
-  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0" % Test
+  "org.mockito" % "mockito-core" % "1.10.19" % Test,
+  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test
 )
 
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation", "-feature")
