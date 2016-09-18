@@ -18,16 +18,21 @@ class SettingsService @Inject()(systemSettingDAO: SystemSettingDAO) {
     val DEFAULT_THEME = "default_theme"
   }
 
-  def asDto: Future[SettingsDTO] = {
-    import SettingKeys._
-    for {
-      siteTitle: String <- systemSettingDAO.getSetting(SITE_TITLE, "Untitled Forum")
-      registerEnabled: Boolean <- systemSettingDAO.getSetting(REGISTER_ENABLED, false)
-      defaultTheme: String <- systemSettingDAO.getSetting(DEFAULT_THEME, "fnb-teal")
-    } yield SettingsDTO(siteTitle, registerEnabled, defaultTheme)
-  }
+  import SettingKeys._
+
+  def asDto: Future[SettingsDTO] = for {
+    siteTitle: String <- systemSettingDAO.getSetting(SITE_TITLE, "Untitled Forum")
+    registerEnabled: Boolean <- systemSettingDAO.getSetting(REGISTER_ENABLED, false)
+    defaultTheme: String <- systemSettingDAO.getSetting(DEFAULT_THEME, "fnb-teal")
+  } yield SettingsDTO(siteTitle, registerEnabled, defaultTheme)
 
   def asJson: Future[String] = asDto map (_.toJson)
+
+  def changeSiteTitle(siteTitle: String): Future[String] = systemSettingDAO.changeSetting(SITE_TITLE, siteTitle)
+
+  def changeRegisterEnabled(registerEnabled: Boolean): Future[Boolean] = systemSettingDAO.changeSetting(REGISTER_ENABLED, registerEnabled)
+
+  def changeDefaultTheme(defaultTheme: String): Future[String] = systemSettingDAO.changeSetting(DEFAULT_THEME, defaultTheme)
 
 }
 

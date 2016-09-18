@@ -1,9 +1,8 @@
-import {Component, OnInit, ElementRef, NgZone} from "@angular/core"
+import {Component, OnInit,  NgZone} from "@angular/core"
 import {Observable} from "rxjs/Observable"
 
 import {AuthenticationService, AuthenticationState} from "./services/authentication.service"
 
-import {FnbSettings} from "./util/settings"
 import {LanguageService} from "./services/language.service";
 
 @Component({

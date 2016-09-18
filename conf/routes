@@ -15,7 +15,13 @@ GET     /register                       @controllers.ApplicationController.regis
 GET     /forum/:id                      @controllers.ApplicationController.showForumPage(id: String)
 GET     /forum/:id/newthread            @controllers.ApplicationController.showNewTopicPage(id: String)
 GET     /thread/:id                     @controllers.ApplicationController.showTopicPage(id: String)
+GET     /admin                          @controllers.ApplicationController.adminPage
+GET     /admin/systemsettings           @controllers.ApplicationController.adminSystemSettingsPage
 GET     /admin/forum/configure          @controllers.ApplicationController.appPage
+GET     /settings                       @controllers.ApplicationController.settingsPage
+GET     /media                          @controllers.ApplicationController.mediaPage
+GET     /events                         @controllers.ApplicationController.eventsPage
+GET     /users                          @controllers.ApplicationController.usersPage
 
 # Files
 GET     /avatar/:id                     @controllers.DownloadController.downloadAvatar(id: String)
@@ -50,6 +56,10 @@ POST    /api/1.0/thread/:id             @rest.api_1_0.controllers.ThreadControll
 # New Topic
 GET     /api/1.0/newthread/:id          @rest.api_1_0.controllers.ForumsController.showForumHead(id: String)
 POST    /api/1.0/newthread/:id          @rest.api_1_0.controllers.ThreadController.createThread(id: String)
+
+# Administration
+GET     /api/1.0/admin/systemsettings   @rest.api_1_0.controllers.AdministrationController.getSystemSettings
+PUT     /api/1.0/admin/systemsettings   @rest.api_1_0.controllers.AdministrationController.changeSystemSettings
 
 # ------ Static Resources -------
 

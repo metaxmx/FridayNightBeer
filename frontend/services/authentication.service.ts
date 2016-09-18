@@ -41,15 +41,12 @@ export class AuthenticationState {
                 public globalPermissions: Array<string>,
                 public user: AuthenticationUserData) {
     }
+
+    public globalPermissionNames: Set<String> = new Set(this.globalPermissions);
 }
 
 const emptyAuthenticationUserData = new AuthenticationUserData("", "", "", "", "", "")
-const initialState: AuthenticationState = <AuthenticationState> {
-    initialized: false,
-    loggedIn: false,
-    globalPermissions: [],
-    user: emptyAuthenticationUserData
-}
+const initialState: AuthenticationState = new AuthenticationState(false, false, [], emptyAuthenticationUserData)
 
 const authApiUrl = "authentication"
 const registerApiUrl = "register"

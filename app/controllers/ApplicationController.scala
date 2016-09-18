@@ -39,6 +39,18 @@ class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
 
   def registerPage = appPage
 
+  def adminPage = appPage
+
+  def mediaPage = appPage
+
+  def eventsPage = appPage
+
+  def settingsPage = appPage
+
+  def usersPage = appPage
+
+  def adminSystemSettingsPage = appPage
+
   def showForumPage(id: String) = appPage
 
   def showNewTopicPage(id: String) = appPage

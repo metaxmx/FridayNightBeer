@@ -44,5 +44,8 @@
   "ShowForum": {
     "CreateThread": "Thread erstellen",
     "ManageThreads": "Threads verwalten"
+  },
+  "AdminOverview": {
+    "Title": "Administration"
   }
 }
