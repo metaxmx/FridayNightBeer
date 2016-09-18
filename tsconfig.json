@@ -5,15 +5,21 @@
     "moduleResolution": "node",
     /* the following two settings are required for angular2 annotations to work*/
     "emitDecoratorMetadata": true,
-    "experimentalDecorators":true,
+    "experimentalDecorators": true,
     /* for reading your ts source while debugging from a browser */
     "sourceMap": true,
     /* noImplicitAny when you want your typescript to be fully typed */
-    "noImplicitAny":true,
-    "noFallthroughCasesInSwitch":true,
-    "noImplicitReturns":true,
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
     "outDir": ".",
-    "rootDir": "."
+    "rootDir": ".",
+    "typeRoots": [
+      "../node_modules/@types"
+    ],
+    "types": [
+      "core-js"
+    ]
   },
   "exclude": [
     "node_modules",

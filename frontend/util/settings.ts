@@ -1,5 +1,18 @@
 import {Injectable} from "@angular/core"
 
+declare module FnbConfig {
+
+    interface FnbConfiguration {
+        siteTitle: string
+        registerEnabled: boolean
+        defaultTheme: string
+        logo: string
+    }
+
+    var config: FnbConfiguration
+
+}
+
 @Injectable()
 export class FnbSettings {
 

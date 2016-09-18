@@ -37,8 +37,10 @@ export function createApiErrorResponse<T extends ApiResult>(statusCode: number, 
         apiError = err.toApiError()
     } else if (err instanceof Error) {
         apiError = new ApiErrorFromMessage(err.toString())
-    } else if (typeof err === "string" || err instanceof String) {
+    } else if (typeof err === "string") {
         apiError = new ApiErrorFromMessage(err)
+    } else if (err instanceof String) {
+        apiError = new ApiErrorFromMessage(err.toString())
     } else {
         apiError = new ApiErrorFromLocalizedMessage("CommonErrors.Unknown")
     }
