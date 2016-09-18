@@ -34,11 +34,15 @@ Installation
 * Install Java Development Toolkit (JDK), at least version 1.8
 * Install Lightbend Activator *or* install sbt (Scala Build Tool)
 * Checkout FNB sourcecode to target directory
-  * Create directory `appdata`, writeable for application user
-  * Copy application configuration `cp conf/application.conf conf/instance.conf`,
-    change application settings (database settings, fnb settings) to your needs and
-    remove all unchanged properties and the include statement
-  * Copy public application assets: `cp public/appdata_template public/appdata` and change to your needs (e.g. favicon, logo, ...)
+* If you want to override the default settings:
+  * Create file `conf/instance.conf` and insert the configuration:
+    ```
+    fnb.datadir = /path/to/datadir
+    mongodb = {
+      uri = "mongodb://mongohost:27017/mydbname"
+    }
+    ```
+  * The new application directory will be automatically created on server startup
 * Run `activator` or `sbt`
   * Activator/sbt will download project dependencies
   * In the interactive shell, execute `run` to start the Play application
@@ -53,6 +57,8 @@ Install Node.js (including `npm`) on your machine, go to the project root and ru
     npm install
 
 The dependencies will be downloaded into a `node_modules` subfolder, which will be used by the TypeScript resolution, but is in the `.gitignore` file.
+
+This will be done automatically via `sbt` when the project is built.
 
 Software Used
 -------------

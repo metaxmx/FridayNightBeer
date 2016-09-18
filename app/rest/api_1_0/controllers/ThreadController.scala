@@ -103,8 +103,8 @@ class ThreadController @Inject()(val userService: UserService,
         postService.insertPost(post)
       }
     } yield {
-      Logger.info(s"Create Thread with title ${insertedThread.title} -> _id = ${insertedThread._id}")
-      Logger.info(s"HTML is: ${insertedPost.text}")
+      Logger(getClass).info(s"Create Thread with title ${insertedThread.title} -> _id = ${insertedThread._id}")
+      Logger(getClass).info(s"HTML is: ${insertedPost.text}")
       insertedThread
     }
   }

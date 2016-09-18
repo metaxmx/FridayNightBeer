@@ -21,6 +21,9 @@ GET     /admin/forum/configure          @controllers.ApplicationController.appPa
 GET     /avatar/:id                     @controllers.DownloadController.downloadAvatar(id: String)
 GET     /uploads/:id/:filename          @controllers.DownloadController.downloadPostUpload(id: String, filename: String)
 
+GET     /logo.png                       @controllers.AppResourceController.logo
+GET     /favicon.ico                    @controllers.AppResourceController.favicon
+
 # ------- REST API 1.0 ---------
 
 # Authentication

@@ -8,7 +8,6 @@
         config: {
             siteTitle: "@{settings.siteTitle}",
             registerEnabled: @settings.registerEnabled,
-            logo: "@routes.Assets.versioned("appdata/logo.png")",
             defaultTheme: "@{settings.defaultTheme}"
         }
 
