@@ -10,7 +10,7 @@ import scala.concurrent.duration.Duration
 import scala.util.Success
 
 /**
-  * Cache for all entities of a specific [[BaseModel]], indexed by id.
+  * Cache for all entities of a specific [[models.BaseModel]], indexed by id.
   *
   * @param cache      injected play cache
   * @param prefix     prefix for the typed cache (must be unique)
@@ -39,7 +39,7 @@ class BaseModelMapCache[T <: BaseModel[T]](cache: CacheApi,
     * Get entity from the cache.
     *
     * @param id id to query for
-    * @return [[Some]] found entity, or [[None]]
+    * @return [[scala.Some]] found entity, or [[scala.None]]
     */
   def get(id: String): Option[T] = getAll flatMap (_.get(id))
 
@@ -47,7 +47,7 @@ class BaseModelMapCache[T <: BaseModel[T]](cache: CacheApi,
     * Replace entity in the model map. If the model map is not loaded, nothing happens.
     *
     * @param id     id to update
-    * @param entity [[Some]] entity or [[None]]
+    * @param entity [[scala.Some]] entity or [[scala.None]]
     * @return true if update was successful
     */
   private[this] def replaceEntry(id: String, entity: Option[T]): Boolean = getAll exists {
@@ -91,7 +91,7 @@ class BaseModelMapCache[T <: BaseModel[T]](cache: CacheApi,
     *
     * @param block asynchronous block to fetch all entities
     * @tparam A type of returned entity collection
-    * @return [[Future]] of the model map
+    * @return [[scala.concurrent.Future]] of the model map
     */
   def getAllOrElseAsync[A <: Iterable[T]](block: => Future[A]): Future[ModelMap] = {
     getAll match {
@@ -111,7 +111,7 @@ class BaseModelMapCache[T <: BaseModel[T]](cache: CacheApi,
     * @param id    query entity id
     * @param block asynchronous block to fetch all entities
     * @tparam A type of returned entity collection
-    * @return [[FutureOption]] of the model
+    * @return [[util.FutureOption]] of the model
     */
   def getOrElseAsync[A <: Iterable[T]](id: String, block: => Future[A]): FutureOption[T] =
     FutureOption(getAllOrElseAsync(block) map (_ get id))

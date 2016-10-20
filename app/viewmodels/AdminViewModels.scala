@@ -1,4 +1,4 @@
-package rest.api_1_0.viewmodels
+package viewmodels
 
 /**
   * Created by Christian Simon on 18.09.2016.

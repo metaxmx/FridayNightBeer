@@ -29,8 +29,9 @@ libraryDependencies ++= Seq(
   "javax.inject" % "javax.inject" % "1",
   "joda-time" % "joda-time" % "2.9.4",
   "commons-io" % "commons-io" % "2.5",
-  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.14",
+  "org.reactivemongo" %% "play2-reactivemongo" % "0.12.0" exclude("org.apache.logging.log4j", "log4j-api"),
   "org.json4s" %% "json4s-native" % "3.4.0",
+  "org.slf4j" % "slf4j-api" % "1.7.21",
 
   // Test
   specs2 % Test,
@@ -38,13 +39,15 @@ libraryDependencies ++= Seq(
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test
 )
 
-scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation", "-feature")
+scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8")
 
 incOptions := incOptions.value.withNameHashing(true)
 
 updateOptions := updateOptions.value.withCachedResolution(cachedResoluton = true)
 
 routesGenerator := InjectedRoutesGenerator
+
+autoAPIMappings := true
 
 // Run npm install to load JS dependencies and run webpack for resource compression
 
@@ -70,3 +73,5 @@ compile <<= (compile in Compile) dependsOn npmBuildTask
 pipelineStages := Seq(digest, gzip)
 
 PlayKeys.playRunHooks <+= baseDirectory.map(Webpack.apply)
+
+net.virtualvoid.sbt.graph.Plugin.graphSettings

@@ -19,7 +19,7 @@ package object mongo {
   implicit val bsonAccessRuleMapHandler = new BSONHandler[BSONDocument, Map[String, AccessRule]] {
 
     override def read(bson: BSONDocument): Map[String, AccessRule] = {
-      bson.elements.toMap.mapValues {
+      bson.elements.map(elem => (elem.name, elem.value)).toMap.mapValues {
         _.seeAsOpt[BSONDocument] map { bsonFormatAccessRule.read }
       } filter {
         case (key, value) => value.isDefined

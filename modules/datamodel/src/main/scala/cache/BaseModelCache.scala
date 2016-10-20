@@ -10,7 +10,7 @@ import scala.concurrent.duration.Duration
 import scala.util.Success
 
 /**
-  * Cache for entities of a specific [[BaseModel]].
+  * Cache for entities of a specific [[models.BaseModel]].
   *
   * @param cache      injected play cache
   * @param prefix     prefix for the typed cache (must be unique)
@@ -31,7 +31,7 @@ class BaseModelCache[T <: BaseModel[T]](cache: CacheApi, prefix: String, expirat
     * Get entity from the cache.
     *
     * @param id id to query for
-    * @return [[Some]] found entity, or [[None]]
+    * @return [[scala.Some]] found entity, or [[scala.None]]
     */
   def get(id: String): Option[T] = cache.get(key(id))
 
@@ -57,7 +57,7 @@ class BaseModelCache[T <: BaseModel[T]](cache: CacheApi, prefix: String, expirat
     *
     * @param id    query entity id
     * @param block asynchronous block to fetch the entity by the given id
-    * @return [[Future]] of the entity (with [[None]], if the entity was not found)
+    * @return [[scala.concurrent.Future]] of the entity (with [[scala.None]], if the entity was not found)
     */
   def getOrElseAsync(id: String, block: => FutureOption[T]): FutureOption[T] =
     FutureOption fromOption get(id) orElse {
@@ -72,7 +72,7 @@ class BaseModelCache[T <: BaseModel[T]](cache: CacheApi, prefix: String, expirat
     *
     * @param id    query entity id
     * @param block asynchronous block to fetch the entity by the given id
-    * @return [[Future]] of the entity (with [[None]], if the entity was not found)
+    * @return [[scala.concurrent.Future]] of the entity (with [[scala.None]], if the entity was not found)
     */
   def getOrElseAsyncDef(id: String, block: => Future[T]): Future[T] =
     get(id) map { Future.successful } getOrElse {

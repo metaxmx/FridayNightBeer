@@ -95,7 +95,7 @@ case class AccessRule(forbiddenUsers: Option[Seq[String]],
   */
 object AccessRule {
 
-  def apply(): AccessRule = AccessRule(None, None, None, None, None, None)
+  def empty: AccessRule = AccessRule(None, None, None, None, None, None)
 
   def accessRuleAllowed(ar: AccessRule)(implicit userOpt: Option[User]): Boolean =
     ar.allowAll.contains(true) || userOpt.exists {

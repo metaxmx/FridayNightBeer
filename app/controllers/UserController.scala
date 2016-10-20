@@ -1,4 +1,4 @@
-package rest.api_1_0.controllers
+package controllers
 
 import javax.inject.{Inject, Singleton}
 

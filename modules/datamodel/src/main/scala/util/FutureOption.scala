@@ -5,21 +5,21 @@ import scala.concurrent.duration.Duration
 import scala.util.Try
 
 /**
-  * Monad combining a [[Future]] with an [[Option]]
+  * Monad combining a [[scala.concurrent.Future]] with an [[scala.Option]]
   * Created by Christian on 05.05.2016.
   */
 class FutureOption[+A](wrapped: Future[Option[A]]) extends Awaitable[Option[A]] {
 
   def toFuture: Future[Option[A]] = wrapped
 
-  @throws[InterruptedException](classOf[InterruptedException])
-  @throws[TimeoutException](classOf[TimeoutException])
+  @throws[InterruptedException]
+  @throws[TimeoutException]
   override def ready(atMost: Duration)(implicit permit: CanAwait): FutureOption.this.type = {
     wrapped.ready(atMost)
     this
   }
 
-  @throws[Exception](classOf[Exception])
+  @throws[Exception]
   override def result(atMost: Duration)(implicit permit: CanAwait): Option[A] = wrapped.result(atMost)
 
   /* Monadic operations */

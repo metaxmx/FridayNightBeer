@@ -1,11 +1,11 @@
-package rest.api_1_0.controllers
+package controllers
 
 import javax.inject.{Inject, Singleton}
 
 import permissions.GlobalPermissions
-import rest.Implicits._
-import rest.api_1_0.viewmodels.AdminViewModels._
 import services._
+import util.Implicits._
+import viewmodels.AdminViewModels._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

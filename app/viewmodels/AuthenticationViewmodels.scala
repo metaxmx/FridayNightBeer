@@ -1,4 +1,4 @@
-package rest.api_1_0.viewmodels
+package viewmodels
 
 /**
   * View Models for Authentication.

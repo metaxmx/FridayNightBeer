@@ -3,7 +3,7 @@ package rest
 import org.scalatestplus.play._
 import play.api.test.Helpers._
 import play.api.test._
-import rest.Exceptions.RestException
+import util.Exceptions.RestException
 
 import scala.concurrent.Future
 

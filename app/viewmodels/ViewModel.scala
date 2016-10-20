@@ -1,7 +1,7 @@
-package rest.api_1_0.viewmodels
+package viewmodels
 
 import org.json4s.{Extraction, JValue}
-import rest.Implicits.formats
+import util.Implicits.formats
 
 /**
   * View model trait.

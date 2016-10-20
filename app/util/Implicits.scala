@@ -1,4 +1,4 @@
-package rest
+package util
 
 import akka.stream.scaladsl.Sink
 import akka.util.ByteString
@@ -8,8 +8,7 @@ import play.api.http.ContentTypes.JSON
 import play.api.http.{ContentTypes, Writeable}
 import play.api.libs.streams.Accumulator
 import play.api.mvc.{BodyParser, Codec}
-import rest.Exceptions._
-import util.JsonFormat
+import util.Exceptions._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.higherKinds
@@ -31,7 +30,7 @@ object Implicits {
 
   def jsonREST: BodyParser[JValue] = jsonREST[JValue]
 
-  def jsonREST[A](implicit manifest: Manifest[A]): BodyParser[A] = BodyParser("jsonREST") {
+  def jsonREST[A : Manifest]: BodyParser[A] = BodyParser("jsonREST") {
     implicit header =>
       def withError(exc: => RestException) = Left(exc.toResult)
       header.contentType.map(_.toLowerCase()) match {

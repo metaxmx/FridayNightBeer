@@ -1,4 +1,4 @@
-package rest
+package util
 
 import org.json4s.Extraction._
 import org.json4s.MappingException
@@ -6,7 +6,7 @@ import play.api.Logger
 import play.api.http.Status._
 import play.api.mvc.Results.Status
 import play.api.mvc.{Request, RequestHeader, Result}
-import rest.Implicits._
+import util.Implicits._
 
 import scala.concurrent.Future
 import scala.util.control.NonFatal
@@ -104,5 +104,25 @@ object Exceptions {
   case class EntityAlreadyExistingException(msg: String)(implicit req: RequestHeader) extends RestException(
     msg, statusCode = Some(CONFLICT))
 
+
+  case class QueryException(message: String, cause: Throwable) extends Exception(message, cause) {
+
+    def this(cause: Throwable) = this(null, cause)
+
+    def this(message: String) = this(message, null)
+
+    def this() = this(null, null)
+
+  }
+
+  object QueryException {
+
+    def apply(cause: Throwable) = new QueryException(cause)
+
+    def apply(message: String) = new QueryException(message)
+
+    def apply() = new QueryException
+
+  }
 
 }

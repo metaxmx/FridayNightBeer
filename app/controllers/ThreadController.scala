@@ -1,4 +1,4 @@
-package rest.api_1_0.controllers
+package controllers
 
 import javax.inject.{Inject, Singleton}
 
@@ -6,10 +6,10 @@ import models._
 import org.joda.time.DateTime.now
 import permissions.{ForumPermissions, GlobalPermissions, ThreadPermissions}
 import play.api.Logger
-import rest.Exceptions.NotFoundException
-import rest.Implicits._
-import rest.api_1_0.viewmodels.ThreadsViewModels._
 import services._
+import util.Exceptions.NotFoundException
+import util.Implicits._
+import viewmodels.ThreadsViewModels._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -91,7 +91,7 @@ class ThreadController @Inject()(val userService: UserService,
     val createThreadRequest: CreateThreadRequest = request.body
     val sticky = createThreadRequest.sticky && request.authorization.checkForumPermissions(category, forum, ForumPermissions.Sticky)
     val closed = createThreadRequest.close && request.authorization.checkForumPermissions(category, forum, ForumPermissions.Close)
-    val threadStart = new ThreadPostData(request.user._id, now)
+    val threadStart = ThreadPostData(request.user._id, now)
     val lastPost = threadStart.copy()
     // TODO: Initial Thread permissions (e.g. only visible to group, for birthday threads)
     val thread = new Thread(_id = "", createThreadRequest.title, forum._id, threadStart, lastPost, posts = 1, sticky, closed, None)

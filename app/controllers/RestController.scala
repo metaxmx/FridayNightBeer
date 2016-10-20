@@ -1,5 +1,6 @@
-package rest.api_1_0.controllers
+package controllers
 
+import controllers.RestController._
 import models._
 import permissions.Authorization
 import permissions.ForumPermissions.ForumPermission
@@ -7,10 +8,10 @@ import permissions.GlobalPermissions.GlobalPermission
 import permissions.ThreadPermissions.ThreadPermission
 import play.api.http.Writeable
 import play.api.mvc._
-import rest.Exceptions._
-import rest.Implicits._
-import rest.api_1_0.viewmodels.ViewModel
 import services.{PermissionService, SessionService, UserService}
+import util.Exceptions._
+import util.Implicits._
+import viewmodels.ViewModel
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -31,7 +32,7 @@ trait RestController extends Controller {
   /** Injected Permission Service */
   implicit val permissionService: PermissionService
 
-  /** Automatic extraction of [[Authorization]] from request. */
+  /** Automatic extraction of [[permissions.Authorization]] from request. */
   implicit def request2authorization(implicit request: OptionalSessionRequest[_]): Authorization = request.authorization
 
   implicit val viewModelWritable: Writeable[ViewModel] = jsonWritable map { (vm: ViewModel) => vm.toJson }
@@ -51,13 +52,13 @@ trait RestController extends Controller {
   def mapOk(viewModelFuture: Future[ViewModel]): Future[Result] = viewModelFuture map { vm => Ok(vm) }
 
   /**
-    * Override to define a [[GlobalPermission]] that must be checked for all Rest Actions with authorization.
+    * Override to define a [[permissions.GlobalPermissions.GlobalPermission]] that must be checked for all Rest Actions with authorization.
     * @return [[None]] for no permission check, or [[Some]] permission to check in front of ever request
     */
   def requiredGlobalPermission: Option[GlobalPermission] = None
 
   /**
-    * Play Action builder for REST actions with handling of [[RestException]].
+    * Play Action builder for REST actions with handling of [[util.Exceptions.RestException]].
     *
     * @tparam R request parameter
     */
@@ -74,7 +75,7 @@ trait RestController extends Controller {
       * @param request general request
       * @param block   block to generate result
       * @tparam A request body type
-      * @return result of action as [[Future]]
+      * @return result of action as [[scala.concurrent.Future]]
       */
     def invokeInner[A](request: Request[A], block: (R[A]) => Future[Result]): Future[Result]
 
@@ -111,7 +112,7 @@ trait RestController extends Controller {
   }
 
   /**
-    * REST action with access to parsed optional [[UserSession]] and [[User]].
+    * REST action with access to parsed optional [[models.UserSession]] and [[models.User]].
     */
   object OptionalSessionRestAction extends RestActionRefiner[OptionalSessionRequest] {
 
@@ -121,7 +122,7 @@ trait RestController extends Controller {
   }
 
   /**
-    * REST action with access to parsed [[UserSession]] and optional [[User]]. Requests without valid session are denied.
+    * REST action with access to parsed [[models.UserSession]] and optional [[models.User]]. Requests without valid session are denied.
     */
   object SessionRestAction extends RestActionRefiner[SessionRequest] {
 
@@ -135,7 +136,7 @@ trait RestController extends Controller {
   }
 
   /**
-    * REST action with access to parsed [[UserSession]] and [[User]]. Requests without valid session and without logged in user are denied.
+    * REST action with access to parsed [[models.UserSession]] and [[models.User]]. Requests without valid session and without logged in user are denied.
     */
   object UserRestAction extends RestActionRefiner[UserRequest] {
 
@@ -147,17 +148,6 @@ trait RestController extends Controller {
       }
 
   }
-
-  /** Session key to store the FNB session in. */
-  protected val fnbSessionHeaderName = "fnbsessionid"
-
-  /**
-    * Parse session key from request
-    *
-    * @param request target request
-    * @return optional parsed session id
-    */
-  protected def parseSessionKey(implicit request: RequestHeader): Option[String] = request.session.get(fnbSessionHeaderName)
 
   /**
     * Parse request and return either error result or one of [[OptionalSessionRequest]], [[SessionRequest]] or [[UserRequest]].
@@ -199,6 +189,24 @@ trait RestController extends Controller {
         }
     }
   }
+
+}
+
+/**
+  * Companion object to [[RestController]].
+  */
+object RestController {
+
+  /** Session key to store the FNB session in. */
+  protected[controllers] val fnbSessionHeaderName = "fnbsessionid"
+
+  /**
+    * Parse session key from request
+    *
+    * @param request target request
+    * @return optional parsed session id
+    */
+  protected[controllers] def parseSessionKey(implicit request: RequestHeader): Option[String] = request.session.get(fnbSessionHeaderName)
 
 }
 

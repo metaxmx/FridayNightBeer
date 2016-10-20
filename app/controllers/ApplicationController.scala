@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import controllers.SecuredController.{fnbSessionHeaderName, parseSessionKey}
+import controllers.RestController._
 import models.UserSession
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.{Action, Controller}
@@ -57,7 +57,7 @@ class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
 
   def showTopicPage(id: String) = appPage
 
-  def ensureSessionActive(sessionKey: String): Future[UserSession] = for {
+  private[this]def ensureSessionActive(sessionKey: String): Future[UserSession] = for {
     maybeSession <- sessionService.getSession(sessionKey).toFuture
     existingSession <- maybeSession.fold {
       sessionService.insertSession(UserSession(sessionKey, None))

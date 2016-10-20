@@ -1,4 +1,4 @@
-package rest.api_1_0.viewmodels
+package viewmodels
 
 import org.joda.time.DateTime
 
