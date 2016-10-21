@@ -30,12 +30,12 @@ libraryDependencies ++= Seq(
   "joda-time" % "joda-time" % "2.9.4",
   "commons-io" % "commons-io" % "2.5",
   "org.reactivemongo" %% "play2-reactivemongo" % "0.12.0" exclude("org.apache.logging.log4j", "log4j-api"),
-  "org.json4s" %% "json4s-native" % "3.4.0",
+  "org.json4s" %% "json4s-native" % "3.4.1",
   "org.slf4j" % "slf4j-api" % "1.7.21",
 
   // Test
   specs2 % Test,
-  "org.mockito" % "mockito-core" % "1.10.19" % Test,
+  "org.mockito" % "mockito-core" % "2.2.2" % Test,
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test
 )
 
