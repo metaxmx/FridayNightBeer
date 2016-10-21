@@ -1,9 +1,10 @@
 package models
 
-import permissions.{Authorization, ForumPermissions, GlobalPermissions, ThreadPermissions}
+import permissions.{Authorization, ForumPermissions, GlobalPermissions}
 
 case class Forum(_id: String,
                  name: String,
+                 url: Option[String],
                  description: Option[String],
                  category: String,
                  position: Int,

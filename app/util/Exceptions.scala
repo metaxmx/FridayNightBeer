@@ -7,6 +7,7 @@ import play.api.http.Status._
 import play.api.mvc.Results.Status
 import play.api.mvc.{Request, RequestHeader, Result}
 import util.Implicits._
+import storage.StorageException
 
 import scala.concurrent.Future
 import scala.util.control.NonFatal
@@ -56,6 +57,7 @@ object Exceptions {
 
     def apply(exc: Throwable)(implicit req: RequestHeader): RestException = exc match {
       case re: RestException => re
+      case db: StorageException => InternalDatabaseException(db.getMessage, db.getCause)
       case other => InternalServerException(other.getMessage, other)
     }
 
@@ -71,6 +73,9 @@ object Exceptions {
 
   case class InternalServerException(msg: String, cause: Throwable)(implicit req: RequestHeader) extends RestException(msg, cause = Some(cause),
     statusCode = Some(INTERNAL_SERVER_ERROR), clientMessage = Some("An unexpected error occurred during this request."), reportError = true)
+
+  case class InternalDatabaseException(msg: String, cause: Throwable)(implicit req: RequestHeader) extends RestException(msg, cause = Some(cause),
+    statusCode = Some(INTERNAL_SERVER_ERROR), clientMessage = Some("A database error occurred during this request."), reportError = true)
 
   case class BadRequestException(cause: Throwable)(implicit req: RequestHeader) extends RestException("Error parsing request", cause = Some(cause),
     statusCode = Some(BAD_REQUEST), clientMessage = Some("Request could not be parsed"))
@@ -103,26 +108,5 @@ object Exceptions {
 
   case class EntityAlreadyExistingException(msg: String)(implicit req: RequestHeader) extends RestException(
     msg, statusCode = Some(CONFLICT))
-
-
-  case class QueryException(message: String, cause: Throwable) extends Exception(message, cause) {
-
-    def this(cause: Throwable) = this(null, cause)
-
-    def this(message: String) = this(message, null)
-
-    def this() = this(null, null)
-
-  }
-
-  object QueryException {
-
-    def apply(cause: Throwable) = new QueryException(cause)
-
-    def apply(message: String) = new QueryException(message)
-
-    def apply() = new QueryException
-
-  }
 
 }

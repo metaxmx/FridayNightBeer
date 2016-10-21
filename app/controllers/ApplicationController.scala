@@ -57,6 +57,10 @@ class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
 
   def showTopicPage(id: String) = appPage
 
+  def forumAdminPage = appPage
+
+  def forumNewCategoryPage = appPage
+
   private[this]def ensureSessionActive(sessionKey: String): Future[UserSession] = for {
     maybeSession <- sessionService.getSession(sessionKey).toFuture
     existingSession <- maybeSession.fold {

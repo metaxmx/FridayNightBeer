@@ -11,7 +11,7 @@ libraryDependencies ++= Seq(
   "com.google.guava" % "guava" % "19.0",
   "javax.inject" % "javax.inject" % "1",
   "joda-time" % "joda-time" % "2.9.4",
-  "com.typesafe.play" %% "play-cache" % "2.5.8",
+  "com.typesafe.play" %% "play-cache" % "2.5.9",
   "org.json4s" %% "json4s-native" % "3.4.0",
   "org.json4s" %% "json4s-ext" % "3.4.0"
 )

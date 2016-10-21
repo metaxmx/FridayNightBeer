@@ -6,62 +6,64 @@
 # ------ Application Entrypoints -------
 
 # Single endpoint for serving AngularJS
-GET     /                               @controllers.ApplicationController.appPage
-GET     /settings.js                    @controllers.ApplicationController.config
+GET     /                                   @controllers.ApplicationController.appPage
+GET     /settings.js                        @controllers.ApplicationController.config
 
 # Virtual Pages
-GET     /login                          @controllers.ApplicationController.loginPage
-GET     /register                       @controllers.ApplicationController.registerPage
-GET     /forum/:id                      @controllers.ApplicationController.showForumPage(id: String)
-GET     /forum/:id/newthread            @controllers.ApplicationController.showNewTopicPage(id: String)
-GET     /thread/:id                     @controllers.ApplicationController.showTopicPage(id: String)
-GET     /admin                          @controllers.ApplicationController.adminPage
-GET     /admin/systemsettings           @controllers.ApplicationController.adminSystemSettingsPage
-GET     /admin/forum/configure          @controllers.ApplicationController.appPage
-GET     /settings                       @controllers.ApplicationController.settingsPage
-GET     /media                          @controllers.ApplicationController.mediaPage
-GET     /events                         @controllers.ApplicationController.eventsPage
-GET     /users                          @controllers.ApplicationController.usersPage
+GET     /login                              @controllers.ApplicationController.loginPage
+GET     /register                           @controllers.ApplicationController.registerPage
+GET     /forum/:id                          @controllers.ApplicationController.showForumPage(id: String)
+GET     /forum/:id/newthread                @controllers.ApplicationController.showNewTopicPage(id: String)
+GET     /thread/:id                         @controllers.ApplicationController.showTopicPage(id: String)
+GET     /admin                              @controllers.ApplicationController.adminPage
+GET     /admin/systemsettings               @controllers.ApplicationController.adminSystemSettingsPage
+GET     /admin/forums                       @controllers.ApplicationController.forumAdminPage
+GET     /admin/forums/newcategory           @controllers.ApplicationController.forumNewCategoryPage
+GET     /settings                           @controllers.ApplicationController.settingsPage
+GET     /media                              @controllers.ApplicationController.mediaPage
+GET     /events                             @controllers.ApplicationController.eventsPage
+GET     /users                              @controllers.ApplicationController.usersPage
 
 # Files
-GET     /avatar/:id                     @controllers.AppResourceController.downloadAvatar(id: String)
-GET     /uploads/:id/:filename          @controllers.AppResourceController.downloadPostUpload(id: String, filename: String)
+GET     /avatar/:id                         @controllers.AppResourceController.downloadAvatar(id: String)
+GET     /uploads/:id/:filename              @controllers.AppResourceController.downloadPostUpload(id: String, filename: String)
 
-GET     /logo.png                       @controllers.AppResourceController.logo
-GET     /favicon.ico                    @controllers.AppResourceController.favicon
+GET     /logo.png                           @controllers.AppResourceController.logo
+GET     /favicon.ico                        @controllers.AppResourceController.favicon
 
 # ------- REST API 1.0 ---------
 
 # Authentication
-GET     /api/1.0/authentication         @controllers.AuthenticationController.getAuthenticationStatus
-POST    /api/1.0/authentication         @controllers.AuthenticationController.login
-DELETE  /api/1.0/authentication         @controllers.AuthenticationController.logout
+GET     /api/1.0/authentication             @controllers.AuthenticationController.getAuthenticationStatus
+POST    /api/1.0/authentication             @controllers.AuthenticationController.login
+DELETE  /api/1.0/authentication             @controllers.AuthenticationController.logout
 
 # Registration
-POST    /api/1.0/register               @controllers.AuthenticationController.register
+POST    /api/1.0/register                   @controllers.AuthenticationController.register
 
 # Index / List Forums
-GET     /api/1.0/forums                 @controllers.ForumsController.getForums
+GET     /api/1.0/forums                     @controllers.ForumsController.getForums
 
 # Show Forum
-GET     /api/1.0/forum/:id              @controllers.ForumsController.showForum(id: String)
-
-# Configure Forums
-#GET     /api/1.0/forums/configure       @controllers.ForumsController.???
+GET     /api/1.0/forum/:id                  @controllers.ForumsController.showForum(id: String)
 
 # Show Topic
-GET     /api/1.0/thread/:id             @controllers.ThreadController.showThread(id: String)
-POST    /api/1.0/thread/:id             @controllers.ThreadController.createPost(id: String)
+GET     /api/1.0/thread/:id                 @controllers.ThreadController.showThread(id: String)
+POST    /api/1.0/thread/:id                 @controllers.ThreadController.createPost(id: String)
 
 # New Topic
-GET     /api/1.0/newthread/:id          @controllers.ForumsController.showForumHead(id: String)
-POST    /api/1.0/newthread/:id          @controllers.ThreadController.createThread(id: String)
+GET     /api/1.0/newthread/:id              @controllers.ForumsController.showForumHead(id: String)
+POST    /api/1.0/newthread/:id              @controllers.ThreadController.createThread(id: String)
 
 # Administration
-GET     /api/1.0/admin/systemsettings   @controllers.AdministrationController.getSystemSettings
-PUT     /api/1.0/admin/systemsettings   @controllers.AdministrationController.changeSystemSettings
+GET     /api/1.0/admin/systemsettings       @controllers.AdministrationController.getSystemSettings
+PUT     /api/1.0/admin/systemsettings       @controllers.AdministrationController.changeSystemSettings
+
+# Forum / Category Administration
+GET     /api/1.0/admin/forums               @controllers.ForumAdminController.listCategoriesAndForums
+POST    /api/1.0/admin/forums/categories    @controllers.ForumAdminController.createCategory
 
 # ------ Static Resources -------
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file                   @controllers.Assets.versioned(path="/public", file: Asset)
+GET     /assets/*file                       @controllers.Assets.versioned(path="/public", file: Asset)
