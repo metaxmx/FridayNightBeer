@@ -13,7 +13,7 @@ import {FNB_PIPES} from "./pipes/pipes"
 import {HttpModule, Http} from "@angular/http"
 import {FormsModule} from '@angular/forms'
 import {TranslateModule, TranslateLoader, TranslateStaticLoader} from "ng2-translate"
-import {Ng2BootstrapModule} from "ng2-bootstrap";
+import {Ng2BootstrapModule} from "ng2-bootstrap/ng2-bootstrap";
 
 const FNB_TRANSLATE_CONFIG = {
     provide: TranslateLoader,
