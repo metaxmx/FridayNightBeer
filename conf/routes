@@ -29,6 +29,7 @@ GET     /avatar/:id                         @controllers.AppResourceController.d
 GET     /uploads/:id/:filename              @controllers.AppResourceController.downloadPostUpload(id: String, filename: String)
 
 GET     /logo.png                           @controllers.AppResourceController.logo
+GET     /logo_small.png                     @controllers.AppResourceController.logoSmall
 GET     /favicon.ico                        @controllers.AppResourceController.favicon
 
 # ------- REST API 1.0 ---------

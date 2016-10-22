@@ -13,7 +13,7 @@
                 </li>
                 <li> <!-- TODO: Admin Check -->
                     <span class="glyphicon glyphicon-wrench"></span>
-                    <a href="#">{{"ForumOverview.Configure"|translate}}</a>
+                    <a routerLink="/admin/forums">{{"ForumOverview.Configure"|translate}}</a>
                 </li>
             </ul>
         </div>
@@ -26,8 +26,8 @@
                 <tr>
                     <th class="forum-icon-col"></th>
                     <th class="forum-title-col">{{"ForumOverview.Cols.Forum"|translate}}</th>
-                    <th class="forum-content-col">{{"ForumOverview.Cols.Content"|translate}}</th>
-                    <th class="forum-latestpost-col">{{"ForumOverview.Cols.LastEntry"|translate}}</th>
+                    <th class="forum-content-col hidden-sm hidden-xs">{{"ForumOverview.Cols.Content"|translate}}</th>
+                    <th class="forum-latestpost-col hidden-xs">{{"ForumOverview.Cols.LastEntry"|translate}}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -37,11 +37,11 @@
                         <a [routerLink]="['/forum', forum.id]">{{forum.name}}</a>
                         <div>{{forum.description}}</div>
                     </td>
-                    <td class="forum-content-col">
+                    <td class="forum-content-col hidden-sm hidden-xs">
                         <div>{{"ForumOverview.CellLabel.Threads"|translate:{'threads':forum.numThreads} }}</div>
                         <div>{{"ForumOverview.CellLabel.Posts"|translate:{'posts':forum.numPosts} }}</div>
                     </td>
-                    <td class="forum-latestpost-col">
+                    <td class="forum-latestpost-col hidden-xs">
                         <div *ngIf="forum.hasLastPost">
                             <div><a [routerLink]="['/thread', forum.lastPostId]">{{forum.lastPostTitle}}</a></div>
                             <div>

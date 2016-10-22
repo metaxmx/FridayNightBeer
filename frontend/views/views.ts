@@ -14,9 +14,11 @@ import {ShowUserComponent} from "./show-user.component";
 import {UsersComponent} from "./users.component";
 import {SearchForumComponent} from "./search-forum.component";
 import {SystemSettingsComponent} from "./admin/system-settings.component";
+import {ForumsComponent} from "./admin/forums.component";
 
 export const FNB_ADMIN_VIEWS: any[] = [
-    SystemSettingsComponent
+    SystemSettingsComponent,
+    ForumsComponent
 ];
 
 export const FNB_VIEWS: any[] = [

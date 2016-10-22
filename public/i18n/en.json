@@ -6,6 +6,12 @@
     "Users": "Users",
     "Admin": "Admin"
   },
+  "SubSection": {
+    "Admin": {
+      "SystemSettings": "System Settings",
+      "Forums": "Forums and Categories"
+    }
+  },
   "User": {
     "Login": "Login",
     "Logout": "Logout",
@@ -45,7 +51,19 @@
     "CreateThread": "Create Thread",
     "ManageThreads": "Manage Threads"
   },
-  "AdminOverview": {
-    "Title": "Administration"
+  "Administration": {
+    "Overview": {
+      "Title": "Administration",
+      "Tile": {
+        "SystemSettings": "System Settings",
+        "Forums": "Forums and Categories"
+      }
+    },
+    "SystemSettings": {
+      "Title": "System Settings"
+    },
+    "Forums": {
+      "Title": "Configure Forums"
+    }
   }
 }

@@ -30,6 +30,8 @@ class AppResourceController @Inject() (val appSettings: AppSettings,
 
   def logo = handleFromAppResourcesOrDefault(RES_LOGO)
 
+  def logoSmall = handleFromAppResourcesOrDefault(RES_LOGO) // TODO: Lower-Res Logo
+
   def downloadAvatar(id: String) = OptionalSessionRestAction.async {
     implicit request =>
       // TODO: Check for permissions

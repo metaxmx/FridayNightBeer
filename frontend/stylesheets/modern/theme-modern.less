@@ -19,6 +19,10 @@ html.modern-theme {
 		background-color: @modern-color-background;
 		color: @modern-color-default;
 		height: 100%;
+
+		@media (max-width: @screen-xs-max) {
+			background-color: @modern-color-content-background;
+		}
 	}
 
 	header {
@@ -26,22 +30,54 @@ html.modern-theme {
 		.box-shadow(0px 7px 20px -7px, @modern-color-shadow);
 		height: @modern-height-header;
 		margin: 0;
+
+		@media (max-width: @screen-xs-max) {
+			height: @modern-height-header-small;
+		}
 		
 		a#logo {
 			display: block;
-			width: 64px;
-			height: 64px;
 			position: absolute;
 			border: none;
-			left: 32px;
-			top: 16px;
 			
 			img {
 				display: block;
 				border: none;
-				width: 64px;
-				height: 64px;
+
+				&#logo_large {
+					width: @modern-width-logo;
+					height: @modern-height-logo;
+				}
+				&#logo_small {
+					width: @modern-width-logo-small;
+					height: @modern-height-logo-small;
+				}
 			}
+
+			@media (max-width: @screen-sm-max) {
+				img#logo_large {
+					.hide;
+				}
+			}
+
+			@media (max-width: @screen-xs-max) {
+				top: 8px;
+				left: 64px;
+			}
+
+			@media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+				top: 12px;
+				left: 12px;
+			}
+
+			@media (min-width: @screen-md-min) {
+				left: 32px;
+				top: 16px;
+				img#logo_small {
+					.hide;
+				}
+			}
+
 		}
 		
 		h1 {
@@ -53,10 +89,21 @@ html.modern-theme {
 			font-size: 36px;
 			color: @modern-color-h1;
 			.text-shadow(3px 3px 1px, @modern-color-shadow);
+
+			@media (max-width: @screen-xs-max) {
+				top: 12px;
+				font-size: 24px;
+				left: 112px;
+			}
+			@media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+				top: 12px;
+				font-size: 30px;
+				left: 64px;
+			}
 			
 			a {
 				color: @modern-color-h1;
-				font-decoration: none;
+				text-decoration: none;
 				&:active, &:hover {
 					color: @modern-color-h1;
 					text-decoration: none;
@@ -78,6 +125,17 @@ html.modern-theme {
 			border-top: 1px solid @modern-color-menu-border;
 			border-left: 1px solid @modern-color-menu-border;
 			border-top-left-radius: 8px;
+
+			@media (max-width: @screen-xs-max) {
+				.hide;
+			}
+
+			@media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+				border-left: none;
+				left: 0;
+				border-top-left-radius: 0;
+				.box-shadow(inset 0px 2px 2px 0px, @modern-color-shadow);
+			}
 			
 			ul {
 				display: block;
@@ -130,7 +188,7 @@ html.modern-theme {
 						width: 13px;
 						height: 19px;
 						vertical-align: -4px;
-						background: url(@modern-img-separator) 0px 0px no-repeat;
+						background: url(@modern-img-separator) 0 0 no-repeat;
 					}
 				}
 			}
@@ -170,6 +228,10 @@ html.modern-theme {
 			top: @modern-height-header;
 			left: 0;
 			right: 0;
+
+			@media (max-width: @screen-xs-max) {
+				top: @modern-height-header-small;
+			}
 		}
 	}
 	
@@ -296,7 +358,7 @@ html.modern-theme {
 				
 				.glyphicon {
 					color: #999999;
-					font-soze: 1.3rem;
+					font-size: 1.3rem;
 					margin-right: 6px;
 				}
 				
@@ -324,7 +386,7 @@ html.modern-theme {
 	
 	.main-content {
 		padding: 16px;
-		background-color: #ffffff;
+		background-color: @modern-color-content-background;
 		.border-radius(8px);
 		border: 1px solid #dedede;
 		
@@ -338,15 +400,12 @@ html.modern-theme {
 	}
 	
 	.loading-spinner {
-		background-color: #ffffff;
 		.border-radius(8px);
 		border: 1px solid #dedede;
 		height: 120px;
 		width: 120px;
 		margin: 0 auto;
-		background-image: url(@modern-img-spinner);
-		background-position: 50% 50%;
-		background-repeat: no-repeat;
+		background: #ffffff url(@modern-img-spinner) no-repeat 50% 50%;
 	}
 	
 	.btn-icon {

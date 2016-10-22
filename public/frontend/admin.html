@@ -8,10 +8,25 @@
     </div>
 
     <div class="main-content">
-        <h2>{{"AdminOverview.Title"|translate}}</h2>
-        <p>
-            <a routerLink="./systemsettings">System Settings</a>
-        </p>
+        <h2>{{"Administration.Overview.Title"|translate}}</h2>
+        <div class="row">
+            <div class="col-xs-6 col-sm-4 col-md-3">
+                <a routerLink="./systemsettings" class="thumbnail text-center">
+                    <div class="h1">
+                        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                    </div>
+                    {{"Administration.Overview.Tile.SystemSettings"|translate}}
+                </a>
+            </div>
+            <div class="col-xs-6 col-sm-4 col-md-3">
+                <a routerLink="./forums" class="thumbnail text-center">
+                    <div class="h1">
+                        <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+                    </div>
+                    {{"Administration.Overview.Tile.Forums"|translate}}
+                </a>
+            </div>
+        </div>
     </div>
 
 </div>

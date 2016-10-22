@@ -14,6 +14,7 @@ import {ShowUserComponent} from "./views/show-user.component"
 import {AdminComponent} from "./views/admin.component"
 import {SearchForumComponent} from "./views/search-forum.component";
 import {SystemSettingsComponent} from "./views/admin/system-settings.component";
+import {ForumsComponent} from "./views/admin/forums.component";
 
 export const APP_ROUTES: Routes = [
     {   path: "",                      component: ForumOverviewComponent   },
@@ -29,5 +30,6 @@ export const APP_ROUTES: Routes = [
     {   path: "user/:id",              component: ShowUserComponent        },
     {   path: "admin",                 component: AdminComponent           },
     {   path: "admin/systemsettings",  component: SystemSettingsComponent  },
+    {   path: "admin/forums",          component: ForumsComponent          },
     {   path: "search/forum",          component: SearchForumComponent     }
 ];
