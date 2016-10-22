@@ -136,14 +136,18 @@ trait FileUploadAsset {
   private[this] def parseModifiedDate(date: String): Option[DateTime] = {
     val matcher = dateRecognizer.matcher(date)
     if (matcher.matches()) {
-      val standardDate = matcher.group(3)
+      val standardDate = Option(matcher.group(3))
       try {
-        if (standardDate != null) {
-          Some(standardDateParserWithoutTZ.parseDateTime(standardDate))
-        } else {
+        standardDate map (sd => standardDateParserWithoutTZ.parseDateTime(sd)) orElse {
           val alternativeDate = matcher.group(6) // Cannot be null otherwise match would have failed
           Some(alternativeDateFormatWithTZOffset.parseDateTime(alternativeDate))
         }
+//        if (standardDate != null) {
+//          Some(standardDateParserWithoutTZ.parseDateTime(standardDate))
+//        } else {
+//          val alternativeDate = matcher.group(6) // Cannot be null otherwise match would have failed
+//          Some(alternativeDateFormatWithTZOffset.parseDateTime(alternativeDate))
+//        }
       } catch {
         case e: IllegalArgumentException =>
           Logger.debug(s"An invalid date was received: couldn't parse: $date", e)

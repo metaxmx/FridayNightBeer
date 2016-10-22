@@ -12,6 +12,4 @@ import services.{PermissionService, SessionService, UserService}
 @Singleton
 class UserController @Inject()(val userService: UserService,
                                val sessionService: SessionService,
-                               val permissionService: PermissionService) extends RestController {
-
-}
+                               val permissionService: PermissionService) extends RestController

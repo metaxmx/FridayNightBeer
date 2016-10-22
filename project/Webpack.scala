@@ -1,4 +1,6 @@
 import java.net.InetSocketAddress
+import java.util.concurrent.atomic.AtomicReference
+
 import play.sbt.PlayRunHook
 import sbt._
 
@@ -10,24 +12,20 @@ object Webpack {
 
   def apply(base: File): PlayRunHook = {
     object WebpackHook extends PlayRunHook {
-      var process: Option[Process] = None
+      val proc = new AtomicReference[Option[Process]](None)
 
       override def beforeStarted() = {
         s"$npmCmd install".!
-        process = Option(
-          Process(s"$webpackCmd", base).run()
-        )
+        proc.set(Some(Process(s"$webpackCmd", base).run()))
       }
 
       override def afterStarted(address: InetSocketAddress) = {
-        process = Option(
-          Process(s"$webpackCmd --watch", base).run()
-        )
+        proc.set(Some(Process(s"$webpackCmd --watch", base).run()))
       }
 
       override def afterStopped() = {
-        process.foreach(_.destroy())
-        process = None
+        proc.get().foreach(_.destroy())
+        proc.set(None)
       }
     }
 

@@ -2,6 +2,4 @@ package storage
 
 import models.User
 
-trait UserDAO extends GenericDAO[User] {
-
-}
+trait UserDAO extends GenericDAO[User]
