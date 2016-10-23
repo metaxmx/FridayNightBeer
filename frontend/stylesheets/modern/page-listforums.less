@@ -26,5 +26,22 @@ html.modern-theme {
 		.forum-latestpost-col {
 			width: 34%;
 		}
+
+		.forum-icon-col .icon {
+			display: inline-block;
+			width: 32px;
+			height: 32px;
+			background: url("images/forum_default.png") no-repeat center center;
+		}
+		tr.forum_status_hot {
+			.forum-icon-col .icon {
+				background-image: url("images/forum_hot.png");
+			}
+		}
+		tr.forum_status_locked {
+			.forum-icon-col .icon {
+				background-image: url("images/forum_locked.png");
+			}
+		}
 	}
 }

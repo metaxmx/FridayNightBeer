@@ -3,7 +3,7 @@
     <div class="view-header" *ngIf="successful && loaded">
         <div class="breadcrumb-combined">
             <ol class="breadcrumb">
-                <li><a routerLink="/">{{settings.siteTitle}}</a></li>
+                <li><a routerLink="/"><span class="glyphicon glyphicon-home"></span></a></li>
                 <li class="active">{{"Section.Forum"|translate}}</li>
             </ol>
             <ul class="headeroptions">
@@ -31,8 +31,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr *ngFor="let forum of category.forums">
-                    <td class="forum-icon-col"><img src="/assets/images/modern/forum_default.png"></td>
+                <tr *ngFor="let forum of category.forums" [class]="forum.status">
+                    <td class="forum-icon-col"><span class="icon"></span></td>
                     <td class="forum-title-col">
                         <a [routerLink]="['/forum', forum.id]">{{forum.name}}</a>
                         <div>{{forum.description}}</div>

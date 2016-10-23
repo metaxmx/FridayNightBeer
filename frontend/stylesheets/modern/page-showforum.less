@@ -21,7 +21,7 @@ html.modern-theme {
 			width: 100%;
 		}
 		.showforum-firstpost-col {
-			width: 140px;
+			width: 150px;
 		}
 		.showforum-posts-col {
 			width: 80px;
@@ -30,7 +30,29 @@ html.modern-theme {
 			text-align: center;
 		}
 		.showforum-latestpost-col {
-			width: 140px;
+			width: 150px;
+		}
+
+		.showforum-icon-col .icon {
+			display: inline-block;
+			width: 32px;
+			height: 32px;
+			background: url("images/topic_default.png") no-repeat center center;
+		}
+		tr.thread_status_hot {
+			.showforum-icon-col .icon {
+				background-image: url("images/topic_hot.png");
+			}
+		}
+		tr.thread_status_locked {
+			.showforum-icon-col .icon {
+				background-image: url("images/topic_default.png"); // TODO: Image for locked thread
+			}
+		}
+		tr.thread_status_sticky {
+			.showforum-icon-col .icon {
+				background-image: url("images/topic_pinned.png");
+			}
 		}
 	}
 }

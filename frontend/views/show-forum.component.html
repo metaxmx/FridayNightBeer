@@ -3,7 +3,7 @@
     <div class="view-header" *ngIf="loaded">
         <div class="breadcrumb-combined">
             <ol class="breadcrumb">
-                <li><a routerLink="/">{{settings.siteTitle}}</a></li>
+                <li><a routerLink="/"><span class="glyphicon glyphicon-home"></span></a></li>
                 <li><a routerLink="/">{{"Section.Forum"|translate}}</a></li>
                 <li class="active" *ngIf="successful">{{forum.title}}</li>
                 <li class="active" *ngIf="!successful">{{"Common.Error"|translate}}</li>
@@ -38,17 +38,14 @@
             </tr>
             </thead>
             <tbody>
-            <tr *ngFor="let thread of forum.threads">
-                <td class="showforum-icon-col">
-                    <img src="/assets/images/modern/topic_pinned.png" *ngIf="thread.sticky">
-                    <img src="/assets/images/modern/topic_default.png" *ngIf="!thread.sticky">
-                </td>
+            <tr *ngFor="let thread of forum.threads" [class]="thread.sticky ? 'thread_status_sticky' : 'thread_status_default'">
+                <td class="showforum-icon-col"><span class="icon"></span></td>
                 <td class="showforum-title-col">
                     <span *ngIf="thread.sticky">[Ankündigung]</span>
                     <a [routerLink]="['/thread', thread.id]">{{thread.title}}</a>
                 </td>
                 <td class="showforum-firstpost-col">
-                    <div>{{thread.firstPost.date}}</div>
+                    <div>{{thread.firstPost.date | localizedDate:"ForumOverview.CellLabel.PostMeta.on"}}</div>
                     <div>von <a [routerLink]="['/user', thread.firstPost.user]"> {{thread.firstPost.userName}}</a></div>
                 </td>
                 <td class="showforum-posts-col">
@@ -56,7 +53,7 @@
                 </td>
                 <td class="forum-latestpost-col">
                     <div *ngIf="thread.latestPost">
-                        <div><a [routerLink]="['/thread', thread.id]">{{thread.latestPost.date}}</a></div>
+                        <div><a [routerLink]="['/thread', thread.id]">{{thread.latestPost.date | localizedDate:"ForumOverview.CellLabel.PostMeta.on"}}</a></div>
                         <div>von {{thread.latestPost.userName}}</div>
                     </div>
                 </td>

@@ -33,3 +33,4 @@ activator-*.sbt
 /frontend/**/*.map
 
 /conf/instance.conf
+/conf/assets.json

@@ -1,6 +1,7 @@
 @* Angular2 Application Template *@
 @import services.SettingsDTO
-@(settings: SettingsDTO)
+@import util.CompiledAssets
+@(settings: SettingsDTO, assets: CompiledAssets)
 <!doctype html>
 <html lang="en" data-framework="angular2" class="modern-theme">
     <head>
@@ -9,10 +10,10 @@
         <base href="/">
         <title>@settings.siteTitle</title>
 
-        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("dist/vendor-style.css")">
-        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("dist/app-style.css")">
+        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("dist/" + assets.vendorStyle)">
+        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("dist/" + assets.appStyle)">
 
-        <link rel="shortcut icon" href="/favicon.ico">
+        <link rel="shortcut icon" href="@routes.Assets.versioned("favicon.ico")">
     </head>
     <body>
         <fnb-app></fnb-app>
@@ -30,8 +31,8 @@
             })(window);
         </script>
         <script src="@routes.ApplicationController.settingsJs"></script>
-        <script src="@routes.Assets.versioned("dist/polyfills.bundle.js")"></script>
-        <script src="@routes.Assets.versioned("dist/vendor.bundle.js")"></script>
-        <script src="@routes.Assets.versioned("dist/app.bundle.js")"></script>
+        <script src="@routes.Assets.versioned("dist/" +  assets.polyfills)"></script>
+        <script src="@routes.Assets.versioned("dist/" + assets.vendor)"></script>
+        <script src="@routes.Assets.versioned("dist/" + assets.app)"></script>
     </body>
 </html>

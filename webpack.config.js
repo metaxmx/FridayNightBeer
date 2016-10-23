@@ -1,7 +1,9 @@
 var webpack = require('webpack');
 var path = require('path');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
+var fs = require('fs');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
+var WebpackCleanupPlugin = require('webpack-cleanup-plugin');
+var WebpackAssetsPlugin = require('assets-webpack-plugin');
 
 // Webpack Config
 var webpackConfig = {
@@ -15,11 +17,11 @@ var webpackConfig = {
 
     devtool: 'source-map',
 
-    cache: true,
+    cache: false,
     output: {
-        path: './public/dist',
-        filename: '[name].bundle.js',
-        sourceMapFilename: '[name].map',
+        path: 'public/dist',
+        filename: '[name].[hash].bundle.js',
+        sourceMapFilename: '[name].[hash].map',
         chunkFilename: '[id].chunk.js'
     },
 
@@ -29,8 +31,16 @@ var webpackConfig = {
 
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({ name: ['app', 'vendor', 'polyfills'], minChunks: Infinity }),
-        new ExtractTextPlugin("[name].css"),
-        new webpack.optimize.DedupePlugin()
+        new ExtractTextPlugin("[name].[hash].css"),
+        new webpack.optimize.DedupePlugin(),
+        new WebpackCleanupPlugin(),
+        new WebpackAssetsPlugin({ filename: 'conf/assets.json', prettyPrint: true }),
+        function() {
+            this.plugin("done", function(stats) {
+                //console.log("STATS:", stats.toJson())
+                //fs.writeFileSync('./stats.json', JSON.stringify(stats.toJson()));
+            });
+        }
     ],
 
     module: {
@@ -44,7 +54,8 @@ var webpackConfig = {
             { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&mimetype=application/octet-stream" },
             { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&mimetype=image/svg+xml" },
             { test: /\.html$/, loader: 'html' },
-            { test: /\.json$/, loader: 'json' }
+            { test: /\.json$/, loader: 'json' },
+            { test: /\.(jpe?g|png|gif)$/i, loaders: ['file?hash=sha512&digest=hex&name=[hash].[ext]', 'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'] }
         ]
     }
 

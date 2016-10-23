@@ -39,11 +39,12 @@ export interface ShowForumPost {
 
 export interface ShowForumThread {
     id:string
-    title:string,
-    posts:number,
-    sticky:boolean,
-    firstPost:ShowForumPost,
+    title:string
+    posts:number
+    sticky:boolean
+    firstPost:ShowForumPost
     latestPost:ShowForumPost
+    status:string
 }
 
 export interface ShowForumResult extends ApiResult {
@@ -54,7 +55,7 @@ export interface ShowForumResult extends ApiResult {
 }
 
 export interface ShowForumHeadResult extends ApiResult {
-    id:string,
-    title:string,
+    id:string
+    title:string
     permissions:Array<string>
 }

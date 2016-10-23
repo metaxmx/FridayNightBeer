@@ -17,6 +17,7 @@ export interface OverviewForum {
     lastPostUser:string
     lastPostUserName:string
     lastPostDate:Date
+    status:string
 }
 
 export interface OverviewForumCategory {
@@ -36,7 +37,8 @@ class OverviewForumData implements  OverviewForum {
                 public lastPostTitle:string,
                 public lastPostUser:string,
                 public lastPostUserName:string,
-                public lastPostDate:Date) {
+                public lastPostDate:Date,
+                public status:string) {
     }
 }
 
@@ -56,10 +58,10 @@ function fromOverviewViewModel(categoryViewModels: Array<ForumOverviewCategory>)
             if (f.lastPost) {
                 let lp = f.lastPost;
                 forum = new OverviewForumData(f.id, f.name, f.description || "", f.numThreads, f.numPosts, true,
-                    lp.id, lp.title, lp.user, lp.userName, new Date(lp.date))
+                    lp.id, lp.title, lp.user, lp.userName, new Date(lp.date), "forum_status_default")
             } else {
                 forum = new OverviewForumData(f.id, f.name, f.description || "", f.numThreads, f.numPosts, false,
-                    null, null, null, null, null)
+                    null, null, null, null, null, "forum_status_default")
             }
             forums.push(forum)
         }
