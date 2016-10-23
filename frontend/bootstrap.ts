@@ -6,7 +6,7 @@ import {AppModule} from './app.module'
  * Bootstrap application
  */
 
-console.info("Bootstrapping Friday Night Beer");
+console.info("Bootstrapping Friday Night Beer ...");
 // enableProdMode();
 platformBrowserDynamic().bootstrapModule(AppModule)
     .then(success => console.info("Friday Night Beer loaded successfully"))

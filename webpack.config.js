@@ -2,8 +2,6 @@ var webpack = require('webpack');
 var path = require('path');
 var fs = require('fs');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
-var WebpackCleanupPlugin = require('webpack-cleanup-plugin');
-var WebpackAssetsPlugin = require('assets-webpack-plugin');
 
 // Webpack Config
 var webpackConfig = {
@@ -17,11 +15,11 @@ var webpackConfig = {
 
     devtool: 'source-map',
 
-    cache: false,
+    cache: true,
     output: {
         path: 'public/dist',
-        filename: '[name].[hash].bundle.js',
-        sourceMapFilename: '[name].[hash].map',
+        filename: '[name].bundle.js',
+        sourceMapFilename: '[name].map',
         chunkFilename: '[id].chunk.js'
     },
 
@@ -31,10 +29,8 @@ var webpackConfig = {
 
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({ name: ['app', 'vendor', 'polyfills'], minChunks: Infinity }),
-        new ExtractTextPlugin("[name].[hash].css"),
+        new ExtractTextPlugin("[name].css"),
         new webpack.optimize.DedupePlugin(),
-        new WebpackCleanupPlugin(),
-        new WebpackAssetsPlugin({ filename: 'conf/assets.json', prettyPrint: true }),
         function() {
             this.plugin("done", function(stats) {
                 //console.log("STATS:", stats.toJson())

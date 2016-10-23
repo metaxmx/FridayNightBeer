@@ -7,7 +7,6 @@ import models.UserSession
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.{Action, Controller}
 import services.{PermissionService, SessionService, SettingsService, UUIDGenerator}
-import util.CompiledAssets
 
 import scala.concurrent.Future
 
@@ -15,8 +14,7 @@ import scala.concurrent.Future
 class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
                                        sessionService: SessionService,
                                        permissionService: PermissionService,
-                                       settingsService: SettingsService,
-                                       assets: CompiledAssets) extends Controller {
+                                       settingsService: SettingsService) extends Controller {
 
   def appPage = Action.async {
     implicit request =>
@@ -25,7 +23,7 @@ class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
         _ <- ensureSessionActive(sessionKey)
         settings <- settingsService.asDto
       } yield {
-        Ok(views.html.index(settings, assets)).withSession(fnbSessionHeaderName -> sessionKey)
+        Ok(views.html.index(settings)).withSession(fnbSessionHeaderName -> sessionKey)
       }
   }
 

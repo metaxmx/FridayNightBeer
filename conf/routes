@@ -5,7 +5,7 @@
 
 # ------ Application Entrypoints -------
 
-# Single endpoint for serving AngularJS
+# Single endpoint for serving the Angular2 SPA
 GET     /                                   @controllers.ApplicationController.appPage
 GET     /settings.js                        @controllers.ApplicationController.settingsJs
 

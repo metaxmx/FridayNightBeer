@@ -1,7 +1,6 @@
 @* Angular2 Application Template *@
 @import services.SettingsDTO
-@import util.CompiledAssets
-@(settings: SettingsDTO, assets: CompiledAssets)
+@(settings: SettingsDTO)
 <!doctype html>
 <html lang="en" data-framework="angular2" class="modern-theme">
     <head>
@@ -10,8 +9,8 @@
         <base href="/">
         <title>@settings.siteTitle</title>
 
-        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("dist/" + assets.vendorStyle)">
-        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("dist/" + assets.appStyle)">
+        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("dist/vendor-style.css")">
+        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("dist/app-style.css")">
 
         <link rel="shortcut icon" href="@routes.Assets.versioned("favicon.ico")">
     </head>
@@ -21,18 +20,13 @@
         <script>
             (function() {
                 this.FnbConfig = this.FnbConfig || {};
-                this.FnbConfig.environment = {
-                    cordova: false,
-                    assetRoot: "/assets",
-                    apiRoot: "/api",
-                    appResourcesRoot: "/resources"
-                };
-                console.log("Environment loaded");
+                this.FnbConfig.environment = { cordova: false, assetRoot: "/assets", apiRoot: "/api", appResourcesRoot: "/resources" };
+                this.FnbConfig.config = { siteTitle: "@{settings.siteTitle}", registerEnabled: @settings.registerEnabled, defaultTheme: "@{settings.defaultTheme}" };
+                console.log("Configuration loaded");
             })(window);
         </script>
-        <script src="@routes.ApplicationController.settingsJs"></script>
-        <script src="@routes.Assets.versioned("dist/" +  assets.polyfills)"></script>
-        <script src="@routes.Assets.versioned("dist/" + assets.vendor)"></script>
-        <script src="@routes.Assets.versioned("dist/" + assets.app)"></script>
+        <script src="@routes.Assets.versioned("dist/polyfills.bundle.js")"></script>
+        <script src="@routes.Assets.versioned("dist/vendor.bundle.js")"></script>
+        <script src="@routes.Assets.versioned("dist/app.bundle.js")"></script>
     </body>
 </html>
