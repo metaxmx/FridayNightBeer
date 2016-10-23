@@ -1,5 +1,5 @@
 import {Component} from "@angular/core"
-import {FnbSettings} from "../util/settings"
+import {FnbSettings, FnbEnvironment} from "../util/settings"
 import {AuthenticationService, AuthenticationState} from "../services/authentication.service"
 import {Observable} from "rxjs/Observable"
 import {LanguageService} from "../services/language.service";
@@ -10,7 +10,8 @@ import {LanguageService} from "../services/language.service";
 })
 export class HeaderComponent {
 
-    constructor(public settings: FnbSettings,
+    constructor(public env: FnbEnvironment,
+                public settings: FnbSettings,
                 private authService: AuthenticationService,
                 private languageService: LanguageService) {
         this.headerAuthState = authService.authenticationStatus.map(HeaderComponent.mapToHeaderPermissions)

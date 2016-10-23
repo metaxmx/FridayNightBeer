@@ -6,6 +6,7 @@ import {
     ApiResponseFromError, ApiResponseFromResult, LocalizedError
 } from "../viewmodels/GeneralViewModels"
 import "../app-rxjs-operations"
+import {FnbEnvironment} from "../util/settings";
 
 function toJsonString(data: any): string {
     if (typeof data === "string" || data instanceof String) {
@@ -34,8 +35,10 @@ function parseResponse<T extends ApiResult>(res: Response): ApiResponse<T> {
 @Injectable()
 export class HttpCommunicationService {
 
-    constructor(private http: Http) {
+    constructor(private env: FnbEnvironment,
+                private http: Http) {
         console.debug("Initialize Service HttpCommunicationService")
+        console.debug("API Root is " + env.apiRoot)
     }
 
     private apiVersion = "1.0";
@@ -45,7 +48,7 @@ export class HttpCommunicationService {
     private requestOptions = new RequestOptions({headers: this.headers});
 
     private getUrl(apiUrl: string): string {
-        return `/api/${this.apiVersion}/${apiUrl}`
+        return `${this.env.apiRoot}/${this.apiVersion}/${apiUrl}`
     }
 
     private static handleResponse<T extends ApiResult>(responseObservable: Observable<Response>): Observable<ApiResponse<T>> {

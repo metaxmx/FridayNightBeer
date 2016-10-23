@@ -7,7 +7,7 @@
 
 # Single endpoint for serving AngularJS
 GET     /                                   @controllers.ApplicationController.appPage
-GET     /settings.js                        @controllers.ApplicationController.config
+GET     /settings.js                        @controllers.ApplicationController.settingsJs
 
 # Virtual Pages
 GET     /login                              @controllers.ApplicationController.loginPage
@@ -24,13 +24,13 @@ GET     /media                              @controllers.ApplicationController.m
 GET     /events                             @controllers.ApplicationController.eventsPage
 GET     /users                              @controllers.ApplicationController.usersPage
 
-# Files
-GET     /avatar/:id                         @controllers.AppResourceController.downloadAvatar(id: String)
-GET     /uploads/:id/:filename              @controllers.AppResourceController.downloadPostUpload(id: String, filename: String)
+# ------ Dynamic Resources (App Resources) -------
 
-GET     /logo.png                           @controllers.AppResourceController.logo
-GET     /logo_small.png                     @controllers.AppResourceController.logoSmall
-GET     /favicon.ico                        @controllers.AppResourceController.favicon
+GET     /resources/avatar/:id               @controllers.AppResourceController.downloadAvatar(id: String)
+GET     /resources/uploads/:id/:filename    @controllers.AppResourceController.downloadPostUpload(id: String, filename: String)
+
+GET     /resources/logo.png                 @controllers.AppResourceController.logo
+GET     /resources/logo_small.png           @controllers.AppResourceController.logoSmall
 
 # ------- REST API 1.0 ---------
 
@@ -64,7 +64,9 @@ PUT     /api/1.0/admin/systemsettings       @controllers.AdministrationControlle
 GET     /api/1.0/admin/forums               @controllers.ForumAdminController.listCategoriesAndForums
 POST    /api/1.0/admin/forums/categories    @controllers.ForumAdminController.createCategory
 
-# ------ Static Resources -------
+# ------ Static Resources (Assets) -------
+
+GET     /favicon.ico                        @controllers.AppResourceController.favicon
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                       @controllers.Assets.versioned(path="/public", file: Asset)

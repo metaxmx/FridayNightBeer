@@ -1,8 +1,8 @@
 <header>
     <h1><a routerLink="/">{{settings.siteTitle}}</a></h1>
     <a id="logo" routerLink="/">
-        <img id="logo_large" src="/logo.png" alt="Site Logo">
-        <img id="logo_small" src="/logo_small.png" alt="Site Logo">
+        <img id="logo_large" [src]="env.appResourcesRoot + '/logo.png'" alt="Site Logo">
+        <img id="logo_small" [src]="env.appResourcesRoot + '/logo_small.png'" alt="Site Logo">
     </a>
     <nav>
         <ul id="pagemenu">

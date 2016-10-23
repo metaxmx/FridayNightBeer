@@ -17,7 +17,19 @@
     <body>
         <fnb-app></fnb-app>
 
-        <script src="@routes.ApplicationController.config"></script>
+        <script>
+            (function() {
+                this.FnbConfig = this.FnbConfig || {};
+                this.FnbConfig.environment = {
+                    cordova: false,
+                    assetRoot: "/assets",
+                    apiRoot: "/api",
+                    appResourcesRoot: "/resources"
+                };
+                console.log("Environment loaded");
+            })(window);
+        </script>
+        <script src="@routes.ApplicationController.settingsJs"></script>
         <script src="@routes.Assets.versioned("dist/polyfills.bundle.js")"></script>
         <script src="@routes.Assets.versioned("dist/vendor.bundle.js")"></script>
         <script src="@routes.Assets.versioned("dist/app.bundle.js")"></script>

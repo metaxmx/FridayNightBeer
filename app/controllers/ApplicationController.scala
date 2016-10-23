@@ -23,15 +23,15 @@ class ApplicationController @Inject() (uuidGenerator: UUIDGenerator,
         _ <- ensureSessionActive(sessionKey)
         settings <- settingsService.asDto
       } yield {
-        Ok(views.html.angular2App(settings)).withSession(fnbSessionHeaderName -> sessionKey)
+        Ok(views.html.index(settings)).withSession(fnbSessionHeaderName -> sessionKey)
       }
   }
 
-  def config = Action.async {
+  def settingsJs = Action.async {
     for {
       settings <- settingsService.asDto
     } yield {
-      Ok(views.js.config(settings))
+      Ok(views.js.settings(settings))
     }
   }
 
