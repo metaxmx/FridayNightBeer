@@ -2,7 +2,7 @@ import {Component} from "@angular/core"
 
 @Component({
     selector: "fnb-media",
-    templateUrl: "assets/frontend/media.html"
+    templateUrl: "media.component.html"
 })
 export class MediaComponent {
 

@@ -7,7 +7,7 @@ import {Subscription} from "rxjs/Rx";
 
 @Component({
     selector: "fnb-show-thread",
-    templateUrl: "assets/frontend/show-thread.html"
+    templateUrl: "show-thread.component.html"
 })
 export class ShowThreadComponent implements  OnInit, OnDestroy {
 

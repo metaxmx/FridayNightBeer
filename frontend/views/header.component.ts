@@ -6,7 +6,7 @@ import {LanguageService} from "../services/language.service";
 
 @Component({
     selector: "fnb-header",
-    templateUrl: "assets/frontend/header.html"
+    templateUrl: "header.component.html"
 })
 export class HeaderComponent {
 

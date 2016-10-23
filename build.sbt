@@ -6,13 +6,11 @@ scalaVersion := "2.11.8"
 
 lazy val fnbDatamodel = project in file("modules/datamodel")
 
-lazy val fnbDefaultTheme = (project in file("modules/default-theme")).dependsOn(fnbDatamodel)
-
 lazy val fnbStorageMongo = (project in file("modules/storage-mongo")).dependsOn(fnbDatamodel)
 
 lazy val fnbPlay = (project in file("."))
-	.aggregate(fnbDatamodel, fnbStorageMongo, fnbDefaultTheme)
-	.dependsOn(fnbDatamodel, fnbStorageMongo, fnbDefaultTheme)
+	.aggregate(fnbDatamodel, fnbStorageMongo)
+	.dependsOn(fnbDatamodel, fnbStorageMongo)
 	.enablePlugins(PlayScala)
 	.enablePlugins(SbtWeb)
 

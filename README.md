@@ -65,9 +65,9 @@ Software Used
 
 * [Scala](http://www.scala-lang.org/) Version 2.11.8
 * [SBT](http://www.scala-sbt.org/) (Scala Build Tool) Version 0.13.12
-* [Play Framework](https://www.playframework.com/) Version 2.5.8
-* [ReactiveMongo](http://reactivemongo.org/) Version 0.11.14
-* [AngularJS](https://angular.io/) Version 2.0.0
+* [Play Framework](https://www.playframework.com/) Version 2.5.9
+* [ReactiveMongo](http://reactivemongo.org/) Version 0.12.0
+* [AngularJS](https://angular.io/) Version 2.1.1
 * [Bootstrap](http://getbootstrap.com/) Version 3.3.7
 * Diverse general libraries and utilities: jQuery, Guice, Guava, Joda-Time, Angular Add-Ons, Polyfills
 * Frontend Assets for the Themes:
@@ -116,6 +116,7 @@ Planned Milestones
   * [ ] Connect media collections with forum topics, so comments to the collection can be made
 * [ ] Version 0.5 Alpha: User Experience Improvements:
   * [ ] Optimize Stylesheets and behaviour for mobile clients
+  * [ ] Add Cordova support to enable the creation of mobile apps
   * [ ] Track visited topics / posts for each user, highlight topics/forums with new content on each visit
   * [ ] Include search for posts/topics
 * [ ] Version 0.6 Alpha: Chat:
@@ -126,7 +127,7 @@ Planned Milestones
   * [ ] Limit access to chat rooms to specific users/groups
 * [ ] Version 0.7 Alpha: User settings:
   * [ ] Themes support
-  * [ ] Languages support
+  * [x] Languages support
   * [ ] Configurable per user
   * [ ] Global override supported 
 * [ ] Version 0.8 Alpha: Events:

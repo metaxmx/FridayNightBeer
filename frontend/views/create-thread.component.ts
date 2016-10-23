@@ -2,7 +2,7 @@ import {Component} from "@angular/core"
 
 @Component({
     selector: "fnb-create-thread",
-    templateUrl: "assets/frontend/create-thread.html"
+    templateUrl: "create-thread.component.html"
 })
 export class CreateThreadComponent {
 

@@ -21,7 +21,7 @@ import scala.concurrent.Future
 
 /**
   * Utility trait to manage streamed uploads with Last-Modified-Header / ETag / Range Support.
-  * Warning: This implementation may depend deeply in
+  * Warning: This implementation may depend deeply on the used Play Framework version.
   */
 trait FileUploadAsset {
 

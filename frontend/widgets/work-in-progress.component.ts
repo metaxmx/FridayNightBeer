@@ -3,7 +3,7 @@ import {FnbSettings} from "../util/settings";
 
 @Component({
     selector: "fnb-work-in-progress",
-    templateUrl: "assets/frontend/widgets/work-in-progress.html"
+    templateUrl: "work-in-progress.component.html"
 })
 export class WorkInProgressComponent {
 

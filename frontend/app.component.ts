@@ -7,7 +7,7 @@ import {LanguageService} from "./services/language.service";
 
 @Component({
     selector: "fnb-app",
-    templateUrl: "assets/frontend/app.html",
+    templateUrl: "app.component.html",
 })
 export class AppComponent implements OnInit {
 

@@ -8,7 +8,7 @@ import {Subscription} from "rxjs/Rx";
 
 @Component({
     selector: "fnb-show-forum",
-    templateUrl: "assets/frontend/show-forum.html"
+    templateUrl: "show-forum.component.html"
 })
 export class ShowForumComponent implements OnInit, OnDestroy {
 

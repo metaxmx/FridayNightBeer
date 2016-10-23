@@ -11,7 +11,7 @@ class RegisterParams {
 
 @Component({
     selector: "fnb-register",
-    templateUrl: "assets/frontend/register.html"
+    templateUrl: "register.component.html"
 })
 export class RegisterComponent {
 

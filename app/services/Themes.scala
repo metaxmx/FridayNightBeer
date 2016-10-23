@@ -18,7 +18,7 @@ object Themes {
     }
     // loadedThemes
     // TODO: FIx Theme Loading
-    Seq(new DefaultTheme)
+    Seq(DefaultTheme)
   }
 
   lazy val themes = loadThemes
@@ -34,5 +34,20 @@ object Themes {
   }
 
   def getTheme(id: String): Option[Theme] = themesById get id
+
+
+  object DefaultTheme extends Theme {
+
+    def id = "default"
+
+    def label = "Default"
+
+    def cssClass = "default-theme"
+
+    def stylesheets = Seq()
+
+    def javascripts = Seq()
+
+  }
 
 }

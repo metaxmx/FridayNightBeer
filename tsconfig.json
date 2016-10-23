@@ -18,8 +18,12 @@
       "../node_modules/@types"
     ],
     "types": [
-      "core-js"
+      "core-js",
+      "requirejs"
     ]
+  },
+  "awesomeTypescriptLoaderOptions": {
+    "useWebpackText": true // Allows other loaders to be chained to awesome-typescript-loader.
   },
   "exclude": [
     "node_modules",

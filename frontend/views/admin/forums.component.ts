@@ -3,7 +3,7 @@ import {FnbSettings} from "../../util/settings";
 
 @Component({
     selector: "fnb-admin-forums",
-    templateUrl: "assets/frontend/admin/forums.html"
+    templateUrl: "forums.component.html"
 })
 export class ForumsComponent {
 

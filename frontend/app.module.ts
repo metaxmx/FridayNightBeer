@@ -10,15 +10,15 @@ import {FNB_SERVICE_PROVIDERS} from "./services/services"
 import {FNB_UTILS_PROVIDERS} from "./util/utils"
 import {FNB_PIPES} from "./pipes/pipes"
 
-import {HttpModule, Http} from "@angular/http"
+import {HttpModule} from "@angular/http"
 import {FormsModule} from '@angular/forms'
-import {TranslateModule, TranslateLoader, TranslateStaticLoader} from "ng2-translate"
-import {Ng2BootstrapModule} from "ng2-bootstrap/ng2-bootstrap";
+import {TranslateModule, TranslateLoader} from "ng2-translate"
+import {Ng2BootstrapModule} from "ng2-bootstrap/ng2-bootstrap"
+import {TranslateBundledLoader} from "./i18n/i18n"
 
 const FNB_TRANSLATE_CONFIG = {
     provide: TranslateLoader,
-    useFactory: (http: Http) => new TranslateStaticLoader(http, '/assets/i18n', '.json'),
-    deps: [Http]
+    useClass: TranslateBundledLoader
 };
 
 @NgModule({

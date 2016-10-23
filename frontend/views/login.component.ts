@@ -16,7 +16,7 @@ class LoginParams {
 
 @Component({
     selector: "fnb-login",
-    templateUrl: "assets/frontend/login.html"
+    templateUrl: "login.component.html"
 })
 export class LoginComponent {
 

@@ -4,7 +4,7 @@ import {Subscription} from "rxjs/Rx"
 
 @Component({
     selector: "fnb-show-user",
-    templateUrl: "assets/frontend/show-user.html"
+    templateUrl: "show-user.component.html"
 })
 export class ShowUserComponent implements OnInit, OnDestroy {
 

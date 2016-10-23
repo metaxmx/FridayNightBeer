@@ -3,7 +3,7 @@ import {FnbSettings} from "../util/settings";
 
 @Component({
     selector: "fnb-admin",
-    templateUrl: "assets/frontend/admin.html"
+    templateUrl: "admin.component.html"
 })
 export class AdminComponent {
 

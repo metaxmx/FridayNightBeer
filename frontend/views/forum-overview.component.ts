@@ -4,7 +4,7 @@ import {ForumService, OverviewForumCategory} from "../services/forum.service"
 
 @Component({
     selector: "fnb-forum-overview",
-    templateUrl: "assets/frontend/forum-overview.html"
+    templateUrl: "forum-overview.component.html"
 })
 export class ForumOverviewComponent {
 

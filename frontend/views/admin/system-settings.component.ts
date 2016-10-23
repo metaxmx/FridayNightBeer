@@ -3,7 +3,7 @@ import {FnbSettings} from "../../util/settings";
 
 @Component({
     selector: "fnb-admin-system-settings",
-    templateUrl: "assets/frontend/admin/system-settings.html"
+    templateUrl: "system-settings.component.html"
 })
 export class SystemSettingsComponent {
 
