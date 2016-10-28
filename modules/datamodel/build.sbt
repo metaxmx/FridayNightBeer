@@ -12,8 +12,8 @@ libraryDependencies ++= Seq(
   "javax.inject" % "javax.inject" % "1",
   "joda-time" % "joda-time" % "2.9.4",
   "com.typesafe.play" %% "play-cache" % "2.5.9",
-  "org.json4s" %% "json4s-native" % "3.4.1",
-  "org.json4s" %% "json4s-ext" % "3.4.1"
+  "org.json4s" %% "json4s-native" % "3.4.2",
+  "org.json4s" %% "json4s-ext" % "3.4.2"
 )
 
 autoAPIMappings := true

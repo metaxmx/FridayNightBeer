@@ -28,7 +28,7 @@ libraryDependencies ++= Seq(
   "joda-time" % "joda-time" % "2.9.4",
   "commons-io" % "commons-io" % "2.5",
   "org.reactivemongo" %% "play2-reactivemongo" % "0.12.0" exclude("org.apache.logging.log4j", "log4j-api"),
-  "org.json4s" %% "json4s-native" % "3.4.1",
+  "org.json4s" %% "json4s-native" % "3.4.2",
   "org.slf4j" % "slf4j-api" % "1.7.21",
 
   // Test
