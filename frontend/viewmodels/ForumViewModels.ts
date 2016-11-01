@@ -15,6 +15,7 @@ export interface ForumOverviewLastPost {
 export interface ForumOverviewForum {
     id:string
     name:string
+    url:string
     description?:string
     numThreads:number
     numPosts:number

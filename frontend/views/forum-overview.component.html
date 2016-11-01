@@ -34,7 +34,7 @@
                 <tr *ngFor="let forum of category.forums" [class]="forum.status">
                     <td class="forum-icon-col"><span class="icon"></span></td>
                     <td class="forum-title-col">
-                        <a [routerLink]="['/forum', forum.id]">{{forum.name}}</a>
+                        <a [routerLink]="['/forum', forum.url]">{{forum.name}}</a>
                         <div>{{forum.description}}</div>
                     </td>
                     <td class="forum-content-col hidden-sm hidden-xs">

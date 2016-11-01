@@ -18,6 +18,7 @@ object ForumsViewModels {
                                    date: DateTime) extends ViewModel
 
   case class ForumOverviewForum(id: String,
+                                url: String,
                                 name: String,
                                 description: Option[String],
                                 numThreads: Int,
@@ -41,6 +42,7 @@ object ForumsViewModels {
                            date: DateTime) extends ViewModel
 
   case class ShowForumThread(id: String,
+                             url: String,
                              title: String,
                              posts: Int,
                              sticky: Boolean,
@@ -59,6 +61,7 @@ object ForumsViewModels {
 
   case class ShowForumHeadResult(success: Boolean,
                                  id: String,
+                                 url: String,
                                  title: String,
                                  permissions: Seq[String]) extends ViewModel
 

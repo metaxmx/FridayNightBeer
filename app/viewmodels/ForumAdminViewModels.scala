@@ -42,8 +42,7 @@ object ForumAdminViewModels {
   case class CreateForumRequest(name: String,
                                 url: Option[String],
                                 description: Option[String],
-                                category: String,
-                                readonly: Boolean,
+                                readonly: Option[Boolean],
                                 forumPermissions: OptPermissionMap,
                                 threadPermissions: OptPermissionMap)
 

@@ -94,7 +94,8 @@ class ThreadController @Inject()(val userService: UserService,
     val threadStart = ThreadPostData(request.user._id, now)
     val lastPost = threadStart.copy()
     // TODO: Initial Thread permissions (e.g. only visible to group, for birthday threads)
-    val thread = new Thread(_id = "", createThreadRequest.title, forum._id, threadStart, lastPost, posts = 1, sticky, closed, None)
+    // TODO: Thread URLs
+    val thread = new Thread(_id = "", createThreadRequest.title, None, forum._id, threadStart, lastPost, posts = 1, sticky, closed, None)
     for {
       insertedThread <- threadService.insertThread(thread)
       insertedPost <- {

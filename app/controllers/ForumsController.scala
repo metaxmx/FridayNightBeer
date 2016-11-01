@@ -30,14 +30,14 @@ class ForumsController @Inject()(val userService: UserService,
       mapOk(getForumOverview)
   }
 
-  def showForum(id: String) = OptionalSessionRestAction.async {
+  def showForum(url: String) = OptionalSessionRestAction.async {
     implicit request =>
-      mapOk(getShowForum(id))
+      mapOk(getShowForum(url))
   }
 
-  def showForumHead(id: String) = OptionalSessionRestAction.async {
+  def showForumHead(url: String) = OptionalSessionRestAction.async {
     implicit request =>
-      mapOk(getShowForumHead(id))
+      mapOk(getShowForumHead(url))
   }
 
   private[this] def getForumOverview(implicit request: OptionalSessionRequest[_]): Future[ForumOverviewResult] =
@@ -54,7 +54,8 @@ class ForumsController @Inject()(val userService: UserService,
             implicit forum =>
               val forumThreads = threadsByForum.getOrElse(forum._id, Seq.empty).filter(_.checkAccess)
               val lastPostThread = forumThreads.sortBy(_.lastPost.date).reverse.headOption
-              ForumOverviewForum(forum._id, forum.name, forum.description, forumThreads.length, forumThreads.map(_.posts).sum,
+              ForumOverviewForum(forum._id, forum.url.getOrElse(forum._id), forum.name, forum.description,
+                forumThreads.length, forumThreads.map(_.posts).sum,
                 for {
                   thread <- lastPostThread
                   user <- userIndex.get(thread.lastPost.user)
@@ -67,9 +68,9 @@ class ForumsController @Inject()(val userService: UserService,
       })
     }
 
-  private[this] def getShowForum(forumId: String)(implicit request: OptionalSessionRequest[_]): Future[ShowForumResult] =
+  private[this] def getShowForum(forumUrl: String)(implicit request: OptionalSessionRequest[_]): Future[ShowForumResult] =
     for {
-      forum <- forumService.getForumOrElse(forumId, throw NotFoundException(s"Forum not found: $forumId"))
+      forum <- forumService.getForumByUrlOrElse(forumUrl, throw NotFoundException(s"Forum not found: $forumUrl"))
       category <- forumCategoryService.getCategoryOrElse(forum.category, throw NotFoundException(s"Category not found: ${forum.category}"))
       _ <- requirePermissionCheck(forum.checkAccess(category))
       threadsForForum <- threadService.getThreadsForForum(forum._id)
@@ -87,19 +88,19 @@ class ForumsController @Inject()(val userService: UserService,
           val firstPost = ShowForumPost(firstPostUser._id, firstPostUser.displayName, thread.threadStart.date)
           val latestPortUser = userIndex(thread.lastPost.user)
           val latestPost = ShowForumPost(latestPortUser._id, latestPortUser.displayName, thread.lastPost.date)
-          ShowForumThread(thread._id, thread.title, thread.posts, thread.sticky, firstPost, latestPost)
+          ShowForumThread(thread._id, thread.url.getOrElse(thread._id), thread.title, thread.posts, thread.sticky, firstPost, latestPost)
       }
       val forumPermissions = request.authorization.listForumPermissions(category, forum)
       ShowForumResult(success = true, forum._id, forum.name, threadViewModels, forumPermissions)
     }
 
-  private[this] def getShowForumHead(forumId: String)(implicit request: OptionalSessionRequest[_]): Future[ShowForumHeadResult] =
+  private[this] def getShowForumHead(forumUrl: String)(implicit request: OptionalSessionRequest[_]): Future[ShowForumHeadResult] =
     for {
-      forum <- forumService.getForumOrElse(forumId, throw NotFoundException(s"Forum not found: $forumId"))
+      forum <- forumService.getForumByUrlOrElse(forumUrl, throw NotFoundException(s"Forum not found: $forumUrl"))
       category <- forumCategoryService.getCategoryOrElse(forum.category, throw NotFoundException(s"Category not found: ${forum.category}"))
       _ <- requirePermissionCheck(forum.checkAccess(category))
     } yield {
       val forumPermissions = request.authorization.listForumPermissions(category, forum)
-      ShowForumHeadResult(success = true, forum._id, forum.name, forumPermissions)
+      ShowForumHeadResult(success = true, forum._id, forum.url.getOrElse(forum._id), forum.name, forumPermissions)
     }
 }

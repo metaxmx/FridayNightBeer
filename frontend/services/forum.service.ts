@@ -8,6 +8,7 @@ import {Observable} from "rxjs/Observable"
 export interface OverviewForum {
     id:string
     name:string
+    url:string
     description:string
     numThreads:number
     numPosts:number
@@ -29,6 +30,7 @@ export interface OverviewForumCategory {
 class OverviewForumData implements  OverviewForum {
     constructor(public id: string,
                 public name: string,
+                public url:string,
                 public description:string,
                 public numThreads:number,
                 public numPosts:number,
@@ -57,10 +59,10 @@ function fromOverviewViewModel(categoryViewModels: Array<ForumOverviewCategory>)
             let forum: OverviewForumData;
             if (f.lastPost) {
                 let lp = f.lastPost;
-                forum = new OverviewForumData(f.id, f.name, f.description || "", f.numThreads, f.numPosts, true,
+                forum = new OverviewForumData(f.id, f.name, f.url, f.description || "", f.numThreads, f.numPosts, true,
                     lp.id, lp.title, lp.user, lp.userName, new Date(lp.date), "forum_status_default")
             } else {
-                forum = new OverviewForumData(f.id, f.name, f.description || "", f.numThreads, f.numPosts, false,
+                forum = new OverviewForumData(f.id, f.name, f.url, f.description || "", f.numThreads, f.numPosts, false,
                     null, null, null, null, null, "forum_status_default")
             }
             forums.push(forum)

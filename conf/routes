@@ -63,6 +63,7 @@ PUT     /api/1.0/admin/systemsettings       @controllers.AdministrationControlle
 # Forum / Category Administration
 GET     /api/1.0/admin/forums               @controllers.ForumAdminController.listCategoriesAndForums
 POST    /api/1.0/admin/forums/categories    @controllers.ForumAdminController.createCategory
+POST    /api/1.0/admin/forums/category/:id  @controllers.ForumAdminController.createForum(id: String)
 
 # ------ Static Resources (Assets) -------
 

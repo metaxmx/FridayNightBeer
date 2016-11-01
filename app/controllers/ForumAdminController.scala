@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import models.ForumCategory
+import models.{Forum, ForumCategory}
 import permissions.GlobalPermissions
 import services._
 import util.Exceptions._
@@ -34,6 +34,11 @@ class ForumAdminController @Inject() (val userService: UserService,
   def createCategory = UserRestAction.async(jsonREST[CreateForumCategoryRequest]) {
     implicit request =>
       mapOk(processCreateCategory())
+  }
+
+  def createForum(id: String) = UserRestAction.async(jsonREST[CreateForumRequest]) {
+    implicit request =>
+      mapOk(processCreateForum(id))
   }
 
   private[this] def retrieveCategoryAndForumsList(): Future[ListCategoriesResult] = {
@@ -69,6 +74,25 @@ class ForumAdminController @Inject() (val userService: UserService,
     val categoryToInsert = ForumCategory(_id = "", data.name, nextPosition,
       AccessRuleViewModel.fromViewModel(data.forumPermissions),AccessRuleViewModel.fromViewModel(data.threadPermissions))
     forumCategoryService.insertCategory(categoryToInsert)
+  }
+
+  private[this] def processCreateForum(categoryId: String)(implicit request: UserRequest[CreateForumRequest]): Future[CreateForumResult] = {
+    for {
+      category <- forumCategoryService.getCategory(categoryId).flatten(throw NotFoundException(s"Category not found: $categoryId"))
+      forumsByCategory <- forumService.getForumsByCategory
+      forumsInCategory = forumsByCategory.getOrElse(category._id, Seq.empty)
+      insertedForum <- insertForum(category, forumsInCategory)
+    } yield {
+      CreateForumResult(success = true, insertedForum._id)
+    }
+  }
+
+  private[this] def insertForum(category: ForumCategory, forumsInCategory: Seq[Forum])(implicit request: UserRequest[CreateForumRequest]): Future[Forum] = {
+    val data = request.body
+    val nextPosition = if(forumsInCategory.isEmpty) 0 else forumsInCategory.map(_.position).max + 1
+    val forumToInsert = Forum(_id = "", data.name, data.url, data.description, category._id, nextPosition, data.readonly.contains(true),
+      AccessRuleViewModel.fromViewModel(data.forumPermissions), AccessRuleViewModel.fromViewModel(data.threadPermissions))
+    forumService.insertForum(forumToInsert)
   }
 
 }

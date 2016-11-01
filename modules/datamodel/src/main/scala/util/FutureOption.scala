@@ -72,4 +72,7 @@ object FutureOption {
   def fromOption[A](option: Option[A])(implicit executor: ExecutionContext): FutureOption[A] =
     new FutureOption(Future.successful(option))
 
+  def fromFuture[A](future: Future[A])(implicit executor: ExecutionContext): FutureOption[A] =
+    new FutureOption(future map Some.apply)
+
 }

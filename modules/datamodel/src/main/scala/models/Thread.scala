@@ -10,6 +10,7 @@ case class ThreadPostData(user: String,
 
 case class Thread(_id: String,
                   title: String,
+                  url: Option[String],
                   forum: String,
                   threadStart: ThreadPostData,
                   lastPost: ThreadPostData,
