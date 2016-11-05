@@ -5,7 +5,7 @@ Friday Night Beer
 [![dependency Status](https://david-dm.org/metaxmx/FridayNightBeer/status.svg?branch=master)](https://david-dm.org/metaxmx/FridayNightBeer)
 [![devDependency Status](https://david-dm.org/metaxmx/FridayNightBeer/dev-status.svg?branch=master)](https://david-dm.org/metaxmx/FridayNightBeer?type=dev)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/426e7fe5908642c286eb3b5ef21c6afa)](https://www.codacy.com/app/metax/FridayNightBeer?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=metaxmx/FridayNightBeer&amp;utm_campaign=Badge_Grade)
-[![Dependency Status](https://www.versioneye.com/user/projects/569baf14db9e9f003a000edf/badge.svg)](https://www.versioneye.com/user/projects/569baf14db9e9f003a000edf)
+[![Dependency Status](https://www.versioneye.com/user/projects/581e46354304530ad3a55511/badge.svg)](https://www.versioneye.com/user/projects/581e46354304530ad3a55511)
 
 
 Author: Christian Simon (<simon@illucit.com>)  
