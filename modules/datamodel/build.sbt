@@ -8,7 +8,7 @@ resolvers += "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositor
 
 libraryDependencies ++= Seq(
   "com.google.inject" % "guice" % "4.1.0",
-  "com.google.guava" % "guava" % "19.0",
+  "com.google.guava" % "guava" % "20.0",
   "javax.inject" % "javax.inject" % "1",
   "joda-time" % "joda-time" % "2.9.4",
   "com.typesafe.play" %% "play-cache" % "2.5.9",

@@ -215,6 +215,10 @@ html.modern-theme {
 					.no-text-shadow
 				}
 			}
+
+			@media (max-width: @screen-xs-max) {
+				display: none;
+			}
 		}
 		
 		&:after {
@@ -240,6 +244,11 @@ html.modern-theme {
 		margin: 0 0 -@modern-height-footer;
 		min-height: 100%;
 		padding: 0 0 (@modern-height-footer + 32px);
+
+		@media (max-width: @screen-sm-max) {
+			margin: 0 0 -@modern-height-footer-xs;
+			padding: 0 0 (@modern-height-footer-xs + 32px);
+		}
 		
 		#main-container {
 			margin-top: 32px;
@@ -253,17 +262,35 @@ html.modern-theme {
 		height: @modern-height-footer;
 		.vertical-gradient(@modern-color-menu-light, @modern-color-menu-dark);
 		.box-shadow(inset 0px 2px 2px 0px, @modern-color-shadow);
+
+		@media (max-width: @screen-sm-max) {
+			height: @modern-height-footer-xs;
+			.box-shadow(inset 0px 1px 1px 0px, @modern-color-shadow);
+		}
 		
 		.footer-software {
 			display: block;
 			padding-top: 12px;
 			margin-left: 24px;
+
+			@media (max-width: @screen-sm-max) {
+				float: left;
+				padding-top: 6px;
+				margin-left: 8px;
+			}
 		}
 		
 		.footer-vendor {
 			display: block;
 			padding-top: 4px;
 			margin-left: 24px;
+
+			@media (max-width: @screen-sm-max) {
+				float: right;
+				padding-top: 6px;
+				margin-left: 0;
+				margin-right: 8px;
+			}
 		}
 	}
 	

@@ -9,5 +9,5 @@ lazy val fnbStorageMongo = (project in file("."))
 
 libraryDependencies ++= Seq(
 	"org.reactivemongo" %% "play2-reactivemongo" % "0.12.0" exclude("org.apache.logging.log4j", "log4j-api"),
-	"com.google.guava" % "guava" % "19.0"
+	"com.google.guava" % "guava" % "20.0"
 )

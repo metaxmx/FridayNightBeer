@@ -23,7 +23,7 @@ libraryDependencies ++= Seq(
   cache,
   ws,
   "com.google.inject" % "guice" % "4.1.0",
-  "com.google.guava" % "guava" % "19.0",
+  "com.google.guava" % "guava" % "20.0",
   "javax.inject" % "javax.inject" % "1",
   "joda-time" % "joda-time" % "2.9.4",
   "commons-io" % "commons-io" % "2.5",
