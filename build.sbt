@@ -33,7 +33,7 @@ libraryDependencies ++= Seq(
 
   // Test
   specs2 % Test,
-  "org.mockito" % "mockito-core" % "2.2.2" % Test,
+  "org.mockito" % "mockito-core" % "2.2.9" % Test,
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test
 )
 
