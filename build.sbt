@@ -2,7 +2,7 @@ name := """fnb-play"""
 
 version := "0.1_alpha"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.11.11"
 
 lazy val fnbDatamodel = project in file("modules/datamodel")
 
@@ -14,28 +14,29 @@ lazy val fnbPlay = (project in file("."))
 	.enablePlugins(PlayScala)
 	.enablePlugins(SbtWeb)
 
-resolvers ++= Seq(
-  "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
-  "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
-)
+libraryDependencies ++= {
+  val playV = "2.5.12"
+  val jodaV = "2.9.9"
+  val jsonV = "3.5.1"
+  val guavaV = "21.0"
+  val reactiveMongoV = "0.12.2"
+  Seq(
+    cache,
+    ws,
+    "com.google.inject"       %  "guice"                % "4.1.0"         exclude("com.google.guava", "guava"),
+    "javax.inject"            %  "javax.inject"         % "1",
+    "com.google.guava"        %  "guava"                % guavaV,
+    "joda-time"               %  "joda-time"            % jodaV,
+    "commons-io"              %  "commons-io"           % "2.5",
+    "org.reactivemongo"       %% "play2-reactivemongo"  % reactiveMongoV  exclude("org.apache.logging.log4j", "log4j-api"),
+    "org.json4s"              %% "json4s-native"        % jsonV,
+    "org.slf4j"               %  "slf4j-api"            % "1.7.25",
 
-libraryDependencies ++= Seq(
-  cache,
-  ws,
-  "com.google.inject" % "guice" % "4.1.0",
-  "com.google.guava" % "guava" % "20.0",
-  "javax.inject" % "javax.inject" % "1",
-  "joda-time" % "joda-time" % "2.9.4",
-  "commons-io" % "commons-io" % "2.5",
-  "org.reactivemongo" %% "play2-reactivemongo" % "0.12.0" exclude("org.apache.logging.log4j", "log4j-api"),
-  "org.json4s" %% "json4s-native" % "3.4.2",
-  "org.slf4j" % "slf4j-api" % "1.7.21",
-
-  // Test
-  specs2 % Test,
-  "org.mockito" % "mockito-core" % "2.2.9" % Test,
-  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test
-)
+    // Test
+    "org.mockito"             %  "mockito-core"         % "2.7.22"  % Test,
+    "org.scalatestplus.play"  %% "scalatestplus-play"   % "2.0.0"   % Test
+  )
+}
 
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8")
 
@@ -66,10 +67,9 @@ watchSources ~= { (ws: Seq[File]) =>
   }
 }
 
-compile <<= (compile in Compile) dependsOn npmBuildTask
+(compile in Compile) := (compile in Compile).dependsOn(npmBuildTask.toTask).value
 
 pipelineStages := Seq(digest, gzip)
 
-PlayKeys.playRunHooks <+= baseDirectory.map(Webpack.apply)
+PlayKeys.playRunHooks += baseDirectory.map(Webpack.apply).value
 
-net.virtualvoid.sbt.graph.Plugin.graphSettings

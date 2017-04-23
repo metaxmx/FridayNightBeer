@@ -1,19 +1,19 @@
 name := """fnb-datamodel"""
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.11.11"
 
 lazy val fnbDatamodel = project in file(".")
 
-resolvers += "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
-
-libraryDependencies ++= Seq(
-  "com.google.inject" % "guice" % "4.1.0",
-  "com.google.guava" % "guava" % "20.0",
-  "javax.inject" % "javax.inject" % "1",
-  "joda-time" % "joda-time" % "2.9.4",
-  "com.typesafe.play" %% "play-cache" % "2.5.9",
-  "org.json4s" %% "json4s-native" % "3.4.2",
-  "org.json4s" %% "json4s-ext" % "3.4.2"
-)
+libraryDependencies ++= {
+  val playV = "2.5.12"
+  val jodaV = "2.9.9"
+  val jsonV = "3.5.1"
+  Seq(
+    "joda-time"         %  "joda-time"      % jodaV,
+    "com.typesafe.play" %% "play-cache"     % playV % Compile,
+    "org.json4s"        %% "json4s-native"  % jsonV,
+    "org.json4s"        %% "json4s-ext"     % jsonV
+  )
+}
 
 autoAPIMappings := true

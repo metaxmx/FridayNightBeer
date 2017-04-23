@@ -1,13 +1,17 @@
 name := """fnb-storage-mongo"""
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.11.11"
 
 lazy val fnbDatamodel = project in file("../datamodel")
 
 lazy val fnbStorageMongo = (project in file("."))
 	.dependsOn(fnbDatamodel)
 
-libraryDependencies ++= Seq(
-	"org.reactivemongo" %% "play2-reactivemongo" % "0.12.0" exclude("org.apache.logging.log4j", "log4j-api"),
-	"com.google.guava" % "guava" % "20.0"
-)
+libraryDependencies ++= {
+	val guavaV = "21.0"
+	val reactiveMongoV = "0.12.2"
+	Seq(
+		"org.reactivemongo" %% "play2-reactivemongo" 	% reactiveMongoV	exclude("org.apache.logging.log4j", "log4j-api"),
+		"com.google.guava" 	%  "guava" 								% guavaV
+	)
+}
