@@ -2,8 +2,8 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
+import authentication.{AuthenticatedProfile, PermissionAuthorization, UserProfile}
 import models.{User, UserSession}
-import permissions.Authorization
 import play.api.http.Status._
 import play.api.mvc.{Request, RequestHeader}
 import services.{PermissionService, SessionService, UserService}
@@ -30,11 +30,13 @@ class AuthenticationController @Inject()(val userService: UserService,
     implicit request =>
       val LoginRequest(username, password) = request.body
       for {
-        userOpt <- tryLoginUser(username, password).flatten(throw LoginFailedException())
-        session <- updateOrCreateSession(request.maybeSession, Some(userOpt))
-        authorization <- permissionService.createAuthorization()(userOpt = Some(userOpt))
+        user <- tryLoginUser(username, password).flatten(throw LoginFailedException())
+        session <- updateOrCreateSession(request.maybeSession, Some(user))
+        userProfile = AuthenticatedProfile(user)
+        authorization <- permissionService.createAuthorization()(userProfile)
       } yield {
-        Ok(LoginResult(success = true, authenticationStatus(Some(session), authorization))).withSession(fnbSessionHeaderName -> session._id)
+        Ok(LoginResult(success = true,
+          authenticationStatus(Some(session), authorization)(userProfile))).withSession(fnbSessionHeaderName -> session._id)
       }
   }
 
@@ -58,10 +60,11 @@ class AuthenticationController @Inject()(val userService: UserService,
 
   def logout = SessionRestAction.async {
     request =>
+      implicit val userProfile = UserProfile()
       for {
         _ <- sessionService.removeSession(request.userSession._id)
         newSession <- sessionService.createSession(userOpt = None)
-        authorization <- permissionService.createAuthorization()(userOpt = None)
+        authorization <- permissionService.createAuthorization()
       } yield {
         Ok(LogoutResult(success = true, authenticationStatus(Some(newSession), authorization))).withSession(fnbSessionHeaderName -> newSession._id)
       }
@@ -69,13 +72,21 @@ class AuthenticationController @Inject()(val userService: UserService,
 
   def getAuthenticationStatus = OptionalSessionRestAction {
     request =>
-      Ok(GetAuthenticationStatusResult(success = true, authenticationStatus(request.maybeSession, request.authorization)))
+      Ok(GetAuthenticationStatusResult(success = true,
+        authenticationStatus(request.maybeSession, request.authorization)(request.userProfile)))
   }
 
-  private[this] def authenticationStatus(maybeSession: Option[UserSession], authorization: Authorization): AuthenticationStatus =
-    AuthenticationStatus(authorization.userOpt.isDefined, maybeSession.map(_._id), authorization.userOpt map {
-      user => AuthenticationStatusUser(user._id, user.username, user.email, user.displayName, user.fullName, user.avatar, user.groups)
-    }, authorization.listGlobalPermissions)
+  private[this] def authenticationStatus(maybeSession: Option[UserSession], authorization: PermissionAuthorization)
+                                        (implicit userProfile: UserProfile): AuthenticationStatus = {
+    AuthenticationStatus(
+      authenticated = userProfile.authenticated,
+      sessionId = maybeSession.map(_._id),
+      user = userProfile.userOpt map {
+        user => AuthenticationStatusUser(user._id, user.username, user.email, user.displayName, user.fullName, user.avatar, user.groups)
+      },
+      globalPermissions = authorization.listGlobalPermissions
+    )
+  }
 
   def register = SessionRestAction.async(jsonREST[RegisterUserRequest]) {
     implicit request =>
@@ -84,9 +95,11 @@ class AuthenticationController @Inject()(val userService: UserService,
         newUserData <- validateAndParseRegistrationData(request.body)
         insertedUser <- userService.createUser(newUserData)
         session <- updateOrCreateSession(request.maybeSession, Some(insertedUser))
-        authorization <- permissionService.createAuthorization()(userOpt = Some(insertedUser))
+        userProfile = AuthenticatedProfile(insertedUser)
+        authorization <- permissionService.createAuthorization()(userProfile)
       } yield {
-        Ok(RegisterUserResult(success = true, authenticationStatus(Some(session), authorization))).withSession(fnbSessionHeaderName -> session._id)
+        Ok(RegisterUserResult(success = true,
+          authenticationStatus(Some(session), authorization)(userProfile))).withSession(fnbSessionHeaderName -> session._id)
       }
   }
 

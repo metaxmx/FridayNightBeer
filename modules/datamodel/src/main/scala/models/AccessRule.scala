@@ -1,10 +1,10 @@
 package models
 
-import permissions.AuthorizationPrincipal
+import scala.annotation.tailrec
+
 
 /**
-  * Permissions:
-  * ------------
+  * Access Rule to define permissions.
   *
   * Permissions are defined by four categories:
   * - (1) All (including Guests) allowed
@@ -18,47 +18,6 @@ import permissions.AuthorizationPrincipal
   *
   * If there is more than one permission rule (from general rules to specialized rules), the general settings
   * for the settings (1)-(4) can be overridden on each level to the more specific rules.
-  *
-  */
-
-/**
-  * General trait for classes to allow or deny access to a permission.
-  */
-trait PermissionRule {
-
-  /**
-    * Check if the permission rule is allowed for the given user (or None for a guest).
-    *
-    * @param userOpt some user or None for guest
-    * @return true if permission is granted
-    */
-  def allowed(implicit userOpt: Option[User]): Boolean
-
-  /**
-    * Check if the permission rule is allowed for the given authorization.
-    *
-    * @param principal authorization principal
-    * @return true if permission is granted
-    */
-  def allowed(implicit principal: AuthorizationPrincipal): Boolean = allowed(principal.userOpt)
-
-}
-
-/**
-  * Chain of access rules.
-  *
-  * @param accessRules sequence of access rules in the chain. The first element in the sequence is
-  *                    the most general one (e.g. default permission), while the last one is the most
-  *                    specific permission (e.g. for the exact object).
-  */
-case class AccessRuleChain(accessRules: Seq[AccessRule]) extends PermissionRule {
-
-  override def allowed(implicit userOpt: Option[User]): Boolean = AccessRule.accessRuleChainAllowed(this)
-
-}
-
-/**
-  * Access Rule to define permissions.
   *
   * @param forbiddenUsers  set of [[User]] ids which are never permitted
   * @param forbiddenGroups set of [[Group]] ids from which users are never permitted
@@ -74,9 +33,7 @@ case class AccessRule(forbiddenUsers: Option[Seq[String]],
                       allowedUsers: Option[Seq[String]],
                       allowedGroups: Option[Seq[String]],
                       allowAllUsers: Option[Boolean],
-                      allowAll: Option[Boolean]) extends PermissionRule {
-
-  override def allowed(implicit userOpt: Option[User]): Boolean = AccessRule.accessRuleAllowed(this)
+                      allowAll: Option[Boolean]) {
 
   def withAllowAllUsers = copy(allowAllUsers = Some(true))
 
@@ -88,6 +45,38 @@ case class AccessRule(forbiddenUsers: Option[Seq[String]],
 
   def withAllowGroups(groupIds: String*) = copy(allowedGroups = Some(groupIds))
 
+  val isAllowAll = allowAll.getOrElse(false)
+  val isAllowAllUsers = allowAllUsers.getOrElse(false)
+  val allowedUserSet: Set[String] = allowedUsers.fold(Set.empty[String])(_.toSet)
+  val allowedGroupSet: Set[String] = allowedGroups.fold(Set.empty[String])(_.toSet)
+  val forbiddenUserSet: Set[String] = forbiddenUsers.fold(Set.empty[String])(_.toSet)
+  val forbiddenGroupSet: Set[String] = forbiddenGroups.fold(Set.empty[String])(_.toSet)
+
+  /**
+    * Return new access rule, containing each parameter from this rule, with a fallback to the
+    * corresponding parameter from the other access rule.
+    * @param fallback other access rule to combine with
+    * @return new access rule containing the combination
+    */
+  def withFallback(fallback: AccessRule): AccessRule = {
+    AccessRule(
+      forbiddenUsers = forbiddenUsers orElse fallback.forbiddenUsers,
+      forbiddenGroups = forbiddenGroups orElse fallback.forbiddenGroups,
+      allowedUsers = allowedUsers orElse fallback.allowedUsers,
+      allowedGroups = allowedGroups orElse fallback.allowedGroups,
+      allowAllUsers = allowAllUsers orElse fallback.allowAllUsers,
+      allowAll = allowAll orElse fallback.allowAll
+    )
+  }
+
+  /**
+    * Return new access rule, containing each parameter from the other rule if defined, with a fallback to the
+    * corresponding parameter from this access rule.
+    * @param other other access rule to combine with
+    * @return new access rule containing the combination
+    */
+  def overrideWith(other: AccessRule): AccessRule = other.withFallback(this)
+
 }
 
 /**
@@ -97,58 +86,39 @@ object AccessRule {
 
   def empty: AccessRule = AccessRule(None, None, None, None, None, None)
 
-  def accessRuleAllowed(ar: AccessRule)(implicit userOpt: Option[User]): Boolean =
-    ar.allowAll.contains(true) || userOpt.exists {
-      implicit user => !userExcluded(ar) && (ar.allowAllUsers.contains(true) || userIncluded(ar))
-    }
+}
 
-  def accessRuleChainAllowed(ac: AccessRuleChain)(implicit userOpt: Option[User]): Boolean = {
-    val state = (PermissionCheckState() /: ac.accessRules) {
-      (state, nextRule) =>
-        val nextState = PermissionCheckState(
-          allowAll = nextRule.allowAll getOrElse state.allowAll,
-          allowUsers = nextRule.allowAllUsers getOrElse state.allowUsers,
-          forbiddenUsers = nextRule.forbiddenUsers getOrElse state.forbiddenUsers,
-          forbiddenGroups = nextRule.forbiddenGroups getOrElse state.forbiddenGroups,
-          allowedUsers = nextRule.allowedUsers getOrElse state.allowedUsers,
-          allowedGroups = nextRule.allowedGroups getOrElse state.allowedGroups
-        )
-        nextState.copy(permitted = stateAllowed(nextState))
+/**
+  * Chain of access rules.
+  *
+  * @param accessRules sequence of access rules in the chain. The first element in the sequence is
+  *                    the most general one (e.g. default permission), while the last one is the most
+  *                    specific permission (e.g. for the exact object).
+  */
+case class AccessRuleChain(accessRules: Seq[AccessRule]) {
+
+  /**
+    * Combine the chain of access rules to a single access rule containing the evaluated logic of the access rules in the chain.
+    * @return single access rule
+    */
+  def reduceToSingleRule: AccessRule = {
+    @tailrec
+    def combineChain(rules: List[AccessRule]): AccessRule = rules match {
+      case Nil => AccessRule.empty
+      case head :: Nil => head
+      case first :: second :: tail => combineChain(first.overrideWith(second) :: tail)
     }
-    state.permitted
+    combineChain(accessRules.toList)
   }
 
-  private[this] def stateAllowed(st: PermissionCheckState)(implicit userOpt: Option[User]): Boolean = {
-    st.allowAll || userOpt.exists {
-      implicit user => !userExcluded(st) && (st.allowUsers || userIncluded(st))
-    }
+}
+
+object AccessRuleChain {
+
+  def empty = AccessRuleChain(Seq.empty)
+
+  def apply(accessRule: Option[AccessRule], accessRules: Option[AccessRule]*): AccessRuleChain = {
+    AccessRuleChain((accessRule +: accessRules).flatten)
   }
-
-  private[this] case class PermissionCheckState(allowAll: Boolean = false,
-                                                allowUsers: Boolean = false,
-                                                forbiddenUsers: Seq[String] = Seq.empty,
-                                                forbiddenGroups: Seq[String] = Seq.empty,
-                                                allowedUsers: Seq[String] = Seq.empty,
-                                                allowedGroups: Seq[String] = Seq.empty,
-                                                permitted: Boolean = false)
-
-  private[this] def userIncluded(ar: AccessRule)(implicit user: User): Boolean =
-    (ar.allowedUsers exists (_ contains user._id)) || containsCommonElement(ar.allowedGroups, user.groups)
-
-  private[this] def userIncluded(st: PermissionCheckState)(implicit user: User): Boolean =
-    (st.allowedUsers contains user._id) || containsCommonElement(st.allowedGroups, user.groups)
-
-  private[this] def userExcluded(ar: AccessRule)(implicit user: User): Boolean =
-    (ar.forbiddenUsers exists (_ contains user._id)) || containsCommonElement(ar.forbiddenGroups, user.groups)
-
-  private[this] def userExcluded(st: PermissionCheckState)(implicit user: User): Boolean =
-    (st.forbiddenUsers contains user._id) || containsCommonElement(st.forbiddenGroups, user.groups)
-
-  private[this] def containsCommonElement(seq1: Option[Seq[String]], seq2: Option[Seq[String]]): Boolean =
-    seq1 exists (s1 => containsCommonElement(s1, seq2))
-
-  private[this] def containsCommonElement(s1: Seq[String], seq2: Option[Seq[String]]): Boolean =
-    seq2 exists (s2 => (s1 intersect s2).nonEmpty)
-
 
 }

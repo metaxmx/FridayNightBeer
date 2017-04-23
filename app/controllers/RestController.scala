@@ -1,8 +1,8 @@
 package controllers
 
+import authentication.{AuthenticatedProfile, PermissionAuthorization, UserProfile}
 import controllers.RestController._
 import models._
-import permissions.Authorization
 import permissions.ForumPermissions.ForumPermission
 import permissions.GlobalPermissions.GlobalPermission
 import permissions.ThreadPermissions.ThreadPermission
@@ -32,8 +32,8 @@ trait RestController extends Controller {
   /** Injected Permission Service */
   implicit val permissionService: PermissionService
 
-  /** Automatic extraction of [[permissions.Authorization]] from request. */
-  implicit def request2authorization(implicit request: OptionalSessionRequest[_]): Authorization = request.authorization
+  /** Automatic extraction of [[authentication.PermissionAuthorization]] from request. */
+  implicit def request2authorization(implicit request: OptionalSessionRequest[_]): PermissionAuthorization = request.authorization
 
   implicit val viewModelWritable: Writeable[ViewModel] = jsonWritable map { (vm: ViewModel) => vm.toJson }
 
@@ -47,7 +47,7 @@ trait RestController extends Controller {
     requirePermissionCheck(request.authorization.checkThreadPermissions(category, forum, thread, permissions: _*))
 
   def requirePermissionCheck(checkPermission: => Boolean)(implicit req: Request[_]): Future[Unit] =
-  if (checkPermission) Future.successful((): Unit) else Future.failed(ForbiddenException())
+    if (checkPermission) Future.successful((): Unit) else Future.failed(ForbiddenException())
 
   def mapOk(viewModelFuture: Future[ViewModel]): Future[Result] = viewModelFuture map { vm => Ok(vm) }
 
@@ -159,31 +159,34 @@ trait RestController extends Controller {
   protected def parseRequest[A](request: Request[A]): Future[Either[Result, OptionalSessionRequest[A]]] = {
     implicit val req = request
     def checkGlobalPermission[B <: OptionalSessionRequest[A]](r: B): Either[Result, B] = {
-      requiredGlobalPermission.filterNot(p => r.authorization.checkGlobalPermission(p)) match {
+      requiredGlobalPermission.filterNot(p => r.authorization.checkGlobalPermissions(p)) match {
         case None => Right(r) // Either no permission to check or check successful
         case Some(unmatchedPermission) => Left(ForbiddenException().toResult)
       }
     }
     parseSessionKey(request) match {
       case None =>
-        permissionService.createAuthorization()(None) map {
-          authorization => checkGlobalPermission(new OptionalSessionRequest[A](authorization, None, None, request))
+        implicit val userProfile = UserProfile()
+        permissionService.createAuthorization() map {
+          authorization => checkGlobalPermission(new OptionalSessionRequest[A](userProfile, authorization, None, None, request))
         }
       case Some(sessionId) =>
         sessionService.getSession(sessionId).toFuture flatMap {
           case None =>
             Future.successful(Left(InvalidSessionException(sessionId).toResult))
           case Some(session) if session.user.isEmpty =>
-            permissionService.createAuthorization()(None) map {
-              authorization => checkGlobalPermission(new SessionRequest[A](authorization, session, None, request))
+            implicit val userProfile = UserProfile()
+            permissionService.createAuthorization() map {
+              authorization => checkGlobalPermission(new SessionRequest[A](userProfile, authorization, session, None, request))
             }
           case Some(session) =>
             userService.getUser(session.user.get).toFuture flatMap {
               case None =>
                 Future.successful(Left(InvalidSessionUserException(sessionId).toResult))
               case Some(user) =>
-                permissionService.createAuthorization()(Some(user)) map {
-                  authorization => checkGlobalPermission(new UserRequest(authorization, session, user, request))
+                implicit val userProfile = AuthenticatedProfile(user)
+                permissionService.createAuthorization() map {
+                  authorization => checkGlobalPermission(new UserRequest(userProfile, authorization, session, user, request))
                 }
             }
         }
@@ -212,43 +215,51 @@ object RestController {
 
 /**
   * Wrapped Request with optional session and user.
+  * @param userProfile   user Profile
   * @param authorization request authorization
-  * @param maybeSession optional session
-  * @param maybeUser    optional user
-  * @param request      original request
+  * @param maybeSession  optional session
+  * @param maybeUser     optional user
+  * @param request       original request
   * @tparam A request body type
   */
-class OptionalSessionRequest[A](val authorization: Authorization,
+class OptionalSessionRequest[A](val userProfile: UserProfile,
+                                val authorization: PermissionAuthorization,
                                 val maybeSession: Option[UserSession],
                                 val maybeUser: Option[User],
                                 request: Request[A])
-  extends WrappedRequest[A](request)
+  extends WrappedRequest[A](request) {
+
+}
 
 /**
   * Wrapped Request with session and optional user.
+  * @param userProfile   user Profile
   * @param authorization request authorization
-  * @param userSession session
-  * @param maybeUser   optional user
-  * @param request     original request
+  * @param userSession   session
+  * @param maybeUser     optional user
+  * @param request       original request
   * @tparam A request body type
   */
-class SessionRequest[A](authorization: Authorization,
+class SessionRequest[A](userProfile: UserProfile,
+                        authorization: PermissionAuthorization,
                         val userSession: UserSession,
                         maybeUser: Option[User],
                         request: Request[A])
-  extends OptionalSessionRequest(authorization, Some(userSession), maybeUser, request)
+  extends OptionalSessionRequest(userProfile, authorization, Some(userSession), maybeUser, request)
 
 /**
   * Wrapped Request with session and user.
   *
+  * @param authenticatedProfile user Profile
   * @param authorization request authorization
   * @param userSession session
   * @param user        user
   * @param request     original request
   * @tparam A request body type
   */
-class UserRequest[A](authorization: Authorization,
+class UserRequest[A](val authenticatedProfile: AuthenticatedProfile,
+                     authorization: PermissionAuthorization,
                      userSession: UserSession,
                      val user: User,
                      request: Request[A])
-  extends SessionRequest(authorization, userSession, Some(user), request)
+  extends SessionRequest(authenticatedProfile, authorization, userSession, Some(user), request)
