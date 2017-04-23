@@ -33,6 +33,7 @@ libraryDependencies ++= {
     "org.slf4j"               %  "slf4j-api"            % "1.7.25",
 
     // Test
+    "org.scalatest"           %% "scalatest"            % "3.0.1"   % Test,
     "org.mockito"             %  "mockito-core"         % "2.7.22"  % Test,
     "org.scalatestplus.play"  %% "scalatestplus-play"   % "2.0.0"   % Test
   )

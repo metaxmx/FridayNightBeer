@@ -12,7 +12,10 @@ libraryDependencies ++= {
     "joda-time"         %  "joda-time"      % jodaV,
     "com.typesafe.play" %% "play-cache"     % playV % Compile,
     "org.json4s"        %% "json4s-native"  % jsonV,
-    "org.json4s"        %% "json4s-ext"     % jsonV
+    "org.json4s"        %% "json4s-ext"     % jsonV,
+
+    // Test
+    "org.scalatest"     %% "scalatest"      % "3.0.1" % Test
   )
 }
 

@@ -17,4 +17,4 @@ dist := (dist dependsOn webpack).value
 
 stage := (stage dependsOn webpack).value
 
-test := ((test in Test) dependsOn webpack).value
+//test := ((test in Test) dependsOn webpack).value

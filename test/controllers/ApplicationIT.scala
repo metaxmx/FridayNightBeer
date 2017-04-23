@@ -1,7 +1,7 @@
 package controllers
 
-import org.specs2.mutable._
 
+import org.scalatestplus.play.PlaySpec
 import play.api.test._
 import play.api.test.Helpers._
 
@@ -9,7 +9,7 @@ import play.api.test.Helpers._
  * You can mock out a whole application including requests, plugins etc.
  * For more information, consult the wiki.
  */
-class ApplicationIT extends Specification {
+class ApplicationIT extends PlaySpec {
 
   "Application" should {
 
@@ -17,7 +17,7 @@ class ApplicationIT extends Specification {
       val app = FakeApplication()
       running(app) {
         val invalid = route(app, FakeRequest(GET, "/boum")).get
-        status(invalid) must equalTo(NOT_FOUND)
+        status(invalid) must be (NOT_FOUND)
       }
     }
 
@@ -25,8 +25,8 @@ class ApplicationIT extends Specification {
       val app = FakeApplication()
       running(app) {
         val home = route(app, FakeRequest(GET, "/")).get
-        status(home) must equalTo(OK)
-        contentType(home) must beSome.which(_ == "text/html")
+        status(home) must be (OK)
+        contentType(home) must be (Some("text/html"))
       }
     }
 

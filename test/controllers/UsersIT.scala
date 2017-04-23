@@ -2,18 +2,19 @@ package controllers
 
 import scala.concurrent._
 import duration._
-import org.specs2.mutable._
 import play.api.libs.json._
 import play.api.test._
 import play.api.test.Helpers._
 import java.util.concurrent.TimeUnit
+
+import org.scalatestplus.play.PlaySpec
 
 
 /**
  * You can mock out a whole application including requests, plugins etc.
  * For more information, consult the wiki.
  */
-class UsersIT extends Specification {
+class UsersIT extends PlaySpec {
 
   val timeout: FiniteDuration = FiniteDuration(5, TimeUnit.SECONDS)
 
