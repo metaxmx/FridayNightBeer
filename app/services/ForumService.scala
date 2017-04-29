@@ -12,7 +12,7 @@ import scala.concurrent.Future
 @Singleton
 class ForumService @Inject()(forumDAO: ForumDAO) {
 
-  def getForum(id: String): FutureOption[Forum] = forumDAO ?? id
+  def getForum(id: String): FutureOption[Forum] = forumDAO getById id
 
   def getForumOrElse(id: String, onEmpty: => Forum) = getForum(id) flatten onEmpty
 
@@ -20,9 +20,9 @@ class ForumService @Inject()(forumDAO: ForumDAO) {
 
   def getForumByUrlOrElse(url: String, onEmpty: => Forum) = getForumByUrl(url) flatten onEmpty
 
-  def getForumsByCategory: Future[Map[String, Seq[Forum]]] = forumDAO >> (_.groupBy(_.category))
+  def getForumsByCategory: Future[Map[String, Seq[Forum]]] = forumDAO map (_.groupBy(_.category))
 
-  def insertForum(forum: Forum): Future[Forum] = forumDAO << forum
+  def insertForum(forum: Forum): Future[Forum] = forumDAO insert forum
 
 }
 

@@ -11,13 +11,13 @@ import scala.concurrent.Future
 @Singleton
 class UserService @Inject()(userDAO: UserDAO) {
 
-  def getUser(id: String): FutureOption[User] = userDAO ?? id
+  def getUser(id: String): FutureOption[User] = userDAO getById id
 
-  def getUserByUsername(username: String): FutureOption[User] = FutureOption(userDAO >> {
+  def getUserByUsername(username: String): FutureOption[User] = FutureOption(userDAO map {
     _ find (_.username.toLowerCase equals username.toLowerCase)
   })
 
-  def getUserByEmail(email: String): FutureOption[User] = FutureOption(userDAO >> {
+  def getUserByEmail(email: String): FutureOption[User] = FutureOption(userDAO map {
     _ find (_.email.toLowerCase equals email.toLowerCase)
   })
 
@@ -25,6 +25,6 @@ class UserService @Inject()(userDAO: UserDAO) {
 
   def getUserIndex: Future[Map[String, User]] = userDAO.getMap
 
-  def createUser(user: User) = userDAO << user
+  def createUser(user: User) = userDAO insert user
 
 }

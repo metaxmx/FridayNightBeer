@@ -22,19 +22,13 @@ sealed trait UserProfile {
 
 object UserProfile {
 
-  /**
-    * Factory for unauthenticated user profile.
-    */
+  /** Factory for unauthenticated user profile. */
   def apply(): UserProfile = UnauthenticatedProfile
 
-  /**
-    * Factory for authenticated user profile.
-    */
+  /** Factory for authenticated user profile. */
   def apply(user: User): UserProfile = AuthenticatedProfile(user)
 
-  /**
-    * Factory for user profile, depending on argument value.
-    */
+  /** Factory for user profile, depending on argument value. */
   def apply(userOpt: Option[User]): UserProfile = userOpt match {
     case None => apply()
     case Some(user) => apply(user)

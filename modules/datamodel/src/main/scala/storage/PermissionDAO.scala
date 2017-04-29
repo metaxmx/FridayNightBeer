@@ -7,10 +7,14 @@ import scala.concurrent.Future
 import PermissionDAO.PermissionMap
 
 /**
-  * Created by Christian Simon on 05.05.2016.
+  * DAO for permission.
   */
 trait PermissionDAO extends GenericDAO[Permission] {
 
+  /**
+    * Get map of global permissions.
+    * @return future of permission map
+    */
   def getPermissionMap: Future[PermissionMap] = getAll map {
     _.groupBy(_.permissionType).mapValues(_.groupBy(_.permission).mapValues(_.head.accessRule))
   }
@@ -19,6 +23,9 @@ trait PermissionDAO extends GenericDAO[Permission] {
 
 object PermissionDAO {
 
+  /**
+    * Map from: permission type -> permission -> access rule
+    */
   type PermissionMap = Map[String, Map[String, AccessRule]]
 
 }

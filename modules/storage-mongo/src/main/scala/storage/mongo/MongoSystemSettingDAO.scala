@@ -22,7 +22,7 @@ class MongoSystemSettingDAO @Inject()(cacheApi: CacheApi, val reactiveMongoApi: 
   implicit val bsonReader = implicitly[BSONDocumentReader[SystemSetting]]
 
   override def getSetting[A](key: String, defaultValue: A)(implicit ttag: TypeTag[A], ctag: ClassTag[A]): Future[A] = {
-    (this ?? key).toFuture flatMap {
+    (this getById key).toFuture flatMap {
       case None =>
         changeSetting(key, defaultValue)
       case Some(setting) =>
@@ -31,7 +31,7 @@ class MongoSystemSettingDAO @Inject()(cacheApi: CacheApi, val reactiveMongoApi: 
   }
 
   def changeSetting[A](key: String, value: A)(implicit ttag: TypeTag[A], ctag: ClassTag[A]): Future[A] = {
-    val insertFuture = this <<! SystemSetting(key, serializeToString(value))
+    val insertFuture = this insertWithGivenId SystemSetting(key, serializeToString(value))
     insertFuture map { _ => value } // Ignore result to skip de-serializing again and just return inserted value
   }
 

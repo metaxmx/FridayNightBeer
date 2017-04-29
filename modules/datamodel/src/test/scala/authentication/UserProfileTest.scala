@@ -1,6 +1,6 @@
 package authentication
 
-import models.{Group, User}
+import models.User
 import org.scalatest.{MustMatchers, WordSpec}
 
 /**

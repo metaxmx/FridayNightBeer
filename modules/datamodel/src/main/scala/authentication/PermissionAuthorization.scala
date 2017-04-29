@@ -15,6 +15,11 @@ import storage.PermissionDAO.PermissionMap
   */
 class PermissionAuthorization(authorization: AccessRuleAuthorization, permissionMap: PermissionMap) {
 
+  /**
+    * Check one or many global permissions.
+    * @param permissions permissions to check
+    * @return true if all permissions are granted
+    */
   def checkGlobalPermissions(permissions: GlobalPermission*): Boolean = {
     val permissionType = GlobalPermissions.name
     permissions forall { permission =>
@@ -25,7 +30,14 @@ class PermissionAuthorization(authorization: AccessRuleAuthorization, permission
     }
   }
 
-
+  /**
+    * Check one or many forum permissions.
+    * The permission precedence is: Global < ForumCategory < Forum.
+    * @param forumCategory forum category to check permissions for
+    * @param forum forum to check permissions for
+    * @param permissions permissions to check
+    * @return true if all permissions are granted
+    */
   def checkForumPermissions(forumCategory: ForumCategory,
                             forum: Forum,
                             permissions: ForumPermission*): Boolean = {
@@ -40,6 +52,14 @@ class PermissionAuthorization(authorization: AccessRuleAuthorization, permission
     }
   }
 
+  /**
+    * Check one or many thread permissions.
+    * @param forumCategory forum category to check permissions for
+    * @param forum forum to check permissions for
+    * @param thread thread to check permissions for
+    * @param permissions permissions to check
+    * @return true if all permissions are granted
+    */
   def checkThreadPermissions(forumCategory: ForumCategory,
                              forum: Forum,
                              thread: Thread,
@@ -56,6 +76,10 @@ class PermissionAuthorization(authorization: AccessRuleAuthorization, permission
     }
   }
 
+  /**
+    * List all granted global permissions.
+    * @return granted permissions names
+    */
   def listGlobalPermissions: Seq[String] = {
     val permissionType = GlobalPermissions.name
     GlobalPermissions.values filter {
@@ -68,6 +92,12 @@ class PermissionAuthorization(authorization: AccessRuleAuthorization, permission
     }
   }
 
+  /**
+    * List all granted forum permissions.
+    * @param forumCategory forum category to check permissions for
+    * @param forum forum to check permissions for
+    * @return granted permission names
+    */
   def listForumPermissions(forumCategory: ForumCategory, forum: Forum): Seq[String] = {
     val permissionType = ForumPermissions.name
     ForumPermissions.values filter {
@@ -82,6 +112,13 @@ class PermissionAuthorization(authorization: AccessRuleAuthorization, permission
     }
   }
 
+  /**
+    * List all granted thread permissions.
+    * @param forumCategory forum category to check permissions for
+    * @param forum forum to check permissions for
+    * @param thread thread to check permissions for
+    * @return granted permission names
+    */
   def listThreadPermissions(forumCategory: ForumCategory, forum: Forum, thread: Thread): Seq[String] = {
     val permissionType = ThreadPermissions.name
     ThreadPermissions.values filter {

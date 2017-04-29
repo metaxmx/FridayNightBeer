@@ -43,7 +43,13 @@ case class AccessRule(forbiddenUsers: Option[Seq[String]],
 
   def withDenyAll = copy(allowAll = Some(false))
 
+  def withAllowUsers(userIds: String*) = copy(allowedUsers = Some(userIds))
+
   def withAllowGroups(groupIds: String*) = copy(allowedGroups = Some(groupIds))
+
+  def withForbiddenUsers(userIds: String*) = copy(forbiddenUsers = Some(userIds))
+
+  def withForbiddenGroups(groupIds: String*) = copy(forbiddenGroups = Some(groupIds))
 
   val isAllowAll = allowAll.getOrElse(false)
   val isAllowAllUsers = allowAllUsers.getOrElse(false)

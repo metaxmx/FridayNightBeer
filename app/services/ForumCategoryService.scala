@@ -12,13 +12,13 @@ import scala.concurrent.Future
 @Singleton
 class ForumCategoryService @Inject()(forumCategoryDAO: ForumCategoryDAO) {
 
-  def getCategory(id: String): FutureOption[ForumCategory] = forumCategoryDAO ?? id
+  def getCategory(id: String): FutureOption[ForumCategory] = forumCategoryDAO getById id
 
   def getCategoryOrElse(id: String, onEmpty: => ForumCategory) = getCategory(id) flatten onEmpty
 
   def getCategories: Future[Seq[ForumCategory]] = forumCategoryDAO.getAll
 
-  def insertCategory(category: ForumCategory): Future[ForumCategory] = forumCategoryDAO << category
+  def insertCategory(category: ForumCategory): Future[ForumCategory] = forumCategoryDAO insert category
 
 }
 
