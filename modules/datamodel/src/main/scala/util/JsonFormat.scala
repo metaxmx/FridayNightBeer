@@ -1,7 +1,10 @@
 package util
 
-import org.json4s.DefaultFormats
+import org.joda.time.LocalDateTime
+import org.joda.time.format.ISODateTimeFormat
+import org.json4s.JsonAST.JString
 import org.json4s.ext.JodaTimeSerializers
+import org.json4s.{CustomSerializer, DefaultFormats, Formats}
 
 object JsonFormat extends JsonFormat
 
@@ -10,6 +13,18 @@ object JsonFormat extends JsonFormat
   */
 trait JsonFormat {
 
-  implicit val jsonFormat = DefaultFormats ++ JodaTimeSerializers.all
+  implicit val jsonFormat: Formats = DefaultFormats ++ JodaTimeSerializers.all + LocalDateTimeSerializer
 
 }
+
+/**
+  * Serializer for LocalDateTime
+  */
+object LocalDateTimeSerializer extends CustomSerializer[LocalDateTime](format => (
+  {
+    case JString(s) => LocalDateTime.parse(s)
+  },
+  {
+    case d: LocalDateTime => JString(ISODateTimeFormat.dateTimeNoMillis().print(d))
+  }
+))
