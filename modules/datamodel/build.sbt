@@ -2,7 +2,7 @@ name := """fnb-datamodel"""
 
 scalaVersion := "2.11.11"
 
-lazy val fnbDatamodel = project in file(".")
+lazy val fnbDataModel = project in file(".")
 
 libraryDependencies ++= {
   val playV = "2.5.12"
@@ -15,7 +15,7 @@ libraryDependencies ++= {
     "org.json4s"        %% "json4s-ext"     % jsonV,
 
     // Test
-    "org.scalatest"     %% "scalatest"      % "3.0.1" % Test
+    "org.scalatest"     %% "scalatest"      % "3.0.3" % Test
   )
 }
 

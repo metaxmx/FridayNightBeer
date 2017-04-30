@@ -4,13 +4,13 @@ version := "0.1_alpha"
 
 scalaVersion := "2.11.11"
 
-lazy val fnbDatamodel = project in file("modules/datamodel")
+lazy val fnbDataModel = project in file("modules/datamodel")
 
-lazy val fnbStorageMongo = (project in file("modules/storage-mongo")).dependsOn(fnbDatamodel)
+lazy val fnbStorageMongo = (project in file("modules/storage-mongo")).dependsOn(fnbDataModel)
 
 lazy val fnbPlay = (project in file("."))
-	.aggregate(fnbDatamodel, fnbStorageMongo)
-	.dependsOn(fnbDatamodel, fnbStorageMongo)
+	.aggregate(fnbDataModel, fnbStorageMongo)
+	.dependsOn(fnbDataModel, fnbStorageMongo)
 	.enablePlugins(PlayScala)
 	.enablePlugins(SbtWeb)
 
@@ -33,7 +33,7 @@ libraryDependencies ++= {
     "org.slf4j"               %  "slf4j-api"            % "1.7.25",
 
     // Test
-    "org.scalatest"           %% "scalatest"            % "3.0.1"   % Test,
+    "org.scalatest"           %% "scalatest"            % "3.0.3"   % Test,
     "org.mockito"             %  "mockito-core"         % "2.7.22"  % Test,
     "org.scalatestplus.play"  %% "scalatestplus-play"   % "2.0.0"   % Test
   )

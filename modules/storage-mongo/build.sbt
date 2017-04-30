@@ -2,10 +2,10 @@ name := """fnb-storage-mongo"""
 
 scalaVersion := "2.11.11"
 
-lazy val fnbDatamodel = project in file("../datamodel")
+lazy val fnbDataModel = project in file("../datamodel")
 
 lazy val fnbStorageMongo = (project in file("."))
-	.dependsOn(fnbDatamodel)
+	.dependsOn(fnbDataModel)
 
 libraryDependencies ++= {
 	val guavaV = "21.0"
