@@ -20,9 +20,11 @@ libraryDependencies ++= {
   val jsonV = "3.5.1"
   val guavaV = "21.0"
   val reactiveMongoV = "0.12.2"
+  val scalaTestV = "3.0.3"
+  val mockitoV = "2.7.22"
   Seq(
     cache,
-    ws,
+    ws                                                                    exclude("com.google.guava", "guava"),
     "com.google.inject"       %  "guice"                % "4.1.0"         exclude("com.google.guava", "guava"),
     "javax.inject"            %  "javax.inject"         % "1",
     "com.google.guava"        %  "guava"                % guavaV,
@@ -33,9 +35,9 @@ libraryDependencies ++= {
     "org.slf4j"               %  "slf4j-api"            % "1.7.25",
 
     // Test
-    "org.scalatest"           %% "scalatest"            % "3.0.3"   % Test,
-    "org.mockito"             %  "mockito-core"         % "2.7.22"  % Test,
-    "org.scalatestplus.play"  %% "scalatestplus-play"   % "2.0.0"   % Test
+    "org.scalatest"           %% "scalatest"            % scalaTestV % Test,
+    "org.mockito"             %  "mockito-core"         % mockitoV   % Test,
+    "org.scalatestplus.play"  %% "scalatestplus-play"   % "2.0.0"    % Test
   )
 }
 
@@ -51,9 +53,9 @@ autoAPIMappings := true
 
 // Run npm install to load JS dependencies and run webpack for resource compression
 
-lazy val npmBuildTask = taskKey[Unit]("Execute the npm build command to build the ui")
+lazy val npmInstall = taskKey[Unit]("Execute the npm build command to build the ui")
 
-npmBuildTask := {
+npmInstall := {
   val operatingSystem = sys.props.getOrElse("os.name", "unknown")
   val cmd = if(operatingSystem contains "Windows")
     "cmd /c npm install"
@@ -67,8 +69,6 @@ watchSources ~= { (ws: Seq[File]) =>
     path.getName.endsWith(".js") || path.getName == "build"
   }
 }
-
-(compile in Compile) := (compile in Compile).dependsOn(npmBuildTask.toTask).value
 
 pipelineStages := Seq(digest, gzip)
 

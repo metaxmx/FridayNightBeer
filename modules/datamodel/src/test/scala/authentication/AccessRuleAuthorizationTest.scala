@@ -1,6 +1,6 @@
 package authentication
 
-import models.{AccessRule, User}
+import models.{AccessRule, AccessRuleChain, User}
 import org.scalatest.{MustMatchers, WordSpec}
 
 /**
@@ -202,6 +202,14 @@ class AccessRuleAuthorizationTest extends WordSpec with MustMatchers {
         val rule = AccessRule.empty.withAllowGroups(groupId1).withForbiddenUsers(userId).withForbiddenGroups(groupId1)
         auth.authorize(rule) mustBe false
       }
+    }
+  }
+
+  "An access rule chain" should {
+    "be evaluated by evaluating the combined rule" in new AuthenticatedFixture {
+      val rule = AccessRule.empty.withAllowUsers(userId)
+      val chain = AccessRuleChain(Seq(rule))
+      auth.authorize(chain) mustBe true
     }
   }
 

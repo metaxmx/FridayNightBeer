@@ -7,6 +7,7 @@ import util.FutureOption
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
+import scala.reflect.ClassTag
 import scala.util.Success
 
 /**
@@ -17,7 +18,7 @@ import scala.util.Success
   * @param expiration expiration date for all data put inside the cache
   * @tparam T base model type
   */
-class BaseModelCache[T <: BaseModel[T]](cache: CacheApi, prefix: String, expiration: Duration = Duration.Inf) {
+class BaseModelCache[T <: BaseModel[T] : ClassTag](cache: CacheApi, prefix: String, expiration: Duration = Duration.Inf) {
 
   /**
     * Get key from entity id.
@@ -25,7 +26,7 @@ class BaseModelCache[T <: BaseModel[T]](cache: CacheApi, prefix: String, expirat
     * @param id entity id
     * @return prefix and id
     */
-  private[this] def key(id: String) = prefix + "/" + id
+  protected[cache] def key(id: String) = prefix + "/" + id
 
   /**
     * Get entity from the cache.
