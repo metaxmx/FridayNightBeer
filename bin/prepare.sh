@@ -3,7 +3,7 @@
 echo "[info]"
 echo "[info] ---- Installing NPM Dependencies"
 echo "[info]"
-npm install
+echo "[warn] npm install is disabled at the moment"
 
 echo "[info]"
 echo "[info] ---- Configure Application"
