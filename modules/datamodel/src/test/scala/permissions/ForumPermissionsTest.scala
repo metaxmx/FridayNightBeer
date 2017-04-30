@@ -1,7 +1,7 @@
 package permissions
 
 import org.scalatest.{MustMatchers, WordSpec}
-import ForumPermissions._
+import permissions.ForumPermissions._
 
 /**
   * Test Forum Permissions

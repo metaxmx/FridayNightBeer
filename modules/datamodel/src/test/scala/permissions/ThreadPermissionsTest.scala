@@ -1,7 +1,7 @@
 package permissions
 
 import org.scalatest.{MustMatchers, WordSpec}
-import ThreadPermissions._
+import permissions.ThreadPermissions._
 
 /**
   * Test Thread Permissions

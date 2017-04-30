@@ -1,7 +1,7 @@
 package permissions
 
 /**
-  * Created by Christian Simon on 04.05.2016.
+  * Permissions for Forum actions.
   */
 object ForumPermissions extends PermissionType {
 

@@ -1,7 +1,7 @@
 package permissions
 
 import org.scalatest.{MustMatchers, WordSpec}
-import GlobalPermissions._
+import permissions.GlobalPermissions._
 
 /**
   * Test Global Permissions
