@@ -44,11 +44,11 @@ class FutureOption[+A](wrapped: Future[Option[A]]) extends Awaitable[Option[A]] 
   def orElse[B >: A](f: => FutureOption[B])(implicit executor: ExecutionContext): FutureOption[B] = new FutureOption(
     wrapped flatMap {
       case None => f.toFuture
-      case Some(value) => wrapped
+      case Some(_) => wrapped
     }
   )
 
-  def andThen[B](pf: PartialFunction[Try[Option[A]], B])(implicit executor: ExecutionContext): FutureOption[A]  =
+  def andThen[B](pf: PartialFunction[Try[Option[A]], B])(implicit executor: ExecutionContext): FutureOption[A] =
     new FutureOption(wrapped.andThen(pf))
 
   def flatten[B >: A](onEmpty: => B)(implicit executor: ExecutionContext): Future[B] = wrapped map { _ getOrElse onEmpty }
