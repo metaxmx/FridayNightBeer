@@ -12,7 +12,7 @@ echo "[info]"
 echo "[info] ---- RUNNING TESTS"
 echo "[info]"
 
-build "$@" test coverageReport
+build "$@" coverage test coverageReport
 
 echo "[info]"
 echo "[info] ALL TESTS PASSED"
