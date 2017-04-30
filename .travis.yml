@@ -14,6 +14,7 @@ addons:
       - mongodb-org-server
 script:
   - bin/travis.sh
+  - sbt clean coverage test coverageReport
 cache:
   directories:
     - $HOME/.ivy2/cache
@@ -31,3 +32,5 @@ before_script:
   - npm prune
 notifications:
   email: false
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
