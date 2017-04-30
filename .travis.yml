@@ -1,7 +1,7 @@
 language: scala
 sudo: false
 scala:
-  - 2.11.8
+  - 2.11.11
 jdk:
   - oraclejdk8
 services:
@@ -14,7 +14,6 @@ addons:
       - mongodb-org-server
 script:
   - bin/travis.sh
-  - sbt clean coverage test coverageReport
 cache:
   directories:
     - $HOME/.ivy2/cache
