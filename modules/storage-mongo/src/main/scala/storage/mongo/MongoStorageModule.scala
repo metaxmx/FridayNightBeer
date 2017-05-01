@@ -15,7 +15,7 @@ class MongoStorageModule extends AbstractModule {
     binder bind classOf[PostDAO] to classOf[MongoPostDAO]
     binder bind classOf[SessionDAO] to classOf[MongoSessionDAO]
     binder bind classOf[ThreadDAO] to classOf[MongoThreadDAO]
-    binder bind classOf[UserDAO] to classOf[MongoUserDAO]
+    binder bind classOf[UserDAO] to classOf[MongoUserDAOInstance]
     binder bind classOf[PermissionDAO] to classOf[MongoPermissionDAO]
     binder bind classOf[SystemSettingDAO] to classOf[MongoSystemSettingDAOInstance]
   }

@@ -17,7 +17,7 @@ import scala.reflect.runtime.universe._
 class MongoSystemSettingDAOInstance @Inject()(cacheApi: CacheApi, reactiveMongoApi: ReactiveMongoApi)
   extends MongoSystemSettingDAO(cacheApi, reactiveMongoApi)
 
-class MongoSystemSettingDAO (cacheApi: CacheApi, val reactiveMongoApi: ReactiveMongoApi, dbCollectionSuffix: Option[String] = None)
+class MongoSystemSettingDAO(cacheApi: CacheApi, val reactiveMongoApi: ReactiveMongoApi, dbCollectionSuffix: Option[String] = None)
   extends MongoGenericDAO[SystemSetting](cacheApi, "systemsettings", dbCollectionSuffix)
     with ReactiveMongoComponents with BSONContext[SystemSetting] with SystemSettingDAO {
 

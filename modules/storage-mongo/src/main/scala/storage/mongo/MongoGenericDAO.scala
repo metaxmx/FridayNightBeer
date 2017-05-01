@@ -74,7 +74,7 @@ abstract class MongoGenericDAO[T <: BaseModel[T]](cacheApi: CacheApi, collection
   def remove(id: String): Future[Boolean] = withCollection { collection =>
     val selector = BSONDocument("_id" -> id)
     collection.remove(selector, firstMatchOnly = true) map {
-      case wr: WriteResult if wr.ok =>
+      case wr: WriteResult if wr.ok && wr.n == 1 =>
         cache.remove(id)
         true
       case _ =>

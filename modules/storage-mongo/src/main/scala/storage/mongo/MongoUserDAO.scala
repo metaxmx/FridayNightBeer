@@ -9,8 +9,12 @@ import reactivemongo.bson.{BSONDocumentReader, BSONDocumentWriter}
 import storage.UserDAO
 
 @Singleton
-class MongoUserDAO @Inject()(cacheApi: CacheApi, val reactiveMongoApi: ReactiveMongoApi)
-  extends MongoGenericDAO[User](cacheApi, "users") with ReactiveMongoComponents with BSONContext[User] with UserDAO {
+class MongoUserDAOInstance @Inject()(cacheApi: CacheApi, reactiveMongoApi: ReactiveMongoApi)
+  extends MongoUserDAO(cacheApi, reactiveMongoApi)
+
+class MongoUserDAO(cacheApi: CacheApi, val reactiveMongoApi: ReactiveMongoApi, dbCollectionSuffix: Option[String] = None)
+  extends MongoGenericDAO[User](cacheApi, "users", dbCollectionSuffix)
+    with ReactiveMongoComponents with BSONContext[User] with UserDAO {
 
   implicit val bsonWriter = implicitly[BSONDocumentWriter[User]]
 
