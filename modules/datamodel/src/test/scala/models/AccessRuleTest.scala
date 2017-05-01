@@ -53,6 +53,24 @@ class AccessRuleTest extends WordSpec with MustMatchers {
         rule.forbiddenUserSet mustBe empty
         rule.forbiddenGroupSet mustBe empty
       }
+      "work for withDenyAll" in {
+        val rule = AccessRule.empty.withAllowAll.withDenyAll
+        rule.isAllowAll mustBe false
+        rule.isAllowAllUsers mustBe false
+        rule.allowedUserSet mustBe empty
+        rule.allowedGroupSet mustBe empty
+        rule.forbiddenUserSet mustBe empty
+        rule.forbiddenGroupSet mustBe empty
+      }
+      "work for withDenyAllUsers" in {
+        val rule = AccessRule.empty.withAllowAllUsers.withDenyAllUsers
+        rule.isAllowAll mustBe false
+        rule.isAllowAllUsers mustBe false
+        rule.allowedUserSet mustBe empty
+        rule.allowedGroupSet mustBe empty
+        rule.forbiddenUserSet mustBe empty
+        rule.forbiddenGroupSet mustBe empty
+      }
     }
   }
 

@@ -1,10 +1,12 @@
 package authentication
 
 import models._
+import org.joda.time.DateTime
 import org.scalatest.{MustMatchers, WordSpec}
 import org.scalatest.mockito.MockitoSugar
 import permissions.ForumPermissions.ForumPermission
-import permissions.{ForumPermissions, GlobalPermissions}
+import permissions.ThreadPermissions.ThreadPermission
+import permissions.{ForumPermissions, GlobalPermissions, ThreadPermissions}
 import storage.PermissionDAO.PermissionMap
 
 /**
@@ -86,42 +88,42 @@ class PermissionAuthorizationTest extends WordSpec with MustMatchers with Mockit
 
     "some forum permissions are granted" when {
       "the forum defines no or only positive permissions" should {
-        "grant those forum permissions" in new ForumPermissionFixture {
-          val (cEmpty, fEmpty) = testForum()
-          val (cCP, fCP) = testForumCP(ForumPermissions.Access -> positiveAccessRule)
-          val (cFP, fFP) = testForumFP(ForumPermissions.Access -> positiveAccessRule)
-          val (cFull, fFull) = testForum(ForumPermissions.Access -> positiveAccessRule,
-            ForumPermissions.Access -> positiveAccessRule)
-
+        "grant those forum permissions" in new ForumPermissionFixture with TestForumsFixture {
           auth.checkForumPermissions(cEmpty, fEmpty, ForumPermissions.Access) mustBe true
           auth.checkForumPermissions(cCP, fCP, ForumPermissions.Access) mustBe true
           auth.checkForumPermissions(cFP, fFP, ForumPermissions.Access) mustBe true
           auth.checkForumPermissions(cFull, fFull, ForumPermissions.Access) mustBe true
         }
-        "deny other forum permissions" in new ForumPermissionFixture {
-          val (cEmpty, fEmpty) = testForum()
-          val (cCP, fCP) = testForumCP(ForumPermissions.Access -> positiveAccessRule)
-          val (cFP, fFP) = testForumFP(ForumPermissions.Access -> positiveAccessRule)
-          val (cFull, fFull) = testForum(ForumPermissions.Access -> positiveAccessRule,
-            ForumPermissions.Access -> positiveAccessRule)
-
+        "deny other forum permissions" in new ForumPermissionFixture with TestForumsFixture {
           auth.checkForumPermissions(cEmpty, fEmpty, ForumPermissions.Sticky) mustBe false
           auth.checkForumPermissions(cCP, fCP, ForumPermissions.Sticky) mustBe false
           auth.checkForumPermissions(cFP, fFP, ForumPermissions.Sticky) mustBe false
           auth.checkForumPermissions(cFull, fFull, ForumPermissions.Sticky) mustBe false
         }
-        "list those forum permissions" in new ForumPermissionFixture {
-          val (cEmpty, fEmpty) = testForum()
-          val (cCP, fCP) = testForumCP(ForumPermissions.Access -> positiveAccessRule)
-          val (cFP, fFP) = testForumFP(ForumPermissions.Access -> positiveAccessRule)
-          val (cFull, fFull) = testForum(ForumPermissions.Access -> positiveAccessRule,
-            ForumPermissions.Access -> positiveAccessRule)
-
+        "list those forum permissions" in new ForumPermissionFixture with TestForumsFixture {
           val expectedPermissions = Set(ForumPermissions.Access.name, ForumPermissions.CreateThread.name)
           auth.listForumPermissions(cEmpty, fEmpty).toSet mustBe expectedPermissions
           auth.listForumPermissions(cCP, fCP).toSet mustBe expectedPermissions
           auth.listForumPermissions(cFP, fFP).toSet mustBe expectedPermissions
           auth.listForumPermissions(cFull, fFull).toSet mustBe expectedPermissions
+        }
+      }
+    }
+
+    "some thread permissions are granted" when {
+      "the thread defines no or only positive permissions" should {
+        "grant those thread permissions" in new ThreadPermissionFixture with TestThreadsFixture {
+          auth.checkThreadPermissions(cEmpty, fEmpty, tEmpty, ThreadPermissions.Access) mustBe true
+          auth.checkThreadPermissions(cFull, fFull, tFull, ThreadPermissions.Access) mustBe true
+        }
+        "deny other thread permissions" in new ThreadPermissionFixture with TestThreadsFixture {
+          auth.checkThreadPermissions(cEmpty, fEmpty, tEmpty, ThreadPermissions.DeletePost) mustBe false
+          auth.checkThreadPermissions(cFull, fFull, tFull, ThreadPermissions.DeletePost) mustBe false
+        }
+        "list those thread permissions" in new ThreadPermissionFixture with TestThreadsFixture {
+          val expectedPermissions = Set(ThreadPermissions.Access.name, ThreadPermissions.Reply.name)
+          auth.listThreadPermissions(cEmpty, fEmpty, tEmpty).toSet mustBe expectedPermissions
+          auth.listThreadPermissions(cFull, fFull, tFull).toSet mustBe expectedPermissions
         }
       }
     }
@@ -237,6 +239,68 @@ class PermissionAuthorizationTest extends WordSpec with MustMatchers with Mockit
       (cat, forum)
     }
 
+  }
+
+  trait TestForumsFixture {
+    self: ForumPermissionFixture =>
+
+    val (cEmpty, fEmpty) = testForum()
+    val (cCP, fCP) = testForumCP(ForumPermissions.Access -> positiveAccessRule)
+    val (cFP, fFP) = testForumFP(ForumPermissions.Access -> positiveAccessRule)
+    val (cFull, fFull) = testForum(ForumPermissions.Access -> positiveAccessRule,
+      ForumPermissions.Access -> positiveAccessRule)
+
+  }
+
+  trait ThreadPermissionFixture extends PermissionAuthFixture {
+
+    lazy val threadPermissionMap: PermissionMap =
+      Map(ThreadPermissions.name -> ThreadPermissions.values.map {
+        case p @ ThreadPermissions.Access => (p.name, positiveAccessRule)
+        case p @ ThreadPermissions.Reply => (p.name, positiveAccessRule)
+        case p => (p.name, negativeAccessRule)
+      }.toMap)
+
+    def permissions = threadPermissionMap
+
+    def testThread(): (ForumCategory, Forum, Thread) = {
+      testThread(None, None, None)
+    }
+
+    def testThread(catPermission: (ThreadPermission, AccessRule),
+                   forumPermission: (ThreadPermission, AccessRule),
+                   threadPermission: (ThreadPermission, AccessRule)): (ForumCategory, Forum, Thread) = {
+      val (cp, cpRule) = catPermission
+      val (fp, fpRule) = forumPermission
+      val (tp, tpRule) = threadPermission
+      testThread(
+        Some(Map(cp.name -> cpRule)),
+        Some(Map(fp.name -> fpRule)),
+        Some(Map(tp.name -> tpRule))
+      )
+    }
+
+    def testThread(catPermissions: Option[Map[String, AccessRule]],
+                   forumPermissions: Option[Map[String, AccessRule]],
+                   threadPermissions: Option[Map[String, AccessRule]]): (ForumCategory, Forum, Thread) = {
+      val cat = ForumCategory("testCat", "Test Category", 0, catPermissions, None)
+      val forum = Forum("testForum", "Test Forum", None, None, cat._id, 0, readonly = false, forumPermissions, None)
+      val thread = Thread("testThread", "Test Thread", None, forum._id, ThreadPostData("testuser", DateTime.now()),
+        ThreadPostData("testuser", DateTime.now()), 22, sticky = false, closed = false, threadPermissions)
+      (cat, forum, thread)
+    }
+
+  }
+
+  trait TestThreadsFixture {
+    self: ThreadPermissionFixture =>
+
+    val (cEmpty, fEmpty, tEmpty) = testThread()
+    val (cFull, fFull, tFull) = testThread(
+      ThreadPermissions.Access -> positiveAccessRule,
+      ThreadPermissions.Access -> positiveAccessRule,
+      ThreadPermissions.Access -> positiveAccessRule
+    )
   }
 
 }
