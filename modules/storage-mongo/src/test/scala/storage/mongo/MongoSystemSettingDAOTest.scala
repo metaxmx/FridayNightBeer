@@ -1,5 +1,7 @@
 package storage.mongo
 
+import java.util.Date
+
 import org.scalatest.MustMatchers
 import play.api.cache.CacheApi
 import play.modules.reactivemongo.ReactiveMongoApi
@@ -153,6 +155,36 @@ class MongoSystemSettingDAOTest extends MongoDAOTestSpec with MustMatchers {
         dao.invalidateCache()
 
         Await.result(dao.getSetting(key, defaultValue), timeout) mustBe value
+      }
+    }
+
+    "fail on serialize of other types" in new MongoFixture {
+      withMongoDatabase(buildDAO) { dao =>
+        val key = "somekey"
+        val value: Date = new Date()
+        val defaultValue: Date = new Date()
+
+        intercept[IllegalArgumentException] {
+          Await.result(dao.changeSetting(key, value), timeout)
+        }
+
+        intercept[IllegalArgumentException] {
+          Await.result(dao.getSetting(key, defaultValue), timeout)
+        }
+      }
+    }
+
+    "fail on deserialize of other types" in new MongoFixture {
+      withMongoDatabase(buildDAO) { dao =>
+        val key = "somekey"
+        val value: String = "something"
+        val expectedValue: Date = new Date()
+
+        Await.ready(dao.changeSetting(key, value), timeout)
+
+        intercept[IllegalArgumentException] {
+          Await.result(dao.getSetting(key, expectedValue), timeout)
+        }
       }
     }
   }
