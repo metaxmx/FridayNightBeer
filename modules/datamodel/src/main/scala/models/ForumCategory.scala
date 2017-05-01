@@ -6,10 +6,10 @@ case class ForumCategory(_id: String,
                          forumPermissions: Option[Map[String, AccessRule]],
                          threadPermissions: Option[Map[String, AccessRule]]) extends BaseModel[ForumCategory] {
 
-  lazy val forumPermissionMap = forumPermissions.getOrElse(Map.empty)
+  lazy val forumPermissionMap: Map[String, AccessRule] = forumPermissions.getOrElse(Map.empty)
 
-  lazy val threadPermissionMap = threadPermissions.getOrElse(Map.empty)
+  lazy val threadPermissionMap: Map[String, AccessRule] = threadPermissions.getOrElse(Map.empty)
 
-  override def withId(_id: String) = copy(_id = _id)
+  override def withId(_id: String): ForumCategory = copy(_id = _id)
 
 }

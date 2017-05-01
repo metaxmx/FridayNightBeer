@@ -9,6 +9,6 @@ case class User(_id: String,
                 avatar: Option[String],
                 groups: Option[Seq[String]]) extends BaseModel[User] {
 
-  def withId(_id: String) = copy(_id = _id)
+  def withId(_id: String): User = copy(_id = _id)
 
 }

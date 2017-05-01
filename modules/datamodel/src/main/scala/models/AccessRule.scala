@@ -35,24 +35,24 @@ case class AccessRule(forbiddenUsers: Option[Seq[String]],
                       allowAllUsers: Option[Boolean],
                       allowAll: Option[Boolean]) {
 
-  def withAllowAllUsers = copy(allowAllUsers = Some(true))
+  def withAllowAllUsers: AccessRule = copy(allowAllUsers = Some(true))
 
-  def withDenyAllUsers = copy(allowAllUsers = Some(false))
+  def withDenyAllUsers: AccessRule = copy(allowAllUsers = Some(false))
 
-  def withAllowAll = copy(allowAll = Some(true))
+  def withAllowAll: AccessRule = copy(allowAll = Some(true))
 
-  def withDenyAll = copy(allowAll = Some(false))
+  def withDenyAll: AccessRule = copy(allowAll = Some(false))
 
-  def withAllowUsers(userIds: String*) = copy(allowedUsers = Some(userIds))
+  def withAllowUsers(userIds: String*): AccessRule = copy(allowedUsers = Some(userIds))
 
-  def withAllowGroups(groupIds: String*) = copy(allowedGroups = Some(groupIds))
+  def withAllowGroups(groupIds: String*): AccessRule = copy(allowedGroups = Some(groupIds))
 
-  def withForbiddenUsers(userIds: String*) = copy(forbiddenUsers = Some(userIds))
+  def withForbiddenUsers(userIds: String*): AccessRule = copy(forbiddenUsers = Some(userIds))
 
-  def withForbiddenGroups(groupIds: String*) = copy(forbiddenGroups = Some(groupIds))
+  def withForbiddenGroups(groupIds: String*): AccessRule = copy(forbiddenGroups = Some(groupIds))
 
-  val isAllowAll = allowAll.getOrElse(false)
-  val isAllowAllUsers = allowAllUsers.getOrElse(false)
+  val isAllowAll: Boolean = allowAll.getOrElse(false)
+  val isAllowAllUsers: Boolean = allowAllUsers.getOrElse(false)
   val allowedUserSet: Set[String] = allowedUsers.fold(Set.empty[String])(_.toSet)
   val allowedGroupSet: Set[String] = allowedGroups.fold(Set.empty[String])(_.toSet)
   val forbiddenUserSet: Set[String] = forbiddenUsers.fold(Set.empty[String])(_.toSet)
