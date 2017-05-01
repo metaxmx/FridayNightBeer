@@ -5,7 +5,7 @@ import javax.inject.{Inject, Singleton}
 import models.SystemSetting
 import play.api.cache.CacheApi
 import play.modules.reactivemongo.{ReactiveMongoApi, ReactiveMongoComponents}
-import reactivemongo.bson.{BSONDocumentReader, BSONDocumentWriter}
+import reactivemongo.bson.{BSONDocument, BSONDocumentReader, BSONDocumentWriter}
 import storage.SystemSettingDAO
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -14,25 +14,43 @@ import scala.reflect.ClassTag
 import scala.reflect.runtime.universe._
 
 @Singleton
-class MongoSystemSettingDAO @Inject()(cacheApi: CacheApi, val reactiveMongoApi: ReactiveMongoApi)
-  extends MongoGenericDAO[SystemSetting](cacheApi, "systemsettings") with ReactiveMongoComponents with BSONContext[SystemSetting] with SystemSettingDAO {
+class MongoSystemSettingDAOInstance @Inject()(cacheApi: CacheApi, reactiveMongoApi: ReactiveMongoApi)
+  extends MongoSystemSettingDAO(cacheApi, reactiveMongoApi)
+
+class MongoSystemSettingDAO (cacheApi: CacheApi, val reactiveMongoApi: ReactiveMongoApi, dbCollectionSuffix: Option[String] = None)
+  extends MongoGenericDAO[SystemSetting](cacheApi, "systemsettings", dbCollectionSuffix)
+    with ReactiveMongoComponents with BSONContext[SystemSetting] with SystemSettingDAO {
 
   implicit val bsonWriter = implicitly[BSONDocumentWriter[SystemSetting]]
 
   implicit val bsonReader = implicitly[BSONDocumentReader[SystemSetting]]
 
-  override def getSetting[A](key: String, defaultValue: A)(implicit ttag: TypeTag[A], ctag: ClassTag[A]): Future[A] = {
+  override def getSetting[A : TypeTag : ClassTag](key: String, defaultValue: A): Future[A] = {
     (this getById key).toFuture flatMap {
       case None =>
-        changeSetting(key, defaultValue)
+        insertSetting(key, defaultValue)
       case Some(setting) =>
         Future.successful(serializeFromString(setting.value))
     }
   }
 
-  def changeSetting[A](key: String, value: A)(implicit ttag: TypeTag[A], ctag: ClassTag[A]): Future[A] = {
+  def changeSetting[A : TypeTag : ClassTag](key: String, value: A): Future[A] = {
+    (this getById key).toFuture flatMap {
+      case None =>
+        insertSetting(key, value)
+      case Some(_) =>
+        updateSetting(key, value)
+    }
+  }
+
+  private def insertSetting[A : TypeTag : ClassTag](key: String, value: A): Future[A] = {
     val insertFuture = this insertWithGivenId SystemSetting(key, serializeToString(value))
     insertFuture map { _ => value } // Ignore result to skip de-serializing again and just return inserted value
+  }
+
+  private def updateSetting[A : TypeTag : ClassTag](key: String, value: A): Future[A] = {
+    val modifier: BSONDocument = BSONDocument("$set" -> BSONDocument("value" -> serializeToString(value)))
+    update(key, modifier).toFuture map {_ => value } // Ignore result to skip de-serializing again and just return inserted value
   }
 
   private[this] def serializeToString[A](value: A)(implicit ttag: TypeTag[A], ctag: ClassTag[A]): String = {

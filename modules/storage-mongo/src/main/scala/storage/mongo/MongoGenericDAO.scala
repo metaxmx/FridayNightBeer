@@ -18,9 +18,15 @@ import scala.concurrent.duration.{Duration, _}
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success}
 
-abstract class MongoGenericDAO[T <: BaseModel[T]](cacheApi: CacheApi, collectionName: String) extends GenericDAO[T] {
+abstract class MongoGenericDAO[T <: BaseModel[T]](cacheApi: CacheApi, collectionName: String,
+                                                  dbCollectionName: String) extends GenericDAO[T] {
 
   self: ReactiveMongoComponents with BSONContext[T] =>
+
+  def this(cacheApi: CacheApi, collectionName: String, dbCollectionSuffix: Option[String] = None) =
+    this(cacheApi, collectionName, dbCollectionSuffix.fold(collectionName)(collectionName + _))
+
+  def this(cacheApi: CacheApi, collectionName: String) = this(cacheApi, collectionName, None)
 
   protected def cacheDuration: Duration = 1.days
 
@@ -28,7 +34,7 @@ abstract class MongoGenericDAO[T <: BaseModel[T]](cacheApi: CacheApi, collection
 
   protected val cache = new BaseModelMapCache[T](cacheApi, cachePrefix, cacheDuration)
 
-  implicit def collectionFuture: Future[BSONCollection] = reactiveMongoApi.database map (db => db.collection[BSONCollection](collectionName))
+  implicit def collectionFuture: Future[BSONCollection] = reactiveMongoApi.database map (db => db.collection[BSONCollection](dbCollectionName))
 
   protected def withCollection[A](block: BSONCollection => Future[A]): Future[A] = {
     collectionFuture flatMap (collection => block(collection) )
