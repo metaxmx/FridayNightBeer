@@ -20,11 +20,11 @@ case class Thread(_id: String,
                   closed: Boolean,
                   threadPermissions: Option[Map[String, AccessRule]]) extends BaseModel[Thread] {
 
-  lazy val threadPermissionMap = threadPermissions.getOrElse(Map.empty)
+  lazy val threadPermissionMap: Map[String, AccessRule] = threadPermissions.getOrElse(Map.empty)
 
-  def withId(_id: String) = copy(_id = _id)
+  def withId(_id: String): Thread = copy(_id = _id)
 
-  def withLastPost(lastPost: ThreadPostData) = copy(lastPost = lastPost)
+  def withLastPost(lastPost: ThreadPostData): Thread = copy(lastPost = lastPost)
 
   def checkAccess(implicit authorization: PermissionAuthorization, category: ForumCategory, forum: Forum): Boolean =
     authorization.checkThreadPermissions(category, forum, this, ThreadPermissions.Access) &&
