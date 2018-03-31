@@ -1,7 +1,7 @@
 package models
 
 import org.joda.time.DateTime
-import util.Joda.dateTimeOrdering
+import util.JodaOrdering.dateTimeOrdering
 
 case class PostEdit(user: String,
                     date: DateTime,

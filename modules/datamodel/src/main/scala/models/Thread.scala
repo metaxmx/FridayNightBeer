@@ -2,8 +2,8 @@ package models
 
 import authentication.PermissionAuthorization
 import org.joda.time.DateTime
-import permissions.ThreadPermissions
-import util.Joda.dateTimeOrdering
+import permissions.ThreadPermission
+import util.JodaOrdering.dateTimeOrdering
 
 case class ThreadPostData(user: String,
                           date: DateTime)
@@ -27,7 +27,7 @@ case class Thread(_id: String,
   def withLastPost(lastPost: ThreadPostData): Thread = copy(lastPost = lastPost)
 
   def checkAccess(implicit authorization: PermissionAuthorization, category: ForumCategory, forum: Forum): Boolean =
-    authorization.checkThreadPermissions(category, forum, this, ThreadPermissions.Access) &&
+    authorization.checkThreadPermissions(category, forum, this, ThreadPermission.Access) &&
       forum.checkAccess
 
   def checkAccess(category: ForumCategory, forum: Forum)(implicit authorization: PermissionAuthorization): Boolean =

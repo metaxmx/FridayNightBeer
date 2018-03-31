@@ -61,23 +61,34 @@ val buildUiSettings = Seq(
  * Modules
  */
 
+lazy val moduleUtil = (project in file("modules/util"))
+  .settings(
+    name := "fnb-util",
+    libraryDependencies ++= Seq(
+      "org.json4s"        %% "json4s-native"  % jsonV,
+      "org.json4s"        %% "json4s-ext"     % jsonV,
+      "joda-time"         %  "joda-time"      % jodaV
+    )
+  )
+
 lazy val moduleDataModel = (project in file("modules/datamodel"))
   .settings(
     name := "fnb-datamodel",
     autoAPIMappings := true,
     libraryDependencies ++= Seq(
-      "joda-time"         %  "joda-time"      % jodaV,
       "com.typesafe.play" %% "play-cache"     % playV,
       "com.google.inject" %  "guice"          % guiceV,
       "com.google.guava"  %  "guava"          % guavaV,
       "org.json4s"        %% "json4s-native"  % jsonV,
       "org.json4s"        %% "json4s-ext"     % jsonV,
+      "com.typesafe.akka" %% "akka-actor"     % akkaV,
 
       // Test
       "org.scalatest"     %% "scalatest"      % scalaTestV % Test,
       "org.mockito"       %  "mockito-core"   % mockitoV   % Test
     )
   )
+  .dependsOn(moduleUtil)
 
 lazy val moduleStorageMongo = (project in file("modules/storage-mongo"))
   .settings(

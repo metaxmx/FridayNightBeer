@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import permissions.GlobalPermissions
+import permissions.GlobalPermission
 import services._
 import util.Implicits._
 import viewmodels.AdminViewModels._
@@ -19,7 +19,7 @@ class AdministrationController @Inject() (val userService: UserService,
                                           val permissionService: PermissionService,
                                           settingsService: SettingsService) extends RestController {
 
-  override def requiredGlobalPermission = Some(GlobalPermissions.Admin)
+  override def requiredGlobalPermission = Some(GlobalPermission.Admin)
 
   def getSystemSettings = UserRestAction.async {
     implicit request =>

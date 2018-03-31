@@ -1,18 +1,15 @@
 package storage.mongo
 
 import javax.inject.{Inject, Singleton}
-
 import models.{User, UserSession}
-import play.api.cache.CacheApi
+import play.api.cache.SyncCacheApi
 import play.modules.reactivemongo.{ReactiveMongoApi, ReactiveMongoComponents}
 import reactivemongo.bson.{BSONDocument, BSONDocumentReader, BSONDocumentWriter}
 import storage.SessionDAO
 import util.FutureOption
 
-import scala.concurrent.Future
-
 @Singleton
-class MongoSessionDAO @Inject()(cacheApi: CacheApi, val reactiveMongoApi: ReactiveMongoApi)
+class MongoSessionDAO @Inject()(cacheApi: SyncCacheApi, val reactiveMongoApi: ReactiveMongoApi)
   extends MongoGenericDAO[UserSession](cacheApi, "sessions") with ReactiveMongoComponents with BSONContext[UserSession] with SessionDAO {
 
   implicit val bsonWriter = implicitly[BSONDocumentWriter[UserSession]]

@@ -2,7 +2,7 @@ package storage.mongo
 
 import cache.BaseModelMapCache
 import models.BaseModel
-import play.api.cache.CacheApi
+import play.api.cache.SyncCacheApi
 import play.modules.reactivemongo.ReactiveMongoComponents
 import reactivemongo.api.Cursor._
 import reactivemongo.api.ReadPreference.Primary
@@ -18,15 +18,15 @@ import scala.concurrent.duration.{Duration, _}
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success}
 
-abstract class MongoGenericDAO[T <: BaseModel[T]](cacheApi: CacheApi, collectionName: String,
+abstract class MongoGenericDAO[T <: BaseModel[T]](cacheApi: SyncCacheApi, collectionName: String,
                                                   dbCollectionName: String) extends GenericDAO[T] {
 
   self: ReactiveMongoComponents with BSONContext[T] =>
 
-  def this(cacheApi: CacheApi, collectionName: String, dbCollectionSuffix: Option[String] = None) =
+  def this(cacheApi: SyncCacheApi, collectionName: String, dbCollectionSuffix: Option[String] = None) =
     this(cacheApi, collectionName, dbCollectionSuffix.fold(collectionName)(collectionName + _))
 
-  def this(cacheApi: CacheApi, collectionName: String) = this(cacheApi, collectionName, None)
+  def this(cacheApi: SyncCacheApi, collectionName: String) = this(cacheApi, collectionName, None)
 
   protected def cacheDuration: Duration = 1.days
 

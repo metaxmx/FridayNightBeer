@@ -14,7 +14,7 @@ class ForumCategoryService @Inject()(forumCategoryDAO: ForumCategoryDAO) {
 
   def getCategory(id: String): FutureOption[ForumCategory] = forumCategoryDAO getById id
 
-  def getCategoryOrElse(id: String, onEmpty: => ForumCategory) = getCategory(id) flatten onEmpty
+  def getCategoryOrElse(id: String, onEmpty: => ForumCategory): Future[ForumCategory] = getCategory(id) flatten onEmpty
 
   def getCategories: Future[Seq[ForumCategory]] = forumCategoryDAO.getAll
 

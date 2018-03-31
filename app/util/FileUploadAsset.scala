@@ -10,9 +10,9 @@ import org.apache.commons.io.FilenameUtils
 import org.joda.time.{DateTime, DateTimeZone}
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 import play.api.{Application, Logger, Mode}
-import play.api.http.ContentTypes
+import play.api.http.{ContentTypes, MimeTypes}
 import play.api.http.HeaderNames._
-import play.api.libs.{Codecs, MimeTypes}
+import play.api.libs.Codecs
 import play.api.mvc._
 import play.api.mvc.Results._
 import play.api.mvc.ResponseHeader.{basicDateFormatPattern, httpDateFormat}

@@ -1,10 +1,10 @@
 package authentication
 
 import models.{AccessRuleChain, Forum, ForumCategory, Thread}
-import permissions.ForumPermissions.ForumPermission
-import permissions.{ForumPermissions, GlobalPermissions, ThreadPermissions}
-import permissions.GlobalPermissions.GlobalPermission
-import permissions.ThreadPermissions.ThreadPermission
+import permissions.ForumPermission
+import permissions.{ForumPermission, GlobalPermission, ThreadPermission}
+import permissions.GlobalPermission
+import permissions.ThreadPermission
 import storage.PermissionDAO.PermissionMap
 
 /**
@@ -21,7 +21,7 @@ class PermissionAuthorization(authorization: AccessRuleAuthorization, permission
     * @return true if all permissions are granted
     */
   def checkGlobalPermissions(permissions: GlobalPermission*): Boolean = {
-    val permissionType = GlobalPermissions.name
+    val permissionType = GlobalPermission.name
     permissions forall { permission =>
       val permissionName = permission.name
       val globalRule = permissionMap.get(permissionType).flatMap(_.get(permissionName))
@@ -41,7 +41,7 @@ class PermissionAuthorization(authorization: AccessRuleAuthorization, permission
   def checkForumPermissions(forumCategory: ForumCategory,
                             forum: Forum,
                             permissions: ForumPermission*): Boolean = {
-    val permissionType = ForumPermissions.name
+    val permissionType = ForumPermission.name
     permissions forall { permission =>
       val permissionName = permission.name
       val globalRule = permissionMap.get(permissionType).flatMap(_.get(permissionName))
@@ -64,7 +64,7 @@ class PermissionAuthorization(authorization: AccessRuleAuthorization, permission
                              forum: Forum,
                              thread: Thread,
                              permissions: ThreadPermission*): Boolean = {
-    val permissionType = ThreadPermissions.name
+    val permissionType = ThreadPermission.name
     permissions forall { permission =>
       val permissionName = permission.name
       val globalRule = permissionMap.get(permissionType).flatMap(_.get(permissionName))
@@ -81,8 +81,8 @@ class PermissionAuthorization(authorization: AccessRuleAuthorization, permission
     * @return granted permissions names
     */
   def listGlobalPermissions: Seq[String] = {
-    val permissionType = GlobalPermissions.name
-    GlobalPermissions.values filter {
+    val permissionType = GlobalPermission.name
+    GlobalPermission.values filter {
       globalPermission =>
         val globalRule = permissionMap.get(permissionType).flatMap(_.get(globalPermission.name))
         val accessRuleChain = AccessRuleChain(globalRule)
@@ -99,8 +99,8 @@ class PermissionAuthorization(authorization: AccessRuleAuthorization, permission
     * @return granted permission names
     */
   def listForumPermissions(forumCategory: ForumCategory, forum: Forum): Seq[String] = {
-    val permissionType = ForumPermissions.name
-    ForumPermissions.values filter {
+    val permissionType = ForumPermission.name
+    ForumPermission.values filter {
       forumPermission =>
         val globalRule = permissionMap.get(permissionType).flatMap(_.get(forumPermission.name))
         val categoryRule = forumCategory.forumPermissionMap.get(forumPermission.name)
@@ -120,8 +120,8 @@ class PermissionAuthorization(authorization: AccessRuleAuthorization, permission
     * @return granted permission names
     */
   def listThreadPermissions(forumCategory: ForumCategory, forum: Forum, thread: Thread): Seq[String] = {
-    val permissionType = ThreadPermissions.name
-    ThreadPermissions.values filter {
+    val permissionType = ThreadPermission.name
+    ThreadPermission.values filter {
       threadPermission =>
         val globalRule = permissionMap.get(permissionType).flatMap(_.get(threadPermission.name))
         val categoryRule = forumCategory.threadPermissionMap.get(threadPermission.name)

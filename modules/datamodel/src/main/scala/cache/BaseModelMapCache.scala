@@ -1,7 +1,7 @@
 package cache
 
 import models.BaseModel
-import play.api.cache.CacheApi
+import play.api.cache.SyncCacheApi
 import util.FutureOption
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -17,7 +17,7 @@ import scala.util.Success
   * @param expiration expiration date for all data put inside the cache
   * @tparam T base model type
   */
-class BaseModelMapCache[T <: BaseModel[T]](cache: CacheApi,
+class BaseModelMapCache[T <: BaseModel[T]](cache: SyncCacheApi,
                                            prefix: String,
                                            expiration: Duration = Duration.Inf) {
 

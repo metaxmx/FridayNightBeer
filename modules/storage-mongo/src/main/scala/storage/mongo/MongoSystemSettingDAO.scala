@@ -1,9 +1,8 @@
 package storage.mongo
 
 import javax.inject.{Inject, Singleton}
-
 import models.SystemSetting
-import play.api.cache.CacheApi
+import play.api.cache.SyncCacheApi
 import play.modules.reactivemongo.{ReactiveMongoApi, ReactiveMongoComponents}
 import reactivemongo.bson.{BSONDocument, BSONDocumentReader, BSONDocumentWriter}
 import storage.SystemSettingDAO
@@ -14,10 +13,10 @@ import scala.reflect.ClassTag
 import scala.reflect.runtime.universe._
 
 @Singleton
-class MongoSystemSettingDAOInstance @Inject()(cacheApi: CacheApi, reactiveMongoApi: ReactiveMongoApi)
+class MongoSystemSettingDAOInstance @Inject()(cacheApi: SyncCacheApi, reactiveMongoApi: ReactiveMongoApi)
   extends MongoSystemSettingDAO(cacheApi, reactiveMongoApi)
 
-class MongoSystemSettingDAO(cacheApi: CacheApi, val reactiveMongoApi: ReactiveMongoApi, dbCollectionSuffix: Option[String] = None)
+class MongoSystemSettingDAO(cacheApi: SyncCacheApi, val reactiveMongoApi: ReactiveMongoApi, dbCollectionSuffix: Option[String] = None)
   extends MongoGenericDAO[SystemSetting](cacheApi, "systemsettings", dbCollectionSuffix)
     with ReactiveMongoComponents with BSONContext[SystemSetting] with SystemSettingDAO {
 

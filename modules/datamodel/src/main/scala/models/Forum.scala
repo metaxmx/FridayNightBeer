@@ -1,7 +1,7 @@
 package models
 
 import authentication.PermissionAuthorization
-import permissions.{ForumPermissions, GlobalPermissions}
+import permissions.{ForumPermission, GlobalPermission}
 
 case class Forum(_id: String,
                  name: String,
@@ -23,6 +23,6 @@ case class Forum(_id: String,
     checkAccess(category)
 
   def checkAccess(category: ForumCategory)(implicit authorization: PermissionAuthorization): Boolean =
-    authorization.checkForumPermissions(category, this, ForumPermissions.Access) &&
-      authorization.checkGlobalPermissions(GlobalPermissions.Forums)
+    authorization.checkForumPermissions(category, this, ForumPermission.Access) &&
+      authorization.checkGlobalPermissions(GlobalPermission.Forums)
 }

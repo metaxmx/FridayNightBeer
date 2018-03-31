@@ -1,19 +1,16 @@
 package storage.mongo
 
 import javax.inject.{Inject, Singleton}
-
 import models.{Thread, ThreadPostData}
 import org.joda.time.DateTime
-import play.api.cache.CacheApi
+import play.api.cache.SyncCacheApi
 import play.modules.reactivemongo.{ReactiveMongoApi, ReactiveMongoComponents}
 import reactivemongo.bson.{BSONBoolean, BSONDocument, BSONDocumentReader, BSONDocumentWriter, BSONInteger}
 import storage.ThreadDAO
 import util.FutureOption
 
-import scala.concurrent.Future
-
 @Singleton
-class MongoThreadDAO @Inject()(cacheApi: CacheApi, val reactiveMongoApi: ReactiveMongoApi)
+class MongoThreadDAO @Inject()(cacheApi: SyncCacheApi, val reactiveMongoApi: ReactiveMongoApi)
   extends MongoGenericDAO[Thread](cacheApi, "threads") with ReactiveMongoComponents with BSONContext[Thread] with ThreadDAO {
 
   implicit val bsonWriter = implicitly[BSONDocumentWriter[Thread]]

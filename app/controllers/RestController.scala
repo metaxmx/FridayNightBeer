@@ -21,7 +21,7 @@ import scala.language.higherKinds
   * Controller trait for REST controllers.
   * Created by Christian Simon on 30.04.2016.
   */
-trait RestController extends Controller {
+trait RestController extends InjectedController {
 
   /** Injected User Service */
   implicit val userService: UserService

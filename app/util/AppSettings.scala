@@ -12,7 +12,9 @@ import play.api.{Configuration, Logger}
 @Singleton
 class AppSettings @Inject() (implicit val config: Configuration) {
 
-  private[this] val fnbConfig = config.getConfig("fnb")
+  private def logger = Logger(getClass)
+
+  private[this] val fnbConfig = config.getOptional[Configuration]("fnb")
 
   val dataPath: String = fnbConfig flatMap (_ getString "datadir") getOrElse "appdata"
 
@@ -23,11 +25,11 @@ class AppSettings @Inject() (implicit val config: Configuration) {
       if (!dataDir.mkdirs()) {
         throw config.reportError("fnb.datadir", s"Datadir '$dataPath' could not be created automatically")
       }
-      Logger(getClass).info(s"Successfully created application directory ${dataDir.getAbsolutePath}")
+      logger.info(s"Successfully created application directory ${dataDir.getAbsolutePath}")
     }
     if (!dataDir.isDirectory) throw config.reportError("fnb.datadir", s"Datadir '$dataPath' does not exist or is no directory")
     if (!dataDir.canWrite) throw config.reportError("fnb.datadir", s"Datadir '$dataPath' is not writable")
-    Logger(getClass).info(s"Successfully initialized application directory ${dataDir.getAbsolutePath}")
+    logger.info(s"Successfully initialized application directory ${dataDir.getAbsolutePath}")
   }
 
   validateDataDir()
