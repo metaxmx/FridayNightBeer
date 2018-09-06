@@ -1,27 +1,32 @@
-name := """fnb-play"""
 
-version := "0.1-SNAPSHOT"
+lazy val root = (project in file("."))
+  .settings(
+    name := "FridayNightBeer",
+    version := "0.1.0",
+    organization := "illucIT Software GmbH",
+    scalaVersion := "2.12.6",
+    libraryDependencies ++= Seq(
 
-scalaVersion := "2.11.4"
+      // Akka
+      "com.typesafe.akka" %% "akka-actor" % "2.5.16",
+      "com.typesafe.akka" %% "akka-stream" % "2.5.16",
+      "com.typesafe.akka" %% "akka-http" % "10.1.5",
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala).enablePlugins(SbtWeb)
+      // Config
+      "com.typesafe" % "config" % "1.3.2",
 
-resolvers += "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
+      // JSON
+      "org.json4s" %% "json4s-native" % "3.6.1",
 
-libraryDependencies ++= Seq(
-  "com.google.inject" % "guice" % "3.0",
-  "javax.inject" % "javax.inject" % "1",
-  "org.reactivemongo" %% "play2-reactivemongo" % "0.10.5.0.akka23",
-  "org.webjars" % "bootstrap" % "3.3.4",
-  "org.webjars" % "jquery" % "1.11.3",
-  "org.webjars" % "angularjs" % "1.3.15",
-  "org.webjars" % "angular-ui-bootstrap" % "0.13.0",
-  "org.webjars" % "html5shiv" % "3.7.2",
-  "org.webjars" % "respond" % "1.4.2",
-  "org.webjars" % "famfamfam-silk" % "1.3-1",
-  "org.webjars" % "smart-table" % "2.0.3",
-  "org.mockito" % "mockito-core" % "1.10.17" % "test")
+      // Logging
+      "ch.qos.logback" % "logback-classic" % "1.2.3",
 
-includeFilter in (Assets, LessKeys.less) := "*.less"
+      // Testing
+      "org.scalatest" %% "scalatest" % "3.0.5" % Test,
+      "org.scalamock" %% "scalamock" % "4.1.0" % Test,
+      "com.typesafe.akka" %% "akka-testkit" % "2.5.16" % Test,
+      "com.typesafe.akka" %% "akka-stream-testkit" % "2.5.16" % Test,
+      "com.typesafe.akka" %% "akka-http-testkit" % "10.1.5" % Test
+    )
+  )
 
-excludeFilter in (Assets, LessKeys.less) := "_*.less"
