@@ -4,11 +4,16 @@ import java.nio.file.{Path, Paths}
 
 import com.typesafe.config.{Config, ConfigFactory}
 
+import scala.concurrent.duration.{Duration, FiniteDuration}
+import scala.language.implicitConversions
+
 /**
   * Settings object.
   * @param config underlying typesafe config
   */
 case class Settings(config: Config) {
+
+  import Settings.asFiniteDuration
 
   object Version {
 
@@ -36,10 +41,18 @@ case class Settings(config: Config) {
 
   }
 
+  object Actors {
+
+    val defaultTimeout: FiniteDuration  = config.getDuration("fnb.actors.default_timeout")
+
+  }
+
 
 }
 
 object Settings {
+
+  implicit def asFiniteDuration(d: java.time.Duration): FiniteDuration = Duration.fromNanos(d.toNanos)
 
   /**
     * Load default settings

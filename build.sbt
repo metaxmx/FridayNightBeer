@@ -13,13 +13,22 @@ lazy val root = (project in file("."))
       "com.typesafe.akka" %% "akka-http" % "10.1.5",
 
       // Config
-      "com.typesafe" % "config" % "1.3.2",
+      "com.typesafe" % "config" % "1.3.3",
 
       // JSON
       "org.json4s" %% "json4s-native" % "3.6.1",
 
       // Logging
       "ch.qos.logback" % "logback-classic" % "1.2.3",
+
+      // Monitoring
+      // TODO: Kamon
+
+      // Database
+      // TODO: DB
+
+      // Image Processing
+      // TODO: scrimage
 
       // Testing
       "org.scalatest" %% "scalatest" % "3.0.5" % Test,
