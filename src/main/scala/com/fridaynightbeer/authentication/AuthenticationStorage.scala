@@ -49,6 +49,8 @@ class AuthenticationStorage(settings: Settings,
 
 object AuthenticationStorage {
 
+  val globalAuthStorage: AuthenticationStorage = AuthenticationStorage()
+
   def apply(settings: Settings = FridayNightBeer.settings,
             storageActorProps: Props = AuthStorageActor())
            (implicit system: ActorSystem = FridayNightBeer.system): AuthenticationStorage = {

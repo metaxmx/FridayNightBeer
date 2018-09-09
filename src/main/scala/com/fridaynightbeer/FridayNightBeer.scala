@@ -5,6 +5,7 @@ import java.nio.file.Files
 import akka.actor.ActorSystem
 import akka.stream.{ActorMaterializer, Materializer}
 import com.fridaynightbeer.util.Logging
+import slick.jdbc.JdbcBackend.Database
 
 import scala.concurrent.{Await, ExecutionContext}
 import scala.concurrent.duration._
@@ -25,11 +26,14 @@ object FridayNightBeer extends Logging {
 
   lazy val httpService: HttpService = HttpService()
 
+  lazy val db = Database.forConfig("fnb.db")
+
   def init(): Unit = {
     logger.info(s"Starting FridayNightBeer version ${settings.Version.version}")
     prepareDataDir()
     registerShutDownHandlers()
     runHttpService()
+    logger.debug(s"Using database ${db.toString}")
   }
 
   private def prepareDataDir(): Unit = {

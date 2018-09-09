@@ -7,7 +7,7 @@ class AuthStorageActor extends Actor {
   import AuthStorageActor._
 
   def receiveState(sessions: Map[String, Session]): Receive = {
-    case CreatedSession(session) =>
+    case CreateSession(session) =>
       context.become(receiveState(sessions + (session.sessionId -> session)))
       sender ! CreatedSession(session)
     case FindSession(sessionId) =>

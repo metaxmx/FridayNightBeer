@@ -25,7 +25,9 @@ lazy val root = (project in file("."))
       // TODO: Kamon
 
       // Database
-      // TODO: DB
+      "com.typesafe.slick" %% "slick" % "3.2.3",
+      "com.typesafe.slick" %% "slick-hikaricp" % "3.2.3",
+      "mysql" % "mysql-connector-java" % "5.1.47",
 
       // Image Processing
       // TODO: scrimage

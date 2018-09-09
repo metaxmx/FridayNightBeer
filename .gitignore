@@ -7,3 +7,4 @@
 target
 /run
 *.iml
+application.conf

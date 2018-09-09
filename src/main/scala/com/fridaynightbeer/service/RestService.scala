@@ -2,16 +2,14 @@ package com.fridaynightbeer.service
 
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
+import com.fridaynightbeer.authentication.AuthenticatedService
+import com.fridaynightbeer.service.rest.AuthService
 
-class RestService {
+class RestService(authService: AuthService) {
 
   val route: Route = {
     pathPrefix("rest") {
-      pathEndOrSingleSlash {
-        complete {
-          "yo."
-        }
-      }
+      authService.route
     }
   }
 
@@ -19,6 +17,6 @@ class RestService {
 
 object RestService {
 
-  def apply(): RestService = new RestService()
-
+  def apply(authService: AuthService = AuthService()): RestService = new RestService(authService)
+  
 }
